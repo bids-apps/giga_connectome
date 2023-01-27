@@ -1,0 +1,37 @@
+{
+    "simple": {
+        "denoise_strategy": "simple"
+    },
+    "simple+gsr": {
+        "denoise_strategy": "simple",
+        "global_signal": "basic"
+    },
+    "scrubbing.5": {
+        "denoise_strategy": "scrubbing",
+        "fd_threshold": 0.5,
+        "std_dvars_threshold": null
+    },
+    "scrubbing.5+gsr": {
+        "denoise_strategy": "scrubbing",
+        "global_signal": "basic",
+        "fd_threshold": 0.5,
+        "std_dvars_threshold": null
+    },
+    "scrubbing.2": {
+        "denoise_strategy": "scrubbing",
+        "fd_threshold": 0.2,
+        "std_dvars_threshold": null
+    },
+    "scrubbing.2+gsr": {
+        "denoise_strategy": "scrubbing",
+        "global_signal": "basic",
+        "fd_threshold": 0.2,
+        "std_dvars_threshold": null
+    },
+    "acompcor50": {
+        "denoise_strategy": "compcor"
+    },
+    "icaaroma": {
+        "denoise_strategy": "ica_aroma"
+    }
+}
