@@ -1,5 +1,3 @@
-import json
-
 # import pandas as pd
 
 # from nilearn.signal import clean
@@ -9,6 +7,9 @@ import json
 #     create_atlas_masker,
 #     get_atlas_dimensions,
 # )
+
+import json
+
 from pkg_resources import resource_filename
 
 

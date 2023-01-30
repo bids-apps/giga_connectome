@@ -1,0 +1,20 @@
+{
+    "schaefer7networks": {
+        "atlas": "Schaefer2018",
+        "template": "MNI152NLin2009cAsym",
+        "resolution": 2,
+        "dimensions": [100, 200, 300, 400, 500, 600, 800]
+    },
+    "mist": {
+        "atlas": "MIST",
+        "template": "MNI152NLin2009bSym",
+        "resolution": 3,
+        "dimensions": [7, 12, 20, 36, 64, 122, 197, 325, 444, "ROI"]
+    },
+    "difumo": {
+        "atlas": "DiFuMo",
+        "template": "MNI152NLin2009cAsym",
+        "resolution": 2,
+        "dimensions": [64, 128, 256, 512, 1024]
+    }
+}

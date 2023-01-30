@@ -1,6 +1,3 @@
-from pathlib import Path
-
-import bids
 import json
 import numpy as np
 import pandas as pd
@@ -8,14 +5,14 @@ import pandas as pd
 from pkg_resources import resource_filename
 
 
-def get_metadata(fmriprep_dir, **kwargs):
+def get_metadata(fmriprep_bids_layout, **kwargs):
     """
     Return dict metadata with participants and files information.
 
     Parameters
     ----------
-    fmriprep_dir : str or pathlib.Path
-        Path to the fmriprep output directory.
+    fmriprep_bids_layout : bids.layout.BIDSLayout
+        fMRIPrep derivative BIDS layout object.
 
     **kwargs :
         BIDS entities subject, session, task for further filtering.
@@ -24,26 +21,16 @@ def get_metadata(fmriprep_dir, **kwargs):
     ------
 
     pandas.DataFrame
-        collection of all the relevant data.
+        Collection of all the relevant data. Each line is a unique functional
+        image, linked to associated epi mask and confound files.
     """
     extra_entities = _check_extra_entitis(kwargs)
-    layout = _get_derivative_layout(fmriprep_dir)
-
-    metadata = pd.DataFrame(
-        columns=[
-            "datatype",
-            "image",
-            "mask",
-            "confound",
-            "session",
-            "subject",
-            "task",
-            "template",
-        ]
-    )
 
     # first initialize the dict with images information
-    all_images = _parse_fmriprep_layout(layout, "images", extra_entities)
+    all_images = _parse_fmriprep_layout(
+        fmriprep_bids_layout, "images", extra_entities
+    )
+    metadata = pd.DataFrame()
     for image in all_images:
         entities = {
             k: [image.entities[k]]
@@ -53,20 +40,26 @@ def get_metadata(fmriprep_dir, **kwargs):
         entities["image"] = image.path
         entities["template"] = entities["space"]
         entities.pop("space")
-        metadata = metadata.concat(pd.DataFrame(entities))
+        metadata = pd.concat((metadata, pd.DataFrame(entities)))
     metadata = metadata.reset_index(drop=True)
 
     # update information with confounds
-    all_confounds = _parse_fmriprep_layout(layout, "confounds", extra_entities)
+    all_confounds = _parse_fmriprep_layout(
+        fmriprep_bids_layout, "confounds", extra_entities
+    )
     for confound in all_confounds:
         row_idx = _find_matched_confound_file(metadata, confound)
         metadata.loc[row_idx, ["confound"]] = confound.path
 
     # update information with masks
-    all_masks = _parse_fmriprep_layout(layout, "masks", extra_entities)
+    all_masks = _parse_fmriprep_layout(
+        fmriprep_bids_layout, "masks", extra_entities
+    )
     for mask in all_masks:
         row_idx = _find_matched_mask_file(metadata, mask)
         metadata.loc[row_idx, ["mask"]] = mask.path
+
+    metadata = metadata.sort_values(["template"])
     return metadata
 
 
@@ -139,15 +132,3 @@ def _load_bids_entities(file_type):
     if file_type not in bids_entities:
         raise ValueError(f"File type {file_type} is not defined.")
     return bids_entities[file_type]
-
-
-def _get_derivative_layout(fmriprep_dir):
-    """Get BIDS fMRIPrep derivative layout."""
-    if isinstance(fmriprep_dir, str):
-        fmriprep_dir = Path(fmriprep_dir)
-
-    if not fmriprep_dir.exists():
-        raise ValueError(f"Directory {fmriprep_dir} does not exists!")
-
-    layout = bids.BIDSLayout(fmriprep_dir, validate=False, derivatives=True)
-    return layout
