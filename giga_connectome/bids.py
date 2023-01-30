@@ -53,7 +53,7 @@ def get_metadata(fmriprep_dir, **kwargs):
         entities["image"] = image.path
         entities["template"] = entities["space"]
         entities.pop("space")
-        metadata = metadata.append(pd.DataFrame(entities))
+        metadata = metadata.concat(pd.DataFrame(entities))
     metadata = metadata.reset_index(drop=True)
 
     # update information with confounds
