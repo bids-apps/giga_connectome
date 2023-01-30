@@ -1,0 +1,3 @@
+[submodule "giga_connectome/tests/data/ds000228-fmriprep"]
+	path = giga_connectome/tests/data/ds000228-fmriprep
+	url = https://github.com/OpenNeuroDerivatives/ds000228-fmriprep.git

@@ -3,7 +3,7 @@
         "scope": "derivatives",
         "space": ["MNI152NLin6Asym", "MNI152NLin2009cAsym"],
         "desc": ["preproc", "smoothAROMAnonaggr"],
-        "suffix": ["bold"],
+        "suffix": "bold",
         "extension":"nii.gz"
     },
     "confounds": {
@@ -18,5 +18,6 @@
         "desc": "brain",
         "suffix": "mask",
         "extension": "nii.gz"
-    }
+    },
+    "extra_bids_entities": ["subject", "session", "task"]
 }
