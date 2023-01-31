@@ -1,5 +1,5 @@
 import pytest
-from giga_connectome.denoise import generate_group_mask
+from giga_connectome.mask import generate_group_mask
 from nilearn import datasets
 
 

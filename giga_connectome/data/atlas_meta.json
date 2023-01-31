@@ -1,20 +1,35 @@
 {
-    "schaefer7networks": {
+    "Schaefer2018": {
         "atlas": "Schaefer2018",
         "template": "MNI152NLin2009cAsym",
-        "resolution": 2,
-        "dimensions": [100, 200, 300, 400, 500, 600, 800]
+        "res": "02",
+        "desc": [
+            "100Parcels7Networks",
+            "200Parcels7Networks",
+            "300Parcels7Networks",
+            "400Parcels7Networks",
+            "500Parcels7Networks",
+            "600Parcels7Networks",
+            "800Parcels7Networks"],
+        "type": "dseg"
     },
-    "mist": {
-        "atlas": "MIST",
-        "template": "MNI152NLin2009bSym",
-        "resolution": 3,
-        "dimensions": [7, 12, 20, 36, 64, 122, 197, 325, 444, "ROI"]
+    "MIST": {
+        "atlas": "BASC",
+        "template": "MNI152NLin2009bAsym",
+        "res": "03",
+        "desc": [7, 12, 20, 36, 64, 122, 197, 325, 122, 444],
+        "type": "dseg"
     },
-    "difumo": {
+    "DiFuMo": {
         "atlas": "DiFuMo",
         "template": "MNI152NLin2009cAsym",
-        "resolution": 2,
-        "dimensions": [64, 128, 256, 512, 1024]
+        "res": "03",
+        "desc": [
+            "64dimensions",
+            "128dimensions",
+            "256dimensions",
+            "512dimensions",
+            "1024dimensions"],
+        "type": "probseg"
     }
 }

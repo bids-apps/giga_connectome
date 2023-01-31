@@ -4,3 +4,9 @@
 [submodule "giga_connectome/tests/data/ds003007-fmriprep"]
 	path = giga_connectome/tests/data/ds003007-fmriprep
 	url = https://github.com/OpenNeuroDerivatives/ds003007-fmriprep.git
+[submodule "giga_connectome/tests/data/ds000017-fmriprep"]
+	path = giga_connectome/tests/data/ds000017-fmriprep
+	url = https://github.com/OpenNeuroDerivatives/ds000017-fmriprep.git
+[submodule "tools/mist2templateflow"]
+	path = tools/mist2templateflow
+	url = https://github.com/SIMEXP/mist2templateflow.git

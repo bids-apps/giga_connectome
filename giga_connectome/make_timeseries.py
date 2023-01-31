@@ -66,23 +66,26 @@ def main():
         current_epis = metadata[metadata["templates"] == tpl]
         current_masks = current_epis["masks"].tolist()
         current_group_mask = generate_group_mask(current_masks, tpl)
+
         current_file_name = f"space-{tpl}_label-GM_desc-group_mask.nii.gz"
         nib.save(current_group_mask, output_path / current_file_name)
+
         masker = NiftiMasker(
             standardize=True,
-            mask_img=group_masks["MNI152NLin2009cAsym"],
+            mask_img=current_group_mask,
             smoothing_fwhm=5,
         )
+
+        # save in disc
         group_masks[tpl] = {
             "file_path": str(output_path / current_file_name),
             "masker": masker,
         }
 
-    # dataset level atlas correction
-
     # denoise
     images = list(metadata["images"])
     templates = list(metadata["templates"])
+
     for img, tpl in zip(images, templates):
         for strategy in denoise_strategy:
             confounds, sample_mask = load_confounds_strategy(
