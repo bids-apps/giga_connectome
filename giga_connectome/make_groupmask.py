@@ -4,10 +4,10 @@ Process fMRIPrep outputs to timeseries based on denoising strategy.
 import argparse
 from pathlib import Path
 
-import bids
+from bids import BIDSLayout
 import nibabel as nib
 
-from giga_connectome.bids import get_metadata
+from giga_connectome.metadata import get_metadata
 from giga_connectome import mask
 
 
@@ -42,7 +42,7 @@ def main():
 
     atlas_settings = mask._load_atlas_setting()
 
-    fmriprep_bids_layout = bids.BIDSLayout(
+    fmriprep_bids_layout = BIDSLayout(
         root=fmriprep_path,
         database_path=None,
         validate=False,
@@ -52,12 +52,12 @@ def main():
     metadata = get_metadata(fmriprep_bids_layout)
     metadata.to_csv(output_path / "func_scans_list.tsv", sep="\t")
 
-    templates = list(metadata["templates"].unique())
+    templates = list(metadata["template"].unique())
 
     # create dataset level masks for each space
     for tpl in templates:
-        current_epis = metadata[metadata["templates"] == tpl]
-        current_masks = current_epis["masks"].tolist()
+        current_epis = metadata[metadata["template"] == tpl]
+        current_masks = current_epis["mask"].tolist()
         current_group_mask = mask.generate_group_mask(current_masks, tpl)
 
         current_file_name = f"space-{tpl}_label-GM_desc-group_mask.nii.gz"
