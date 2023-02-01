@@ -69,12 +69,16 @@ def generate_group_mask(
         memory=None,
         verbose=0,
     )
+    print(
+        f"Group EPI mask affine:\n{group_epi_mask.affine}"
+        f"\nshape: {group_epi_mask.shape}"
+    )
 
     # load grey matter mask
     check_valid_template = re.match(r"MNI152NLin2009[abc][A]?[sS]ym", template)
     if not check_valid_template:
         raise ValueError(
-            f"TemplateFlow does not supply template {template}"
+            f"TemplateFlow does not supply template {template} "
             "with grey matter masks. Please use any "
             "MNI152NLin2009* templates."
         )
@@ -82,7 +86,8 @@ def generate_group_mask(
         template,
         raise_empty=True,
         label="GM",
-    )  # this is a probalistic mask, getting one fifth of the values
+        resolution="02",  # preprocessed data don't need high res
+    )
 
     mni_gm = resample_to_img(
         source_img=mni_gm_path,
@@ -92,6 +97,7 @@ def generate_group_mask(
     # the following steps are take from
     # nilearn.images.fetch_icbm152_brain_gm_mask
     mni_gm_data = get_data(mni_gm)
+    # this is a probalistic mask, getting one fifth of the values
     mni_gm_mask = (mni_gm_data > 0.2).astype("int8")
     mni_gm_mask = binary_closing(mni_gm_mask, iterations=n_iter)
     mni_gm_mask_img = new_img_like(mni_gm, mni_gm_mask)
@@ -154,15 +160,7 @@ def resample_atlas2groupmask(atlas, desc, group_mask, templateflow_dir=None):
     parcellation_resampled = resample_to_img(
         parcellation, group_mask, interpolation="nearest"
     )
-
-    filename = (
-        f"tpl-{atlas_parameters['template']}_"
-        f"atlas-{atlas_parameters['atlas']}_"
-        "res-dataset_"
-        f"desc-{atlas_parameters['desc']}_"
-        f"{atlas_parameters['type']}"
-    )
-    return parcellation_resampled, filename
+    return parcellation_resampled
 
 
 def _load_atlas_setting():
