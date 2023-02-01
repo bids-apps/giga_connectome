@@ -100,18 +100,12 @@ def generate_group_mask(
     return math_img("img1 & img2", img1=group_epi_mask, img2=mni_gm_mask_img)
 
 
-def generate_dataset_atlas(group_mask, atlas, desc, templateflow_dir=None):
+def resample_atlas2groupmask(atlas, desc, group_mask, templateflow_dir=None):
     """
-    Generate a group EPI grey matter mask, and overlaid with a MNI grey
-    matter template.
-    The Group EPI mask will ensure the signal extraction is from the most
-    overlapping voxels.
+    Resample atlas to group EPI grey matter mask.
 
     Parameters
     ----------
-
-    group_mask : str or pathlib.Path or nibabel.nifti1.Nifti1Image
-        A group-level EPI grey matter mask.
 
     atlas : str
         Atlas name. Currently support Schaefer2018, MIST, DiFuMo.
@@ -119,6 +113,9 @@ def generate_dataset_atlas(group_mask, atlas, desc, templateflow_dir=None):
     desc : str or int
         Description field of the atlas. Please see the set up files for
         details of each atlas.
+
+    group_mask : str or pathlib.Path or nibabel.nifti1.Nifti1Image
+        A group-level EPI grey matter mask.
 
     templateflow_dir : None or pathlib.Path
         TemplateFlow directory. Default to None to download the directory,
@@ -131,7 +128,7 @@ def generate_dataset_atlas(group_mask, atlas, desc, templateflow_dir=None):
         EPI (grey matter) mask for the current group of subjects.
 
     str
-        new filename.
+        New filename.
     """
     # verify the atlas name and desc matches the defined data
     atlas_parameters = _load_atlas_setting()[atlas]
@@ -150,7 +147,7 @@ def generate_dataset_atlas(group_mask, atlas, desc, templateflow_dir=None):
         atlas_parameters["template"],
         raise_empty=True,
         atlas=atlas_parameters["atlas"],
-        res=atlas_parameters["res"],
+        resolution=atlas_parameters["res"],
         desc=desc,
         extension="nii.gz",
     )

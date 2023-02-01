@@ -71,8 +71,11 @@ def main():
                     output_path
                     / f"space-{tpl}_label-GM_desc-group_mask.nii.gz"
                 )
-                parcellation_resampled, filename = mask.generate_dataset_atlas(
-                    current_group_mask, parameters["atlas"], desc
+                (
+                    parcellation_resampled,
+                    filename,
+                ) = mask.resample_atlas2groupmask(
+                    parameters["atlas"], current_group_mask, desc
                 )
                 nib.save(parcellation_resampled, output_path / filename)
 
