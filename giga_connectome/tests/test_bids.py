@@ -1,7 +1,7 @@
 from pathlib import Path
 import bids
 import numpy as np
-from giga_connectome.bids import get_metadata
+from giga_connectome.metadata import get_metadata
 from pkg_resources import resource_filename
 
 

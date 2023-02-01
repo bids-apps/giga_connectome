@@ -60,7 +60,7 @@ def generate_group_mask(
         lower_cutoff=0.2,
         upper_cutoff=0.85,
         connected=True,
-        opening=2,
+        opening=False,  # we should be using fMRIPrep masks
         threshold=0.5,
         target_affine=None,
         target_shape=None,
