@@ -3,7 +3,7 @@ import json
 from pkg_resources import resource_filename
 
 
-def get_denoise_strategy(strategy_name):
+def get_denoise_strategy(strategy_name=None):
     """
     Select denoise strategies and associated parameters.
     The strategy parameters are designed to pass to load_confounds_strategy.
