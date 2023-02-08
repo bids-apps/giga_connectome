@@ -1,18 +1,24 @@
 import os
 import re
 import json
+from typing import Optional, Union
+
+from pathlib import Path
 
 from nilearn.masking import compute_multi_epi_mask
 from nilearn.image import resample_to_img, new_img_like, get_data, math_img
-
+from nibabel import Nifti1Image
 from scipy.ndimage import binary_closing
 
 from pkg_resources import resource_filename
 
 
 def generate_group_mask(
-    imgs, template="MNI152NLin2009aAsym", templateflow_dir=None, n_iter=2
-):
+    imgs: list,
+    template: str = "MNI152NLin2009aAsym",
+    templateflow_dir: Optional[Path] = None,
+    n_iter: int = 2,
+) -> Nifti1Image:
     """
     Generate a group EPI grey matter mask, and overlaid with a MNI grey
     matter template.
@@ -106,7 +112,12 @@ def generate_group_mask(
     return math_img("img1 & img2", img1=group_epi_mask, img2=mni_gm_mask_img)
 
 
-def resample_atlas2groupmask(atlas, desc, group_mask, templateflow_dir=None):
+def resample_atlas2groupmask(
+    atlas: str,
+    desc: str,
+    group_mask: Union[str, Path, Nifti1Image],
+    templateflow_dir: Optional[Path] = None,
+) -> Nifti1Image:
     """
     Resample atlas to group EPI grey matter mask.
 
@@ -137,7 +148,7 @@ def resample_atlas2groupmask(atlas, desc, group_mask, templateflow_dir=None):
         New filename.
     """
     # verify the atlas name and desc matches the defined data
-    atlas_parameters = _load_atlas_setting()[atlas]
+    atlas_parameters = load_atlas_setting()[atlas]
     if desc not in atlas_parameters["desc"]:
         raise ValueError(
             f"{desc} not found. Available options for atlas "
@@ -163,7 +174,7 @@ def resample_atlas2groupmask(atlas, desc, group_mask, templateflow_dir=None):
     return parcellation_resampled
 
 
-def _load_atlas_setting():
+def load_atlas_setting():
     """Load atlas details for templateflow to fetch."""
     file_atlas_setting = resource_filename(
         "giga_connectome", "data/atlas_meta.json"

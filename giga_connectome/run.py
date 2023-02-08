@@ -1,5 +1,5 @@
 import argparse
-
+from pathlib import Path
 from main import main
 
 
@@ -12,11 +12,15 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument(
     "bids_dir",
+    action="store",
+    type=Path,
     help="The directory with the input dataset "
     "formatted according to the BIDS standard.",
 )
 parser.add_argument(
     "output_dir",
+    action="store",
+    type=Path,
     help="The directory where the output files "
     "should be stored. If you are running group level analysis "
     "this folder should be prepopulated with the results of the"
@@ -30,17 +34,25 @@ parser.add_argument(
     choices=["participant", "group"],
 )
 parser.add_argument(
+    "-w",
+    "--work-dir",
+    action="store",
+    type=Path,
+    default=Path("work").absolute(),
+    help="Path where intermediate results should be stored.",
+)
+parser.add_argument(
     "--atlas",
     help="The choice of atlas for time series extraction.",
     choices=["Schaefer2018", "MIST", "DiFuMo"],
 )
 parser.add_argument(
-    "--denoise_strategy",
+    "--denoise-strategy",
     help="The choice of post-processing for denoising.",
     choices=["simple", "scrubbing.2", "scrubbing.5", "acompcor50", "icaaroma"],
 )
 parser.add_argument(
-    "--globalsignal",
+    "--global-signal",
     help="Apply global signal regressor. Only available to simple and "
     "scrubbing strategies.",
     action="store_true",
