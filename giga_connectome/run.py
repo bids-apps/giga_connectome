@@ -14,24 +14,20 @@ parser.add_argument(
     "bids_dir",
     action="store",
     type=Path,
-    help="The directory with the input dataset "
+    help="The directory with the input dataset (e.g. fMRIPrep derivative)"
     "formatted according to the BIDS standard.",
 )
 parser.add_argument(
     "output_dir",
     action="store",
     type=Path,
-    help="The directory where the output files "
-    "should be stored. If you are running group level analysis "
-    "this folder should be prepopulated with the results of the"
-    "participant level analysis.",
+    help="The directory where the output files should be stored.",
 )
 parser.add_argument(
     "analysis_level",
-    help="Level of the analysis that will be performed. "
-    "Multiple participant level analyses can be run independently "
-    "(in parallel) using the same output_dir.",
-    choices=["participant", "group"],
+    help="Level of the analysis that will be performed. Only group level is "
+    "allowed as we need to generate a dataset inclusive brain mask.",
+    choices=["group"],
 )
 parser.add_argument(
     "-w",

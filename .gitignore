@@ -1,4 +1,6 @@
 */_version.py
+data/
+output/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

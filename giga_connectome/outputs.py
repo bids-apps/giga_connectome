@@ -5,6 +5,7 @@ from pathlib import Path
 
 import h5py
 import numpy as np
+from nibabel import Nifti1Image
 from nilearn.connectome import ConnectivityMeasure
 from nilearn.interfaces.fmriprep import load_confounds_strategy
 from nilearn.interfaces.bids import parse_bids_filename
@@ -54,7 +55,7 @@ def get_denoise_strategy_parameters(
     return {strategy_name: benchmark_strategies[strategy_name]}
 
 
-def generate_subject_level_data(
+def run_postprocessing_dataset(
     strategy_parameters: dict,
     resampled_atlases: List[str],
     images: List[str],
@@ -65,63 +66,43 @@ def generate_subject_level_data(
     Generate subject level timeseries and connectomes.
 
     """
-    # load confounds and maskers
-    confounds, sample_mask = load_confounds_strategy(
-        images, **strategy_parameters
-    )
-
+    atlas = output_path.name.split("_")[0].split("-")[-1]
     # set up masker objects
     group_masker = NiftiMasker(
         standardize=True, mask_img=group_mask, smoothing_fwhm=5
     )
 
-    atlas_maskers = {}
+    atlas_maskers, connectomes = {}, {}
     for atlas_path in resampled_atlases:
         desc = atlas_path.split("desc-")[-1].split("_")[0]
         atlas_maskers[desc] = _get_masker(atlas_path)
+        connectomes[desc] = []
 
     correlation_measure = ConnectivityMeasure(
         kind="correlation", discard_diagonal=True
     )
 
     # transform data
-    connectomes = {desc: [] for desc in atlas_maskers}
-    for img, cf, sm in zip(images, confounds, sample_mask):
-        time_series_voxel = group_masker.fit_transform(
-            img, confounds=cf, sample_mask=sm
+    for img in images:
+        # process timeseries
+        denoised_img = _denoise_nifti_voxel(
+            strategy_parameters, group_masker, img
         )
-        denoised_img = group_masker.inverse_transform(time_series_voxel)
         # parse file name
-        reference = parse_bids_filename(img)
-        subject = f"sub-{reference['sub']}"
-        session = reference.get("ses", None)
-        run = reference.get("run", None)
-        specifier = f"tast-{reference['task']}"
-        if isinstance(session, str):
-            session = f"ses-{session}"
-            specifier = f"{session}_{specifier}"
-
-        if isinstance(run, str):
-            specifier = f"{specifier}_run-{run}"
-        atlas = output_path.name.split("_")[0].split("-")[-1]
-
+        subject, session, specifier = _parse_bids_name(img)
         for desc in atlas_maskers:
             attribute_name = f"{subject}_{specifier}_atlas-{atlas}_desc-{desc}"
             masker = atlas_maskers[desc]
-            time_series_atlas = masker.fit_transform(denoised_img)
-            correlation_matrix = correlation_measure.fit_transform(
-                [time_series_atlas]
-            )[0]
-            # float 32 instead of 64
-            time_series_atlas = time_series_atlas.astype(np.float32)
-            correlation_matrix = correlation_matrix.astype(np.float32)
+            (
+                time_series_atlas,
+                correlation_matrix,
+            ) = _generate_subject_timeseries_connectome(
+                masker, correlation_measure, denoised_img
+            )
             connectomes[desc].append(correlation_matrix)
 
             # dump to h5
-            flag = "w"
-            if output_path.exists():
-                flag = "a"
-
+            flag = _set_file_flag(output_path)
             with h5py.File(output_path, flag) as f:
                 group = _fetch_h5_group(f, subject, session)
                 group.create_dataset(
@@ -131,17 +112,72 @@ def generate_subject_level_data(
                     f"{attribute_name}_connectome", data=correlation_matrix
                 )
 
-        for desc in connectomes:
-            average_connectome = np.mean(connectomes[desc]).astype(np.float32)
-            with h5py.File(output_path, "a") as f:
-                f.create_dataset(
-                    "atlas-{atlas}_desc-{desc}_connectome",
-                    data=average_connectome,
-                )
+    print("create group connectome")
+    for desc in connectomes:
+        average_connectome = np.mean(
+            np.array(connectomes[desc]), axis=0
+        ).astype(np.float32)
+        with h5py.File(output_path, "a") as f:
+            f.create_dataset(
+                f"atlas-{atlas}_desc-{desc}_connectome",
+                data=average_connectome,
+            )
 
 
-def _fetch_h5_group(f, subject, session):
-    """Determine which level the file is in."""
+def _generate_subject_timeseries_connectome(
+    masker: Union[NiftiMapsMasker, NiftiLabelsMasker],
+    correlation_measure: ConnectivityMeasure,
+    denoised_img: Nifti1Image,
+) -> List[np.array]:
+    """Generate connectome and timeseries per nifti image."""
+    time_series_atlas = masker.fit_transform(denoised_img)
+    correlation_matrix = correlation_measure.fit_transform(
+        [time_series_atlas]
+    )[0]
+    # float 32 instead of 64
+    time_series_atlas = time_series_atlas.astype(np.float32)
+    correlation_matrix = correlation_matrix.astype(np.float32)
+    return time_series_atlas, correlation_matrix
+
+
+def _denoise_nifti_voxel(
+    strategy_parameters: dict, group_masker: NiftiMasker, img: str
+) -> Nifti1Image:
+    """Denoise voxel level data per nifti image."""
+    cf, sm = load_confounds_strategy(img, **strategy_parameters)
+    time_series_voxel = group_masker.fit_transform(
+        img, confounds=cf, sample_mask=sm
+    )
+    denoised_img = group_masker.inverse_transform(time_series_voxel)
+    return denoised_img
+
+
+def _set_file_flag(output_path: Path) -> str:
+    """Find out if new file needs to be created."""
+    flag = "w"
+    if output_path.exists():
+        flag = "a"
+    return flag
+
+
+def _parse_bids_name(img: str) -> List[str]:
+    """Get subject, session, and specifier for a fMRIPrep output."""
+    reference = parse_bids_filename(img)
+    subject = f"sub-{reference['sub']}"
+    session = reference.get("ses", None)
+    run = reference.get("run", None)
+    specifier = f"tast-{reference['task']}"
+    if isinstance(session, str):
+        session = f"ses-{session}"
+        specifier = f"{session}_{specifier}"
+
+    if isinstance(run, str):
+        specifier = f"{specifier}_run-{run}"
+    return subject, session, specifier
+
+
+def _fetch_h5_group(f: h5py.File, subject: str, session: str) -> h5py.Group:
+    """Determine the level of grouping based on BIDS standard."""
     if subject not in f:
         if session:
             group = f.create_group(f"{subject}/{session}")

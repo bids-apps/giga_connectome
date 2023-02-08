@@ -15,7 +15,7 @@ from pkg_resources import resource_filename
 
 def generate_group_mask(
     imgs: list,
-    template: str = "MNI152NLin2009aAsym",
+    template: str = "MNI152NLin2009cAsym",
     templateflow_dir: Optional[Path] = None,
     n_iter: int = 2,
 ) -> Nifti1Image:
@@ -30,7 +30,7 @@ def generate_group_mask(
     imgs : list of string
         List of EPI masks or preprocessed BOLD data.
 
-    template : str
+    template : str, Default = MNI152NLin2009cAsym
         Template name from TemplateFlow to retrieve the grey matter template.
         This template should match the template for the EPI mask.
 
@@ -81,18 +81,22 @@ def generate_group_mask(
     )
 
     # load grey matter mask
-    check_valid_template = re.match(r"MNI152NLin2009[abc][A]?[sS]ym", template)
+    check_valid_template = re.match(r"MNI152NLin2009[ac][A]?[sS]ym", template)
     if not check_valid_template:
         raise ValueError(
             f"TemplateFlow does not supply template {template} "
-            "with grey matter masks. Please use any "
-            "MNI152NLin2009* templates."
+            "with grey matter masks. Possible templates: "
+            "MNI152NLin2009a*, MNI152NLin2009c*."
         )
+    # preprocessed data don't need high res
+    # for MNI152NLin2009a* templates, only one resolution is available
+    gm_res = "02" if template == "MNI152NLin2009cAsym" else "1"
+
     mni_gm_path = templateflow.api.get(
         template,
         raise_empty=True,
         label="GM",
-        resolution="02",  # preprocessed data don't need high res
+        resolution=gm_res,
     )
 
     mni_gm = resample_to_img(

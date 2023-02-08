@@ -9,7 +9,7 @@ from giga_connectome import mask
 from giga_connectome.metadata import get_metadata
 from giga_connectome.outputs import (
     get_denoise_strategy_parameters,
-    generate_subject_level_data,
+    run_postprocessing_dataset,
 )
 
 
@@ -89,7 +89,7 @@ def main(args):
     select_space = metadata["template"] == tpl
     images = metadata.loc[select_space, "image"]
     output_path = output_dir / f"atlas-{atlas}_desc-{strategy_name}.h5"
-    generate_subject_level_data(
+    run_postprocessing_dataset(
         strategy_parameters[strategy_name],
         resampled_atlases,
         images,

@@ -1,3 +1,4 @@
+import warnings
 import json
 import numpy as np
 import pandas as pd
@@ -11,6 +12,7 @@ def get_metadata(fmriprep_bids_layout, **kwargs):
 
     Parameters
     ----------
+
     fmriprep_bids_layout : bids.layout.BIDSLayout
         fMRIPrep derivative BIDS layout object.
 
@@ -73,7 +75,7 @@ def _check_extra_entitis(kwargs):
             extra_entities[key] = value
     invalid_entities = list(kwargs.keys())
     if invalid_entities:
-        raise UserWarning(
+        warnings.warn(
             f"The following BIDS entities are not used: {invalid_entities}."
         )
     return extra_entities
