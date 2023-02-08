@@ -23,6 +23,7 @@ dependencies = [
   "nilearn",
   "pybids",
   "templateflow",
+  "tqdm",
 ]
 dynamic = ["version"]
 

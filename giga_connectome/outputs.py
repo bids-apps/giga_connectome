@@ -1,9 +1,9 @@
 import json
 from typing import Union, List, Optional
-
 from pathlib import Path
 
 import h5py
+from tqdm import tqdm
 import numpy as np
 from nibabel import Nifti1Image
 from nilearn.connectome import ConnectivityMeasure
@@ -67,7 +67,7 @@ def run_postprocessing_dataset(
 
     """
     atlas = output_path.name.split("_")[0].split("-")[-1]
-    # set up masker objects
+    print("set up masker objects")
     group_masker = NiftiMasker(
         standardize=True, mask_img=group_mask, smoothing_fwhm=5
     )
@@ -83,7 +83,8 @@ def run_postprocessing_dataset(
     )
 
     # transform data
-    for img in images:
+    print("processing subjects")
+    for img in tqdm(images):
         # process timeseries
         denoised_img = _denoise_nifti_voxel(
             strategy_parameters, group_masker, img
