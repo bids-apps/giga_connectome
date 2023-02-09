@@ -1,9 +1,11 @@
 import os
 import re
 import json
-from typing import Optional, Union
+from typing import Optional, Union, List, Tuple
 
 from pathlib import Path
+from tqdm import tqdm
+import nibabel as nib
 
 from nilearn.masking import compute_multi_epi_mask
 from nilearn.image import resample_to_img, new_img_like, get_data, math_img
@@ -11,6 +13,78 @@ from nibabel import Nifti1Image
 from scipy.ndimage import binary_closing
 
 from pkg_resources import resource_filename
+
+
+def create_group_masks_atlas(
+    all_masks: List[Union[str, Path]],
+    template: str,
+    atlas: str,
+    working_dir: Path,
+) -> Tuple[Path, List[Path]]:
+    """
+    A High level wrapper for creating group level grey matter mask and atlas.
+    The grey matter mask is always sampled to the MNI152NLin2009cAsym one,
+    as that's the most commonly used grey matter mask.
+
+    Parameters
+    ----------
+
+    all_masks: list of string or pathlib.Path
+        Paths of all the fMRIPrep whole brain EPI masks that should be
+        included in group mask creation.
+
+    template: str
+        Templateflow template name. This template should match the template of
+        `all_masks`.
+
+    atlas: str
+        Atlas name. Currently support Schaefer20187Networks, MIST, DiFuMo.
+
+    working_dir: pathlib.Path
+        Path to working directory where the outputs are saved.
+
+    Returns
+    -------
+
+    pathlib.Path
+        Path to group level grey matter mask.
+
+    List of pathlib.Path
+        Paths to atlases sampled to group level grey matter mask.
+    """
+    # no grey matter mask is supplied with MNI152NLin6Asym
+    # so we are fixed at using the most common space from
+    # fmriprep output
+    group_mask = generate_group_mask(all_masks, "MNI152NLin2009cAsym")
+    current_file_name = (
+        f"tpl-{template}_res-dataset_label-GM_desc-group_mask.nii.gz"
+    )
+
+    group_mask_path = working_dir / current_file_name
+    nib.save(group_mask, group_mask_path)
+
+    # dataset level atlas correction
+    # TODO: can implement some kinds of caching file found in working dir
+    atlas_parameters = load_atlas_setting()[atlas]
+    print("Resample atlas to group grey matter mask.")
+    resampled_atlases = []
+    for desc in tqdm(atlas_parameters["desc"]):
+        parcellation_resampled = resample_atlas2groupmask(
+            atlas,
+            desc,
+            group_mask,
+        )
+        filename = (
+            f"tpl-{template}_"
+            f"atlas-{atlas_parameters['atlas']}_"
+            "res-dataset_"
+            f"desc-{desc}_"
+            f"{atlas_parameters['type']}.nii.gz"
+        )
+        save_path = working_dir / filename
+        nib.save(parcellation_resampled, save_path)
+        resampled_atlases.append(save_path)
+    return group_mask_path, resampled_atlases
 
 
 def generate_group_mask(
@@ -129,7 +203,7 @@ def resample_atlas2groupmask(
     ----------
 
     atlas : str
-        Atlas name. Currently support Schaefer2018, MIST, DiFuMo.
+        Atlas name. Currently support Schaefer20187Networks, MIST, DiFuMo.
 
     desc : str or int
         Description field of the atlas. Please see the set up files for

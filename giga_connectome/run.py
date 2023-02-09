@@ -40,7 +40,7 @@ parser.add_argument(
 parser.add_argument(
     "--atlas",
     help="The choice of atlas for time series extraction.",
-    choices=["Schaefer2018", "MIST", "DiFuMo"],
+    choices=["Schaefer20187Networks", "MIST", "DiFuMo"],
 )
 parser.add_argument(
     "--denoise-strategy",
@@ -53,7 +53,6 @@ parser.add_argument(
     "scrubbing strategies.",
     action="store_true",
 )
-
 args = parser.parse_args()
 
 main(args)

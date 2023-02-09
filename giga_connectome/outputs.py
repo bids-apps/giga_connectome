@@ -57,7 +57,7 @@ def get_denoise_strategy_parameters(
 
 def run_postprocessing_dataset(
     strategy_parameters: dict,
-    resampled_atlases: List[str],
+    resampled_atlases: List[Union[str, Path]],
     images: List[str],
     group_mask: Union[str, Path],
     output_path: Path,
@@ -74,7 +74,9 @@ def run_postprocessing_dataset(
 
     atlas_maskers, connectomes = {}, {}
     for atlas_path in resampled_atlases:
-        desc = atlas_path.split("desc-")[-1].split("_")[0]
+        if isinstance(atlas_path, str):
+            atlas_path = Path(atlas_path)
+        desc = atlas_path.name.split("desc-")[-1].split("_")[0]
         atlas_maskers[desc] = _get_masker(atlas_path)
         connectomes[desc] = []
 
@@ -194,9 +196,9 @@ def _fetch_h5_group(f: h5py.File, subject: str, session: str) -> h5py.Group:
     return group
 
 
-def _get_masker(atlas_path: str) -> Union[NiftiLabelsMasker, NiftiMapsMasker]:
+def _get_masker(atlas_path: Path) -> Union[NiftiLabelsMasker, NiftiMapsMasker]:
     """Get the masker object based on the templateflow file name suffix."""
-    atlas_type = atlas_path.split("_")[-1].split(".nii")[0]
+    atlas_type = atlas_path.name.split("_")[-1].split(".nii")[0]
     if atlas_type == "dseg":
         atlas_masker = NiftiLabelsMasker(
             labels_img=atlas_path, standardize=False
