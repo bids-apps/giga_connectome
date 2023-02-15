@@ -58,13 +58,31 @@ def get_denoise_strategy_parameters(
 def run_postprocessing_dataset(
     strategy_parameters: dict,
     resampled_atlases: List[Union[str, Path]],
-    images: List[str],
+    images: List[Union[str, Path]],
     group_mask: Union[str, Path],
     output_path: Path,
 ) -> None:
     """
-    Generate subject level timeseries and connectomes.
+    Generate subject and group level timeseries and connectomes.
 
+    Parameters
+    ----------
+
+    strategy_parameters : dict
+        Parameters for `load_confounds_strategy`.
+
+    resampled_atlases : list of str or pathlib.Path
+        Atlas niftis resampled to the common space of the dataset.
+
+    images : list of str or pathlib.Path
+        Preprocessed Nifti images for post processing
+
+    group_mask : str or pathlib.Path
+        Group level grey matter mask.
+
+    output_path:
+        Full path to output file, named in the following format:
+            output_dir / atlas-<atlas>_desc-<strategy_name>.h5
     """
     atlas = output_path.name.split("_")[0].split("-")[-1]
     print("set up masker objects")

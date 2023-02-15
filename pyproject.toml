@@ -27,6 +27,9 @@ dependencies = [
 ]
 dynamic = ["version"]
 
+[project.scripts]
+giga_connectome = "giga_connectome.run:main"
+
 [project.optional-dependencies]
 dev = [
   "black",

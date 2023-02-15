@@ -4,7 +4,7 @@ Simple code to smoke test the functionality.
 
 import argparse
 from pathlib import Path
-from giga_connectome.main import main
+from giga_connectome.workflow import workflow
 
 
 project_root = Path(__file__).parents[2]
@@ -20,4 +20,4 @@ args = argparse.Namespace(
 if not Path(args.output_dir).exists:
     Path(args.output_dir).mkdir()
 
-main(args)
+workflow(args)

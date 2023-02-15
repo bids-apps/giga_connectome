@@ -13,7 +13,7 @@ from giga_connectome.outputs import (
 )
 
 
-def main(args):
+def workflow(args):
     print(vars(args))
     # parse denoise strategy
     strategy_parameters = _parse_strategy(
