@@ -16,8 +16,8 @@ from giga_connectome.outputs import (
 def workflow(args):
     print(vars(args))
     # parse denoise strategy
-    strategy_parameters = _parse_strategy(
-        args.denoise_strategy, args.global_signal
+    strategy_parameters = get_denoise_strategy_parameters(
+        args.denoise_strategy
     )
     strategy_name = list(strategy_parameters.keys())[0]
     # template
@@ -45,15 +45,6 @@ def workflow(args):
             "with the same options."
         )
 
-    # check masks
-    group_mask_dir = working_dir / "groupmasks" / f"tpl-{tpl}"
-    group_mask, resampled_atlases = None, None
-    if group_mask_dir.exists():
-        group_mask, resampled_atlases = _check_pregenerated_masks(
-            tpl, working_dir, atlas
-        )
-    group_mask_dir.mkdir(exist_ok=True, parents=True)
-
     # check the list of subjects to run
     print("Indexing BIDS directory")
     fmriprep_bids_layout = BIDSLayout(
@@ -64,6 +55,15 @@ def workflow(args):
     )
     metadata = get_metadata(fmriprep_bids_layout)
     select_space = metadata["template"] == tpl
+
+    # check masks
+    group_mask_dir = working_dir / "groupmasks" / f"tpl-{tpl}"
+    group_mask, resampled_atlases = None, None
+    if group_mask_dir.exists():
+        group_mask, resampled_atlases = _check_pregenerated_masks(
+            tpl, working_dir, atlas
+        )
+    group_mask_dir.mkdir(exist_ok=True, parents=True)
 
     if not group_mask:
         print(
@@ -121,16 +121,3 @@ def _check_pregenerated_masks(template, working_dir, atlas):
         "mask generation step."
     )
     return group_mask, resampled_atlases
-
-
-def _parse_strategy(denoise_strategy, global_signal):
-    if global_signal:
-        if denoise_strategy in ["simple", "scrubbing.2", "scrubbing.5"]:
-            denoise_strategy += "+gsr"
-        else:
-            UserWarning(
-                f'Strategy "{denoise_strategy}" doesn\'t allow '
-                "additional global signal regressor. "
-                "Ignore this flag."
-            )
-    return get_denoise_strategy_parameters(denoise_strategy)

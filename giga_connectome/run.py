@@ -49,17 +49,14 @@ def main():
         help="The choice of post-processing for denoising.",
         choices=[
             "simple",
+            "simple+gsr",
             "scrubbing.2",
+            "scrubbing.2+gsr",
             "scrubbing.5",
+            "scrubbing.5+gsr",
             "acompcor50",
             "icaaroma",
         ],
-    )
-    parser.add_argument(
-        "--global-signal",
-        help="Apply global signal regressor. Only available to simple and "
-        "scrubbing strategies.",
-        action="store_true",
     )
     args = parser.parse_args()
 
