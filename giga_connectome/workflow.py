@@ -4,8 +4,14 @@ Process fMRIPrep outputs to timeseries based on denoising strategy.
 # TODO: the output structutre is not fully bids
 
 from bids import BIDSLayout
+import nibabel as nib
+from tqdm import tqdm
 
-from giga_connectome.mask import create_group_masks_atlas, load_atlas_setting
+from giga_connectome.mask import (
+    generate_group_mask,
+    resample_atlas2groupmask,
+    load_atlas_setting,
+)
 from giga_connectome.metadata import get_metadata
 from giga_connectome.outputs import (
     get_denoise_strategy_parameters,
@@ -63,16 +69,21 @@ def workflow(args):
         group_mask, resampled_atlases = _check_pregenerated_masks(
             tpl, working_dir, atlas
         )
+
     group_mask_dir.mkdir(exist_ok=True, parents=True)
 
     if not group_mask:
-        print(
-            "Create dataset level masks with all EPI masks from the "
-            "current fMRIPrep derivative."
-        )
         all_masks = metadata.loc[select_space, "mask"]
-        group_mask, resampled_atlases = create_group_masks_atlas(
-            all_masks, tpl, atlas, group_mask_dir
+        group_mask_nii = generate_group_mask(all_masks, "MNI152NLin2009cAsym")
+        current_file_name = (
+            f"tpl-{tpl}_res-dataset_label-GM_desc-group_mask.nii.gz"
+        )
+        group_mask = group_mask_dir / current_file_name
+        nib.save(group_mask_nii, group_mask)
+
+    if not resampled_atlases:
+        resampled_atlases = _resample_atlas_collection(
+            tpl, atlas, group_mask_dir, group_mask
         )
 
     # filter subjects
@@ -87,6 +98,30 @@ def workflow(args):
     )
 
 
+def _resample_atlas_collection(tpl, atlas, group_mask_dir, group_mask):
+    """Resample a atlas collection to group grey matter mask."""
+    atlas_parameters = load_atlas_setting()[atlas]
+    print("Resample atlas to group grey matter mask.")
+    resampled_atlases = []
+    for desc in tqdm(atlas_parameters["desc"]):
+        parcellation_resampled = resample_atlas2groupmask(
+            atlas,
+            desc,
+            group_mask,
+        )
+        filename = (
+            f"tpl-{tpl}_"
+            f"atlas-{atlas_parameters['atlas']}_"
+            "res-dataset_"
+            f"desc-{desc}_"
+            f"{atlas_parameters['type']}.nii.gz"
+        )
+        save_path = group_mask_dir / filename
+        nib.save(parcellation_resampled, save_path)
+        resampled_atlases.append(save_path)
+    return resampled_atlases
+
+
 def _check_pregenerated_masks(template, working_dir, atlas):
     """Check if the working directory is populated with needed files."""
     output_dir = working_dir / "groupmasks" / f"tpl-{template}"
@@ -95,6 +130,10 @@ def _check_pregenerated_masks(template, working_dir, atlas):
         output_dir
         / f"tpl-{template}_res-dataset_label-GM_desc-group_mask.nii.gz"
     )
+    if not group_mask.exists():
+        group_mask = None
+    else:
+        print(f"Found pregenerated group level grey matter mask: {group_mask}")
     resampled_atlases = []
     for desc in atlas_parameters["desc"]:
         filename = (
@@ -105,19 +144,12 @@ def _check_pregenerated_masks(template, working_dir, atlas):
             f"{atlas_parameters['type']}.nii.gz"
         )
         resampled_atlases.append(output_dir / filename)
-    all_exist = [
-        file_path.exists() for file_path in resampled_atlases + [group_mask]
-    ]
+    all_exist = [file_path.exists() for file_path in resampled_atlases]
     if not all(all_exist):
-        raise FileNotFoundError(
-            "Not all resampled mask and/or atlas needed for the current "
-            "workflow needed for the current workflow are present in "
-            f"{working_dir}. Please regenerate the missing files, or "
-            "point to a clean working directory."
+        resampled_atlases = None
+    else:
+        print(
+            f"Found resampled atlases: {resampled_atlases}. Skipping group "
+            "level mask generation step."
         )
-    print(
-        f"Found pregenerated group level grey matter mask: {group_mask}"
-        f"and resampled atlases: {resampled_atlases}. Skipping group level"
-        "mask generation step."
-    )
     return group_mask, resampled_atlases
