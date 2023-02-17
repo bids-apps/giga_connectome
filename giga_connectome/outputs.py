@@ -113,15 +113,18 @@ def run_postprocessing_dataset(
         subject, session, specifier = _parse_bids_name(img)
         for desc in atlas_maskers:
             attribute_name = f"{subject}_{specifier}_atlas-{atlas}_desc-{desc}"
-            masker = atlas_maskers[desc]
-            (
-                time_series_atlas,
-                correlation_matrix,
-            ) = _generate_subject_timeseries_connectome(
-                masker, correlation_measure, denoised_img
-            )
-            connectomes[desc].append(correlation_matrix)
-
+            if denoised_img:
+                masker = atlas_maskers[desc]
+                (
+                    time_series_atlas,
+                    correlation_matrix,
+                ) = _generate_subject_timeseries_connectome(
+                    masker, correlation_measure, denoised_img
+                )
+                connectomes[desc].append(correlation_matrix)
+            else:
+                time_series_atlas = None
+                correlation_matrix = None
             # dump to h5
             flag = _set_file_flag(output_path)
             with h5py.File(output_path, flag) as f:
@@ -166,11 +169,24 @@ def _denoise_nifti_voxel(
 ) -> Nifti1Image:
     """Denoise voxel level data per nifti image."""
     cf, sm = load_confounds_strategy(img, **strategy_parameters)
+    if _check_exclusion(cf, sm):
+        return None
     time_series_voxel = group_masker.fit_transform(
         img, confounds=cf, sample_mask=sm
     )
     denoised_img = group_masker.inverse_transform(time_series_voxel)
     return denoised_img
+
+
+def _check_exclusion(reduced_confounds, sample_mask):
+    """For scrubbing based strategy, check if regression can be performed."""
+    if sample_mask is not None:
+        kept_vol = len(sample_mask)
+    else:
+        kept_vol = reduced_confounds.shape[0]
+    # more noise regressors than volume
+    remove = kept_vol < reduced_confounds.shape[1]
+    return remove
 
 
 def _set_file_flag(output_path: Path) -> str:

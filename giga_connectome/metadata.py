@@ -34,15 +34,16 @@ def get_metadata(fmriprep_bids_layout, **kwargs):
     )
     metadata = pd.DataFrame()
     for image in all_images:
-        entities = {
-            k: [image.entities[k]]
-            for k in ["datatype", "session", "subject", "task", "space"]
-            if k in image.entities
-        }
-        entities["image"] = image.path
-        entities["template"] = entities["space"]
-        entities.pop("space")
-        metadata = pd.concat((metadata, pd.DataFrame(entities)))
+        if "space-MNI152NLin6Asym_desc-preproc" not in image.path:
+            entities = {
+                k: [image.entities[k]]
+                for k in ["datatype", "session", "subject", "task", "space"]
+                if k in image.entities
+            }
+            entities["image"] = image.path
+            entities["template"] = entities["space"]
+            entities.pop("space")
+            metadata = pd.concat((metadata, pd.DataFrame(entities)))
     metadata = metadata.reset_index(drop=True)
 
     # update information with confounds

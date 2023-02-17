@@ -5,6 +5,7 @@ Process fMRIPrep outputs to timeseries based on denoising strategy.
 
 from bids import BIDSLayout
 import nibabel as nib
+import pandas as pd
 from tqdm import tqdm
 
 from giga_connectome.mask import (
@@ -46,20 +47,23 @@ def workflow(args):
     connectome_path = output_dir / f"atlas-{atlas}_desc-{strategy_name}.h5"
     if connectome_path.exists():
         raise FileExistsError(
-            f"Output file exists. {connectome_path}"
+            f"Output file exists: {connectome_path}. "
             "Delete or rename the file before running the app "
             "with the same options."
         )
 
     # check the list of subjects to run
-    print("Indexing BIDS directory")
-    fmriprep_bids_layout = BIDSLayout(
-        root=bids_dir,
-        database_path=working_dir,
-        validate=False,
-        derivatives=True,
-    )
-    metadata = get_metadata(fmriprep_bids_layout)
+    if not (working_dir / "functional_data.tsv").exists():
+        print("Indexing BIDS directory")
+        fmriprep_bids_layout = BIDSLayout(
+            root=bids_dir,
+            database_path=working_dir,
+            validate=False,
+            derivatives=True,
+        )
+        metadata = get_metadata(fmriprep_bids_layout)
+        metadata.to_csv(working_dir / "functiona_data.tsv", sep="\t")
+    metadata = pd.read_csv(working_dir / "functiona_data.tsv", sep="\t")
     select_space = metadata["template"] == tpl
 
     # check masks
