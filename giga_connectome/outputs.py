@@ -122,19 +122,19 @@ def run_postprocessing_dataset(
                     masker, correlation_measure, denoised_img
                 )
                 connectomes[desc].append(correlation_matrix)
+                # dump to h5
+                flag = _set_file_flag(output_path)
+                with h5py.File(output_path, flag) as f:
+                    group = _fetch_h5_group(f, subject, session)
+                    group.create_dataset(
+                        f"{attribute_name}_timeseries", data=time_series_atlas
+                    )
+                    group.create_dataset(
+                        f"{attribute_name}_connectome", data=correlation_matrix
+                    )
             else:
-                time_series_atlas = None
-                correlation_matrix = None
-            # dump to h5
-            flag = _set_file_flag(output_path)
-            with h5py.File(output_path, flag) as f:
-                group = _fetch_h5_group(f, subject, session)
-                group.create_dataset(
-                    f"{attribute_name}_timeseries", data=time_series_atlas
-                )
-                group.create_dataset(
-                    f"{attribute_name}_connectome", data=correlation_matrix
-                )
+                time_series_atlas, correlation_matrix = None, None
+                print(f"{attribute_name}: no volume after scrubbing")
 
     print("create group connectome")
     for desc in connectomes:
