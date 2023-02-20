@@ -62,8 +62,8 @@ def workflow(args):
             derivatives=True,
         )
         metadata = get_metadata(fmriprep_bids_layout)
-        metadata.to_csv(working_dir / "functiona_data.tsv", sep="\t")
-    metadata = pd.read_csv(working_dir / "functiona_data.tsv", sep="\t")
+        metadata.to_csv(working_dir / "functional_data.tsv", sep="\t")
+    metadata = pd.read_csv(working_dir / "functional_data.tsv", sep="\t")
     select_space = metadata["template"] == tpl
 
     # check masks
