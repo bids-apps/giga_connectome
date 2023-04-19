@@ -1,0 +1,7 @@
+{
+    "name": "simple",
+    "function": "load_confounds_strategy",
+    "parameters": {
+        "denoise_strategy": "simple"
+    }
+}

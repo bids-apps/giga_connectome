@@ -1,0 +1,9 @@
+{
+    "name": "scrubbing.2",
+    "function": "load_confounds_strategy",
+    "parameters": {
+        "denoise_strategy": "scrubbing",
+        "fd_threshold": 0.2,
+        "std_dvars_threshold": null
+    }
+}

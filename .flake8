@@ -1,0 +1,7 @@
+[flake8]
+doctests = False
+exclude =
+    **/__init__.py
+    **/tests/*
+    *build/
+    giga_connectome/_version.py

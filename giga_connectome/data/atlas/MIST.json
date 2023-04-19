@@ -1,0 +1,11 @@
+{
+    "name": "MIST",
+    "parameters": {
+        "atlas": "BASC",
+        "template": "MNI152NLin2009bAsym",
+        "resolution": "03",
+        "suffix": "dseg"
+    },
+    "desc": [7, 12, 20, 36, 64, 122, 197, 325, 122, 444],
+    "templateflow_dir" : null
+}

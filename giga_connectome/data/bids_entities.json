@@ -1,0 +1,23 @@
+{
+    "images": {
+        "scope": "derivatives",
+        "space": ["MNI152NLin6Asym", "MNI152NLin2009cAsym"],
+        "desc": ["preproc", "smoothAROMAnonaggr"],
+        "suffix": "bold",
+        "extension":"nii.gz"
+    },
+    "confounds": {
+        "scope": "derivatives",
+        "desc": "confounds",
+        "suffix": "timeseries",
+        "extension": "tsv"
+    },
+    "masks": {
+        "scope": "derivatives",
+        "space": ["MNI152NLin6Asym", "MNI152NLin2009cAsym"],
+        "desc": "brain",
+        "suffix": "mask",
+        "extension": "nii.gz"
+    },
+    "extra_bids_entities": ["subject", "session", "task"]
+}

@@ -1,0 +1,8 @@
+{
+    "name": "simple+gsr",
+    "function": "load_confounds_strategy",
+    "parameters": {
+        "denoise_strategy": "simple",
+        "global_signal": "basic"
+    }
+}

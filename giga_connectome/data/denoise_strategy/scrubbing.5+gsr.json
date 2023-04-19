@@ -1,0 +1,10 @@
+{
+    "name": "scrubbing.5+gsr",
+    "function": "load_confounds_strategy",
+    "parameters": {
+        "denoise_strategy": "scrubbing",
+        "global_signal": "basic",
+        "fd_threshold": 0.5,
+        "std_dvars_threshold": null
+    }
+}

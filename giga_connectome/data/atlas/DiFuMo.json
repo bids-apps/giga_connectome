@@ -1,0 +1,16 @@
+{
+    "name": "DiFuMo",
+    "parameters": {
+        "atlas": "DiFuMo",
+        "template": "MNI152NLin2009cAsym",
+        "resolution": "03",
+        "suffix": "probseg"
+    },
+    "desc": [
+        "64dimensions",
+        "128dimensions",
+        "256dimensions",
+        "512dimensions",
+        "1024dimensions"],
+    "templateflow_dir" : null
+}
