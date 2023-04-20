@@ -27,8 +27,7 @@ def main():
     )
     parser.add_argument(
         "analysis_level",
-        help="Level of the analysis that will be performed. Only group level "
-        "is allowed as we need to generate a dataset inclusive brain mask.",
+        help="Level of the analysis that will be performed.",
         choices=["participant", "group"],
     )
     parser.add_argument(
