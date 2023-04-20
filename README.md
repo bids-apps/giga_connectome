@@ -9,24 +9,39 @@ This is a Python project packaged according to [Contemporary Python Packaging - 
 ## Usage
 
 ```
-giga_connectome [-h] [--participant_label PARTICIPANT_LABEL [PARTICIPANT_LABEL ...]] [-w WORK_DIR] [--atlas ATLAS] [--denoise-strategy DENOISE_STRATEGY] [--bids-filter-file BIDS_FILTER_FILE] bids_dir output_dir {participant,group}
+giga_connectome [-h] [--participant_label PARTICIPANT_LABEL [PARTICIPANT_LABEL ...]]
+  [-w WORK_DIR] [--atlas ATLAS] [--denoise-strategy DENOISE_STRATEGY]
+  [--bids-filter-file BIDS_FILTER_FILE]
+  bids_dir output_dir {participant,group}
 
 Generate connectome based on denoising strategy for fmriprep processed dataset.
 
 positional arguments:
-  bids_dir              The directory with the input dataset (e.g. fMRIPrep derivative)formatted according to the BIDS standard.
+  bids_dir              The directory with the input dataset (e.g. fMRIPrep derivative)
+                          formatted according to the BIDS standard.
   output_dir            The directory where the output files should be stored.
   {participant,group}   Level of the analysis that will be performed.
 
 optional arguments:
   -h, --help            show this help message and exit
   --participant_label PARTICIPANT_LABEL [PARTICIPANT_LABEL ...]
-                        The label(s) of the participant(s) that should be analyzed. The label corresponds to sub-<participant_label> from the BIDS spec (so it does not include 'sub-'). If this parameter is not provided all subjects should be analyzed. Multiple participants can be specified with a space separated list.
+                        The label(s) of the participant(s) that should be analyzed. The
+                          label corresponds to sub-<participant_label> from the BIDS spec
+                          (so it does not include 'sub-'). If this parameter is not provided
+                          all subjects should be analyzed. Multiple participants can be
+                          specified with a space separated list.
   -w WORK_DIR, --work-dir WORK_DIR
                         Path where intermediate results should be stored.
-  --atlas ATLAS         The choice of atlas for time series extraction. Default atlas choices are: 'Schaefer20187Networks, 'MIST', 'DiFuMo'. User can pass a path to a json file containing configuration for their own choice of atlas.
+  --atlas ATLAS         The choice of atlas for time series extraction. Default atlas choices
+                          are: 'Schaefer20187Networks, 'MIST', 'DiFuMo'.
+                          User can pass a path to a json file containing configuration for
+                          their own choice of atlas.
   --denoise-strategy DENOISE_STRATEGY
-                        The choice of post-processing for denoising. The default choices are: 'simple', 'simple+gsr', 'scrubbing.2', 'scrubbing.2+gsr', 'scrubbing.5', 'scrubbing.5+gsr', 'acompcor50', 'icaaroma'. User can pass a path to a json file containing configuration for their own choice of denoising strategy.
+                        The choice of post-processing for denoising. The default choices are:
+                          'simple', 'simple+gsr', 'scrubbing.2', 'scrubbing.2+gsr',
+                          'scrubbing.5', 'scrubbing.5+gsr', 'acompcor50', 'icaaroma'.
+                          User can pass a path to a json file containing configuration for
+                          their own choice of denoising strategy.
 
 ```
 
