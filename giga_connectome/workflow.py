@@ -30,7 +30,8 @@ def workflow(args):
         subjects = args.participant_label
     else:  # get all subjects
         subject_dirs = bids_dir.glob("sub-*/")
-        subjects = [subject_dir.split("-")[-1] for subject_dir in subject_dirs]
+        subjects = [subject_dir.name.split("-")[-1] 
+                    for subject_dir in subject_dirs]
 
     strategy = get_denoise_strategy_parameters(args.denoise_strategy)
     atlas = load_atlas_setting(args.atlas)
