@@ -25,7 +25,7 @@ def workflow(args):
     output_dir = args.output_dir
     working_dir = args.work_dir
     analysis_level = args.analysis_level
-    
+
     subjects = utils.get_subject_lists(args.participant_label, bids_dir)
     strategy = get_denoise_strategy_parameters(args.denoise_strategy)
     atlas = load_atlas_setting(args.atlas)
@@ -43,7 +43,7 @@ def workflow(args):
     # https://github.com/nipreps/fmriprep/blob/689ad26811cfb18771fdb8d7dc208fe24d27e65c/fmriprep/cli/parser.py#L72
     fmriprep_bids_layout = BIDSLayout(
         root=bids_dir,
-        database_path=working_dir,
+        database_path=bids_dir,
         validate=False,
         derivatives=True,
     )

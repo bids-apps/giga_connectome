@@ -1,15 +1,21 @@
 import os
 import re
 import json
-from typing import Optional, Union, List
+from typing import Optional, Union, List, Tuple
 
 from pathlib import Path
 from tqdm import tqdm
 import nibabel as nib
-
 from nilearn.masking import compute_multi_epi_mask
-from nilearn.image import resample_to_img, new_img_like, get_data, math_img
+from nilearn.image import (
+    resample_to_img,
+    new_img_like,
+    get_data,
+    math_img,
+    load_img,
+)
 from nibabel import Nifti1Image
+import numpy as np
 from scipy.ndimage import binary_closing
 
 from pkg_resources import resource_filename
@@ -74,6 +80,7 @@ def generate_group_mask(
     template: str = "MNI152NLin2009cAsym",
     templateflow_dir: Optional[Path] = None,
     n_iter: int = 2,
+    verbose: int = 1,
 ) -> Nifti1Image:
     """
     Generate a group EPI grey matter mask, and overlaid with a MNI grey
@@ -98,6 +105,9 @@ def generate_group_mask(
         Number of repetitions of dilation and erosion steps performed in
         scipy.ndimage.binary_closing function.
 
+    verbose :
+        Level of verbosity.
+
     Keyword Arguments
     -----------------
     Used to filter the cirret
@@ -109,7 +119,12 @@ def generate_group_mask(
     nibabel.nifti1.Nifti1Image
         EPI (grey matter) mask for the current group of subjects.
     """
-    # TODO: subject native space grey matter mask???
+    if verbose > 1:
+        print(f"Found {len(imgs)} masks")
+    if exclude := _check_mask_affine(imgs, verbose):
+        imgs, __annotations__ = _get_consistent_masks(imgs, exclude)
+        if verbose > 1:
+            print(f"Remaining: {len(imgs)} masks")
 
     # templateflow environment setting to get around network issue
     if templateflow_dir and templateflow_dir.exists():
@@ -258,3 +273,107 @@ def _load_config(atlas: Union[str, Path, dict]) -> dict:
     else:
         raise ValueError(f"Invalid input: {atlas}")
     return atlas_config
+
+
+def _get_consistent_masks(
+    mask_imgs: List[Union[Path, str, Nifti1Image]], exclude: List[int]
+) -> Tuple[List[int], List[str]]:
+    """Create a list of masks that has the same affine.
+
+    Parameters
+    ----------
+
+    mask_imgs :
+        The original list of functional masks
+
+    exclude :
+        List of index to exclude.
+
+    Returns
+    -------
+    List of str
+        Functional masks with the same affine.
+
+    List of str
+        Identidiers of scans with a different affine.
+    """
+    weird_mask_identifiers = []
+    odd_masks = np.array(mask_imgs)[np.array(exclude)]
+    odd_masks = odd_masks.tolist()
+    for odd_file in odd_masks:
+        identifier = Path(odd_file).name.split("_space")[0]
+        weird_mask_identifiers.append(identifier)
+    cleaned_func_masks = set(mask_imgs) - set(odd_masks)
+    cleaned_func_masks = list(cleaned_func_masks)
+    return cleaned_func_masks, weird_mask_identifiers
+
+
+def _check_mask_affine(
+    mask_imgs: List[Union[Path, str, Nifti1Image]], verbose: int = 1
+) -> Union[list, None]:
+    """Given a list of input mask images, show the most common affine matrix
+    and subjects with different values.
+
+    Parameters
+    ----------
+    mask_imgs : :obj:`list` of Niimg-like objects
+        See :ref:`extracting_data`.
+        3D or 4D EPI image with same affine.
+
+    verbose :
+        Level of verbosity.
+
+    Returns
+    -------
+
+    List or None
+        Index of masks with odd affine matrix. Return None when all masks have
+        the same affine matrix.
+    """
+    # save all header and affine info in hashable type...
+    header_info = {"affine": []}
+    key_to_header = {}
+    for this_mask in mask_imgs:
+        img = load_img(this_mask)
+        affine = img.affine
+        affine_hashable = str(affine)
+        header_info["affine"].append(affine_hashable)
+        if affine_hashable not in key_to_header:
+            key_to_header[affine_hashable] = affine
+
+    if isinstance(mask_imgs[0], Nifti1Image):
+        mask_imgs = np.arange(len(mask_imgs))
+    else:
+        mask_imgs = np.array(mask_imgs)
+    # get most common values
+    common_affine = max(
+        set(header_info["affine"]), key=header_info["affine"].count
+    )
+    if verbose > 0:
+        print(
+            f"We found {len(set(header_info['affine']))} unique affine "
+            f"matrices. The most common one is "
+            f"{key_to_header[common_affine]}"
+        )
+    odd_balls = set(header_info["affine"]) - {common_affine}
+    if not odd_balls:
+        return None
+
+    exclude = []
+    for ob in odd_balls:
+        ob_index = [
+            i for i, aff in enumerate(header_info["affine"]) if aff == ob
+        ]
+        if verbose > 1:
+            print(
+                "The following subjects has a different affine matrix "
+                f"({key_to_header[ob]}) comparing to the most common value: "
+                f"{mask_imgs[ob_index]}."
+            )
+        exclude += ob_index
+    if verbose > 0:
+        print(
+            f"{len(exclude)} out of {len(mask_imgs)} has "
+            "different affine matrix. Ignore when creating group mask."
+        )
+    return sorted(exclude)
