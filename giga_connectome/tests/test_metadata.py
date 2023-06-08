@@ -10,7 +10,7 @@ IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
 
 @pytest.mark.skipif(
-    IN_GITHUB_ACTIONS, reason="Test doesn't work in Github Actions."
+    IN_GITHUB_ACTIONS, reason="Test data is not set up on Github Actions."
 )
 def test_get_metadata():
     """Check the function can load from different fMRIPrep dataset."""
