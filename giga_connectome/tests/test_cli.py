@@ -1,37 +1,38 @@
 """
 Simple code to smoke test the functionality.
 """
-
-import argparse
 from pathlib import Path
+from pkg_resources import resource_filename
 from giga_connectome.workflow import workflow
 
+import argparse
+import pytest
+import os
 
-project_root = Path(__file__).parents[2]
-args = argparse.Namespace(
-    bids_dir=Path("/home/haoting/Downloads/fmriprep-20.2.1lts"),
-    output_dir=project_root / "output",
-    work_dir=project_root / "output/work",
-    atlas="Schaefer20187Networks",
-    denoise_strategy="simple",
-    participant_label=["pixar001", "pixar002"],
-    analysis_level="participant",
+IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
+
+
+@pytest.mark.skipif(
+    IN_GITHUB_ACTIONS, reason="Test doesn't work in Github Actions."
 )
+def test_smoke(tmp_path):
+    bids_dir = resource_filename(
+        "giga_connectome", "data/test_data/ds000017-fmriprep22.0.1-downsampled"
+    )
 
-if not Path(args.output_dir).exists:
-    Path(args.output_dir).mkdir()
-
-workflow(args)
-
-# test the group level
-args = argparse.Namespace(
-    bids_dir=Path("/home/haoting/Downloads/fmriprep-20.2.1lts"),
-    output_dir=project_root / "output",
-    work_dir=project_root / "output/work",
-    atlas="Schaefer20187Networks",
-    denoise_strategy="simple",
-    participant_label=["pixar001", "pixar002"],
-    analysis_level="group",
-)
-
-workflow(args)
+    args = argparse.Namespace(
+        bids_dir=Path(bids_dir),
+        output_dir=tmp_path / "output",
+        work_dir=tmp_path / "output/work",
+        atlas="Schaefer20187Networks",
+        denoise_strategy="simple",
+        analysis_level="participant",
+        participant_label=[],
+    )
+    if not Path(args.output_dir).exists:
+        Path(args.output_dir).mkdir()
+    workflow(args)
+    # test the group level
+    # Smoke test the group level
+    args.analysis_level = "group"
+    workflow(args)
