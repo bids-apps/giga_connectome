@@ -10,7 +10,7 @@ from nilearn.connectome import ConnectivityMeasure
 from nilearn.interfaces import fmriprep
 from nilearn.maskers import NiftiMasker, NiftiLabelsMasker, NiftiMapsMasker
 
-from giga_connectome.utils import parse_bids_name
+from giga_connectome import utils
 from pkg_resources import resource_filename
 
 
@@ -119,7 +119,7 @@ def run_postprocessing_dataset(
         # process timeseries
         denoised_img = _denoise_nifti_voxel(strategy, group_masker, img)
         # parse file name
-        subject, session, specifier = parse_bids_name(img)
+        subject, session, specifier = utils.parse_bids_name(img)
         for desc, masker in atlas_maskers.items():
             attribute_name = f"{subject}_{specifier}_atlas-{atlas}_desc-{desc}"
             if denoised_img:
