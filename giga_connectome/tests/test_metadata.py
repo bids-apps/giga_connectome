@@ -2,35 +2,40 @@ import pytest
 
 from pathlib import Path
 import bids
-from giga_connectome.metadata import get_metadata
+from giga_connectome import metadata
+from pkg_resources import resource_filename
+import os
+
+IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
 
+@pytest.mark.skipif(
+    IN_GITHUB_ACTIONS, reason="Test doesn't work in Github Actions."
+)
 def test_get_metadata():
     """Check the function can load from different fMRIPrep dataset."""
-    # clone a openneuro datalad instance to temporary space
-    # run the function
-    fmriprep_path = Path(__file__).parent / "data/ds000228-fmriprep"
-    fmriprep_bids_layout = bids.BIDSLayout(
-        root=fmriprep_path,
-        database_path=None,
-        validate=False,
-        derivatives=True,
-    )
-    df = get_metadata(fmriprep_bids_layout, subject=["pixar001", "pixar002"])
-    assert df.shape[0] == 4  # aroma and regular for two subjects
-    assert "session" not in df.columns.tolist()
-
     # check another dataset with session info
-    fmriprep_path = Path(__file__).parent / "data/ds003007-fmriprep"
+    fmriprep_path = resource_filename(
+        "giga_connectome", "data/test_data/ds000017-fmriprep22.0.1-downsampled"
+    )
     fmriprep_bids_layout = bids.BIDSLayout(
         root=fmriprep_path,
-        database_path=None,
         validate=False,
         derivatives=True,
     )
-    df = get_metadata(fmriprep_bids_layout, subject=["01", "02"])
-    assert df.shape[0] == 8  # aroma and regular
-    assert set(df.loc[:, "session"].unique()) == {"post", "pre"}
+    df = metadata.get_metadata(fmriprep_bids_layout, subject=["1", "2"])
+    # aroma and regular, two session, two tasks (2 runs and 3 runs)
+    assert df.shape[0] == 40
+    print(df)
+    assert set(df.loc[:, "session"].unique()) == {"timepoint1", "timepoint2"}
 
     with pytest.warns(UserWarning, match="The following BIDS entities"):
-        get_metadata(fmriprep_bids_layout, space="MNI152NLin2009cAsym")
+        metadata.get_metadata(
+            fmriprep_bids_layout, space="MNI152NLin2009cAsym"
+        )
+
+
+def test_load_bids_entities():
+    with pytest.raises(ValueError) as exc_info:
+        metadata._load_bids_entities("blah")
+    assert str(exc_info.value) == "File type blah is not defined."

@@ -15,7 +15,7 @@ from giga_connectome.outputs import (
     get_denoise_strategy_parameters,
     run_postprocessing_dataset,
 )
-from giga_connectome.utils import get_bids_basename
+from giga_connectome import utils
 
 
 def workflow(args):
@@ -25,12 +25,8 @@ def workflow(args):
     output_dir = args.output_dir
     working_dir = args.work_dir
     analysis_level = args.analysis_level
-    # get subject list
-    if args.participant_label:
-        subjects = args.participant_label
-    else:  # get all subjects
-        subject_dirs = bids_dir.glob("sub-*/")
-        subjects = [subject_dir.split("-")[-1] for subject_dir in subject_dirs]
+
+    subjects = utils.get_subject_lists(args.participant_label, bids_dir)
 
     strategy = get_denoise_strategy_parameters(args.denoise_strategy)
     atlas = load_atlas_setting(args.atlas)
@@ -84,7 +80,8 @@ def workflow(args):
         )
     elif analysis_level == "participant":
         for img in images:
-            basename = get_bids_basename(img, tpl)
+            subject, session, specifier = utils.parse_bids_name(img)
+            basename = f"{subject}_{session}_{specifier}_space-{tpl}"
             connectome_path = output_dir / (
                 f"{basename}_atlas-{atlas['name']}"
                 f"_desc-{strategy['name']}.h5"
