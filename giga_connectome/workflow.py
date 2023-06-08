@@ -25,9 +25,8 @@ def workflow(args):
     output_dir = args.output_dir
     working_dir = args.work_dir
     analysis_level = args.analysis_level
-
+    
     subjects = utils.get_subject_lists(args.participant_label, bids_dir)
-
     strategy = get_denoise_strategy_parameters(args.denoise_strategy)
     atlas = load_atlas_setting(args.atlas)
 

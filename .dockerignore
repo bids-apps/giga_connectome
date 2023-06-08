@@ -1,0 +1,22 @@
+# python cache
+.cache/
+__pycache__/**/*
+__pycache__
+*.pyc
+
+# python distribution
+build/**/*
+build
+dist/**/*
+dist
+*.egg-info/**/*
+*.egg-info
+.eggs/**/*
+.eggs
+src/**/*
+src/
+notebooks/
+.maint/
+.maint/**/*
+
+Makefile
