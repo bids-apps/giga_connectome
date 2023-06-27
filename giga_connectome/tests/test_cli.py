@@ -9,6 +9,8 @@ import argparse
 import pytest
 import os
 
+import h5py
+
 IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
 
@@ -29,13 +31,25 @@ def test_smoke(tmp_path):
         smoothing_fwhm=5.0,
         denoise_strategy="simple",
         analysis_level="participant",
-        participant_label=[],
+        participant_label=["1"],
     )
     if not Path(args.output_dir).exists:
         Path(args.output_dir).mkdir()
     workflow(args)
-    # test the group level
+
     # Smoke test the group level
     args.analysis_level = "group"
     args.standardize = "psc"
+    args.participant_label = []
     workflow(args)
+
+    output_group = (
+        Path(args.output_dir) / "atlas-Schaefer20187Networks_desc-simple.h5"
+    )
+    basename = (
+        "sub-1_ses-timepoint1_task-probabilisticclassification_run-01_"
+        "atlas-Schaefer20187Networks_desc-100Parcels7Networks_timeseries"
+    )
+    with h5py.File(output_group, "r") as f:
+        data = f[f"sub-1/ses-timepoint1/{basename}"]
+        assert data.attrs.get("RepetitionTime") == 2.0

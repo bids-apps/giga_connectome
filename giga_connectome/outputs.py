@@ -9,7 +9,7 @@ from nibabel import Nifti1Image
 from nilearn.connectome import ConnectivityMeasure
 from nilearn.interfaces import fmriprep
 from nilearn.maskers import NiftiMasker, NiftiLabelsMasker, NiftiMapsMasker
-
+from bids.layout import BIDSImageFile
 from giga_connectome import utils
 from pkg_resources import resource_filename
 
@@ -68,7 +68,7 @@ def get_denoise_strategy_parameters(
 def run_postprocessing_dataset(
     strategy: dict,
     resampled_atlases: List[Union[str, Path]],
-    images: List[Union[str, Path]],
+    images: List[BIDSImageFile],
     group_mask: Union[str, Path],
     standardize: Union[str, bool],
     smoothing_fwhm: float,
@@ -87,7 +87,7 @@ def run_postprocessing_dataset(
     resampled_atlases : list of str or pathlib.Path
         Atlas niftis resampled to the common space of the dataset.
 
-    images : list of str or pathlib.Path
+    images : list of BIDSImageFile
         Preprocessed Nifti images for post processing
 
     group_mask : str or pathlib.Path
@@ -129,9 +129,9 @@ def run_postprocessing_dataset(
     print("processing subjects")
     for img in tqdm(images):
         # process timeseries
-        denoised_img = _denoise_nifti_voxel(strategy, group_masker, img)
+        denoised_img = _denoise_nifti_voxel(strategy, group_masker, img.path)
         # parse file name
-        subject, session, specifier = utils.parse_bids_name(img)
+        subject, session, specifier = utils.parse_bids_name(img.path)
         for desc, masker in atlas_maskers.items():
             attribute_name = f"{subject}_{specifier}_atlas-{atlas}_desc-{desc}"
             if denoised_img:
@@ -148,9 +148,12 @@ def run_postprocessing_dataset(
                     group = _fetch_h5_group(
                         f, subject, session, analysis_level
                     )
-                    group.create_dataset(
+                    timeseries_dset = group.create_dataset(
                         f"{attribute_name}_timeseries", data=time_series_atlas
                     )
+                    timeseries_dset.attrs["RepetitionTime"] = img.entities[
+                        "RepetitionTime"
+                    ]
                     group.create_dataset(
                         f"{attribute_name}_connectome", data=correlation_matrix
                     )

@@ -58,7 +58,7 @@ def workflow(args):
         "extension": "nii.gz",
     }
 
-    images = fmriprep_bids_layout.get(**image_filter, return_type="file")
+    images = fmriprep_bids_layout.get(**image_filter, return_type="object")
 
     group_mask, resampled_atlases = _generate_gm_mask_atlas(
         working_dir, atlas, tpl, fmriprep_bids_layout, subjects
@@ -83,7 +83,7 @@ def workflow(args):
         )
     elif analysis_level == "participant":
         for img in images:
-            subject, session, specifier = utils.parse_bids_name(img)
+            subject, session, specifier = utils.parse_bids_name(img.path)
             basename = f"{subject}_{session}_{specifier}_space-{tpl}"
             connectome_path = output_dir / (
                 f"{basename}_atlas-{atlas['name']}"
