@@ -25,6 +25,8 @@ def workflow(args):
     output_dir = args.output_dir
     working_dir = args.work_dir
     analysis_level = args.analysis_level
+    standardize = _parse_standardize_options(args.standardize)
+    smoothing_fwhm = args.smoothing_fwhm
 
     subjects = utils.get_subject_lists(args.participant_label, bids_dir)
     strategy = get_denoise_strategy_parameters(args.denoise_strategy)
@@ -74,6 +76,8 @@ def workflow(args):
             resampled_atlases,
             images,
             group_mask,
+            standardize,
+            smoothing_fwhm,
             connectome_path,
             analysis_level,
         )
@@ -92,9 +96,20 @@ def workflow(args):
                 resampled_atlases,
                 [img],
                 group_mask,
+                standardize,
+                smoothing_fwhm,
                 connectome_path,
                 analysis_level,
             )
+
+
+def _parse_standardize_options(standardize):
+    if standardize not in ["zscore", "psc"]:
+        raise ValueError(f"{standardize} is no valid standardize strategy.")
+    if standardize == "psc":
+        return standardize
+    else:
+        return True
 
 
 def _generate_gm_mask_atlas(

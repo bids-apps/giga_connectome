@@ -25,6 +25,8 @@ def test_smoke(tmp_path):
         output_dir=tmp_path / "output",
         work_dir=tmp_path / "output/work",
         atlas="Schaefer20187Networks",
+        standardize="zscore",
+        smoothing_fwhm=5.0,
         denoise_strategy="simple",
         analysis_level="participant",
         participant_label=[],
@@ -35,4 +37,5 @@ def test_smoke(tmp_path):
     # test the group level
     # Smoke test the group level
     args.analysis_level = "group"
+    args.standardize = "psc"
     workflow(args)

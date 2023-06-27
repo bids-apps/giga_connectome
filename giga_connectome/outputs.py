@@ -70,6 +70,8 @@ def run_postprocessing_dataset(
     resampled_atlases: List[Union[str, Path]],
     images: List[Union[str, Path]],
     group_mask: Union[str, Path],
+    standardize: Union[str, bool],
+    smoothing_fwhm: float,
     output_path: Path,
     analysis_level: str,
 ) -> None:
@@ -91,6 +93,13 @@ def run_postprocessing_dataset(
     group_mask : str or pathlib.Path
         Group level grey matter mask.
 
+    standardize : str or bool
+        Standardization options used in nilearn, passed to nilearn masker.
+        Options: True, False, "psc"
+
+    smoothing_fwhm : float
+        Smoothing kernel size, passed to nilearn masker.
+
     output_path:
         Full path to output file, named in the following format:
             output_dir / atlas-<atlas>_desc-<strategy_name>.h5
@@ -98,7 +107,10 @@ def run_postprocessing_dataset(
     atlas = output_path.name.split("atlas-")[-1].split("_")[0]
     print("set up masker objects")
     group_masker = NiftiMasker(
-        standardize=True, mask_img=group_mask, smoothing_fwhm=5
+        mask_img=group_mask,
+        detrend=True,
+        standardize=standardize,
+        smoothing_fwhm=smoothing_fwhm,
     )
 
     atlas_maskers, connectomes = {}, {}
