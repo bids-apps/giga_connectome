@@ -12,10 +12,10 @@ This is a Python project packaged according to [Contemporary Python Packaging - 
 ## Usage
 
 ```
-giga_connectome [-h] [--participant_label PARTICIPANT_LABEL [PARTICIPANT_LABEL ...]]
-                       [-w WORK_DIR] [--atlas ATLAS] [--denoise-strategy DENOISE_STRATEGY]
-                       [--standardize {zscore,psc}] [--bids-filter-file BIDS_FILTER_FILE]
-                       bids_dir output_dir {participant,group}
+giga_connectome [-h] [-v] [--participant_label PARTICIPANT_LABEL [PARTICIPANT_LABEL ...]]
+                [-w WORK_DIR] [--atlas ATLAS] [--denoise-strategy DENOISE_STRATEGY]
+                [--standardize {zscore,psc}] [--smoothing_fwhm SMOOTHING_FWHM]
+                bids_dir output_dir {participant,group}
 
 Generate connectome based on denoising strategy for fmriprep processed dataset.
 
