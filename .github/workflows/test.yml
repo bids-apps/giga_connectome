@@ -49,6 +49,22 @@ jobs:
         name: archive
         path: archive/
 
+  download-test-data:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+    - uses: suisei-cn/actions-download-file@v1.3.0
+      id: downloadfile  # Remember to give an ID if you need the output filename
+      name: Download fmriprep derivative of ds000017
+      with:
+        url: "https://zenodo.org/record/7901637/files/ds000017-fmriprep22.0.1-downsampled.tar.gz?download=1"
+        target: giga_connectome/data/test_data
+    - name: Untar the data
+      id: ds000017
+      run: |
+        cd giga_connectome/data/test_data/
+        tar -xzvf ds000017-fmriprep22.0.1-downsampled.tar.gz .
+
   test-package:
     runs-on: ubuntu-latest
     needs: [build]
@@ -87,7 +103,7 @@ jobs:
 
   test-coverage:
     runs-on: ubuntu-latest
-    needs: [build]
+    needs: [build, download-test-data]
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11']

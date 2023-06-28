@@ -1,17 +1,10 @@
 import pytest
 
-from pathlib import Path
 import bids
 from giga_connectome import metadata
 from pkg_resources import resource_filename
-import os
-
-IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
 
-@pytest.mark.skipif(
-    IN_GITHUB_ACTIONS, reason="Test data is not set up on Github Actions."
-)
 def test_get_metadata():
     """Check the function can load from different fMRIPrep dataset."""
     # check another dataset with session info
