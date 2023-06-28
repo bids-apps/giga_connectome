@@ -54,16 +54,19 @@ jobs:
     needs: [build]
     steps:
     - uses: suisei-cn/actions-download-file@v1.3.0
-      id: downloadfile  # Remember to give an ID if you need the output filename
       name: Download fmriprep derivative of ds000017
       with:
         url: "https://zenodo.org/record/8091903/files/ds000017-fmriprep22.0.1-downsampled-nosurface.tar.gz?download=1"
-        target: giga_connectome/data/test_data
+        target: giga_connectome/data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface.tar.gz
     - name: Untar the data
-      id: ds000017
       run: |
         cd giga_connectome/data/test_data/
-        tar -xzvf ds000017-fmriprep22.0.1-downsampled-nosurface.tar.gz .
+        tar -xzvf ds000017-fmriprep22.0.1-downsampled-nosurface.tar.gz
+    - uses: actions/cache@v3
+      id: cache
+      with:
+        path: giga_connectome/data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface
+        key: ds000017
 
   test-package:
     runs-on: ubuntu-latest
