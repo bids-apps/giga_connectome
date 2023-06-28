@@ -57,13 +57,13 @@ jobs:
       id: downloadfile  # Remember to give an ID if you need the output filename
       name: Download fmriprep derivative of ds000017
       with:
-        url: "https://zenodo.org/record/7901637/files/ds000017-fmriprep22.0.1-downsampled.tar.gz?download=1"
+        url: "https://zenodo.org/record/8091903/files/ds000017-fmriprep22.0.1-downsampled-nosurface.tar.gz?download=1"
         target: giga_connectome/data/test_data
     - name: Untar the data
       id: ds000017
       run: |
         cd giga_connectome/data/test_data/
-        tar -xzvf ds000017-fmriprep22.0.1-downsampled.tar.gz .
+        tar -xzvf ds000017-fmriprep22.0.1-downsampled-nosurface.tar.gz .
 
   test-package:
     runs-on: ubuntu-latest

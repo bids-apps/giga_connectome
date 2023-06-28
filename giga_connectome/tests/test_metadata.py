@@ -9,7 +9,8 @@ def test_get_metadata():
     """Check the function can load from different fMRIPrep dataset."""
     # check another dataset with session info
     fmriprep_path = resource_filename(
-        "giga_connectome", "data/test_data/ds000017-fmriprep22.0.1-downsampled"
+        "giga_connectome",
+        "data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface",
     )
     fmriprep_bids_layout = bids.BIDSLayout(
         root=fmriprep_path,

@@ -19,7 +19,8 @@ IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 )
 def test_smoke(tmp_path):
     bids_dir = resource_filename(
-        "giga_connectome", "data/test_data/ds000017-fmriprep22.0.1-downsampled"
+        "giga_connectome",
+        "data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface",
     )
 
     args = argparse.Namespace(
