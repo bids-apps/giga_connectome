@@ -57,7 +57,13 @@ jobs:
       run: |
         mkdir ~/test_data/
         cd ~/test_data/
-        wget "https://zenodo.org/record/8091903/files/ds000017-fmriprep22.0.1-downsampled-nosurface.tar.gz?download=1" .
+        wget --retry-connrefused \
+          --waitretry=5 \
+          --read-timeout=20 \
+          --timeout=15 \
+          -t 0 \
+          -q \
+          "https://zenodo.org/record/8091903/files/ds000017-fmriprep22.0.1-downsampled-nosurface.tar.gz?download=1"
         tar -xzvf ds000017-fmriprep22.0.1-downsampled-nosurface.tar.gz
     - uses: actions/cache@v3
       id: cache
@@ -114,7 +120,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: load downloaded data
-      run: ln -s ~/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface
+      run: ln -s ~/test_data /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data
     - name: Install build dependencies
       run: python -m pip install --upgrade pip
     - name: Install task package
