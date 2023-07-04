@@ -55,14 +55,14 @@ jobs:
     steps:
     - name: Download fmriprep derivative of ds000017
       run: |
-        mkdir giga_connectome/data/test_data/
-        cd giga_connectome/data/test_data/
+        mkdir ~/test_data/
+        cd ~/test_data/
         wget "https://zenodo.org/record/8091903/files/ds000017-fmriprep22.0.1-downsampled-nosurface.tar.gz?download=1" .
         tar -xzvf ds000017-fmriprep22.0.1-downsampled-nosurface.tar.gz
     - uses: actions/cache@v3
       id: cache
       with:
-        path: giga_connectome/data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface
+        path: ~/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface
         key: ds000017
 
   test-package:
@@ -113,6 +113,8 @@ jobs:
     - uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+    - name: load downloaded data
+      run: ln -s ~/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface
     - name: Install build dependencies
       run: python -m pip install --upgrade pip
     - name: Install task package
