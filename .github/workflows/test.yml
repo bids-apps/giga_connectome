@@ -68,8 +68,8 @@ jobs:
       name: Download fmriprep derivative of ds000017
       id: download
       run: |
-        mkdir ~/test_data/
-        cd ~/test_data/
+        mkdir -p /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data
+        cd /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data
         wget --retry-connrefused \
           --waitretry=5 \
           --read-timeout=20 \
@@ -79,6 +79,7 @@ jobs:
           -O ds000017.tar.gz \
           "https://zenodo.org/record/8091903/files/ds000017-fmriprep22.0.1-downsampled-nosurface.tar.gz?download=1"
         tar -xzvf ds000017.tar.gz
+
     - uses: actions/cache@v3
       if: ${{ steps.download.outputs.cache-hit == 'true' }}
       id: cache-save
