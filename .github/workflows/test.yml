@@ -143,13 +143,14 @@ jobs:
       run: pip install -e .[test]
 
     - name: Test with pytest - ignore smoke test.
+      if: ${{ !contains(github.event.head_commit.message, 'full_test') }}
       run: |
+        echo " ${{ github.event.head_commit.message }} "
         pytest -m "not smoke" --cov=giga_connectome --cov-report=xml --doctest-modules -v --pyargs giga_connectome
 
     - name: Full test - run all the test to generate accurate coverage report.
-      if: contains(github.event.head_commit.message, 'full_test')
-      run: |
-        pytest --cov=giga_connectome --cov-report=xml --doctest-modules -v --pyargs giga_connectome
+      if: ${{ contains(github.event.head_commit.message, 'full_test') }}
+      run: pytest --cov=giga_connectome --cov-report=xml --doctest-modules -v --pyargs giga_connectome
 
     - uses: codecov/codecov-action@v3
       if: ${{ always() }}
