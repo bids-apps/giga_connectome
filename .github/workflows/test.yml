@@ -49,6 +49,22 @@ jobs:
         name: archive
         path: archive/
 
+  download-test-data:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+    - name: Download fmriprep derivative of ds000017
+      run: |
+        mkdir giga_connectome/data/test_data/
+        cd giga_connectome/data/test_data/
+        wget "https://zenodo.org/record/8091903/files/ds000017-fmriprep22.0.1-downsampled-nosurface.tar.gz?download=1" .
+        tar -xzvf ds000017-fmriprep22.0.1-downsampled-nosurface.tar.gz
+    - uses: actions/cache@v3
+      id: cache
+      with:
+        path: giga_connectome/data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface
+        key: ds000017
+
   test-package:
     runs-on: ubuntu-latest
     needs: [build]
