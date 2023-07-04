@@ -84,6 +84,11 @@ def main(argv=None):
         default=5.0,
     )
     parser.add_argument(
+        "--reindex-bids",
+        help="Reindex BIDS data set, even if layout has already been created.",
+        action="store_true",
+    )
+    parser.add_argument(
         "--bids-filter-file",
         type=Path,
         help="A JSON file describing custom BIDS input filters using PyBIDS."

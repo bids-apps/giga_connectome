@@ -54,6 +54,7 @@ def test_smoke(tmp_path, capsys):
             "simple",
             "--standardize",
             "zscore",
+            "--reindex-bids",
             str(bids_dir),
             str(output_dir),
             "participant",
