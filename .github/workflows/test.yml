@@ -142,13 +142,13 @@ jobs:
     - name: Install task package
       run: pip install -e .[test]
 
-    - name: Run all the test to generate accurate coverage report.
-      if: contains( github.event.head_commit.message, 'full_test')
+    - name: Full test - run all the test to generate accurate coverage report.
+      if: contains(github.event.head_commit.message, 'full_test')
       run: |
         pytest --cov=giga_connectome --cov-report=xml --doctest-modules -v --pyargs giga_connectome
 
     - name: Test with pytest - ignore smoke test.
-      if:  ${{ !contains(github.event.head_commit.message, 'full_test') }}
+      if: ! contains(github.event.head_commit.message, 'full_test')
       run: |
         pytest -m "not smoke" --cov=giga_connectome --cov-report=xml --doctest-modules -v --pyargs giga_connectome
 
