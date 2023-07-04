@@ -79,6 +79,7 @@ jobs:
           -O ds000017.tar.gz \
           "https://zenodo.org/record/8091903/files/ds000017-fmriprep22.0.1-downsampled-nosurface.tar.gz?download=1"
         tar -xzf ds000017.tar.gz
+        rm ds000017.tar.gz
 
     - uses: actions/cache@v3
       if: ${{ steps.download.outputs.cache-hit == 'true' }}
@@ -139,6 +140,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Find test type
       run: |
+        echo $(git log -1 --pretty=%B) | tee gitlog.txt
         GITLOG=$(cat gitlog.txt)
         if [ "$GITHUB_REF_NAME" == "main" ] || [[ $GITLOG == *"[full test]"* ]]; then
           echo "Run the full test";
