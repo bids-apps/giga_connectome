@@ -63,12 +63,13 @@ jobs:
           --timeout=15 \
           -t 0 \
           -q \
+          -O ds000017.tar.gz \
           "https://zenodo.org/record/8091903/files/ds000017-fmriprep22.0.1-downsampled-nosurface.tar.gz?download=1"
-        tar -xzvf ds000017-fmriprep22.0.1-downsampled-nosurface.tar.gz
+        tar -xzvf ds000017.tar.gz
     - uses: actions/cache@v3
       id: cache
       with:
-        path: ~/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface
+        path: ~/test_data/ds000017
         key: ds000017
 
   test-package:
