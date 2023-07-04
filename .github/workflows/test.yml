@@ -78,7 +78,7 @@ jobs:
           -q \
           -O ds000017.tar.gz \
           "https://zenodo.org/record/8091903/files/ds000017-fmriprep22.0.1-downsampled-nosurface.tar.gz?download=1"
-        tar -xzvf ds000017.tar.gz
+        tar -xzf ds000017.tar.gz
 
     - uses: actions/cache@v3
       if: ${{ steps.download.outputs.cache-hit == 'true' }}
@@ -137,6 +137,21 @@ jobs:
     - uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Find test type
+      run: |
+        GITLOG=$(cat gitlog.txt)
+        if [ "$GITHUB_REF_NAME" == "main" ] || [[ $GITLOG == *"[full test]"* ]]; then
+          echo "Run the full test";
+          echo full-test > test.txt;
+        else
+          echo regular > test.txt;
+        fi
+      env:
+        COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+
+    - name: Verify test type
+      run: |
+        echo "TEST = $(cat test.txt)"
 
     - name: Restore cached data ds000017
       id: cache
@@ -149,8 +164,16 @@ jobs:
       run: python -m pip install --upgrade pip
     - name: Install task package
       run: pip install -e .[test]
+
     - name: Test with pytest
-      run: pytest --cov=giga_connectome --cov-report=xml --doctest-modules -v --pyargs giga_connectome
+      run: |
+        if [[ "$(cat test.txt)" == "full-test" ]]; then
+          echo "Full test - run all the test to generate accurate coverage report.";
+          pytest --cov=giga_connectome --cov-report=xml --doctest-modules -v --pyargs giga_connectome
+        else
+          echo "Partial test - ignore smoke test.";
+          pytest -m "not smoke" --cov=giga_connectome --cov-report=xml --doctest-modules -v --pyargs giga_connectome
+        fi
     - uses: codecov/codecov-action@v3
       if: ${{ always() }}
 

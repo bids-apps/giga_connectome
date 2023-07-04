@@ -4,7 +4,7 @@ from giga_connectome.workflow import workflow
 from giga_connectome import __version__
 
 
-def main():
+def main(argv=None):
     """Entry point."""
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter,
@@ -91,6 +91,7 @@ def main():
         "https://fmriprep.org/en/latest/faq.html#"
         "how-do-i-select-only-certain-files-to-be-input-to-fmriprep",
     )
-    args = parser.parse_args()
+
+    args = parser.parse_args(argv)
 
     workflow(args)

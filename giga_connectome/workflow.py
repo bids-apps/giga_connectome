@@ -70,6 +70,7 @@ def workflow(args):
             output_dir / f"atlas-{atlas['name']}_desc-{strategy['name']}.h5"
         )
         connectome_path = _check_path(connectome_path, verbose=True)
+        print(connectome_path)
         print("Generate subject level connectomes")
         run_postprocessing_dataset(
             strategy,
