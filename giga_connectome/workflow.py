@@ -48,7 +48,7 @@ def workflow(args):
         database_path=bids_dir,
         validate=False,
         derivatives=True,
-        force_index=args.reindex_bids,
+        reset_database=args.reindex_bids,
     )
     image_filter = {
         "subject": subjects,
