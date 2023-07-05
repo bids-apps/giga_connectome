@@ -4,7 +4,7 @@ from giga_connectome.workflow import workflow
 from giga_connectome import __version__
 
 
-def main():
+def main(argv=None):
     """Entry point."""
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter,
@@ -84,6 +84,11 @@ def main():
         default=5.0,
     )
     parser.add_argument(
+        "--reindex-bids",
+        help="Reindex BIDS data set, even if layout has already been created.",
+        action="store_true",
+    )
+    parser.add_argument(
         "--bids-filter-file",
         type=Path,
         help="A JSON file describing custom BIDS input filters using PyBIDS."
@@ -91,6 +96,7 @@ def main():
         "https://fmriprep.org/en/latest/faq.html#"
         "how-do-i-select-only-certain-files-to-be-input-to-fmriprep",
     )
-    args = parser.parse_args()
+
+    args = parser.parse_args(argv)
 
     workflow(args)

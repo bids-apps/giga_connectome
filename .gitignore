@@ -1,6 +1,5 @@
-test_data/
 */_version.py
-data/
+*/data/test_data/
 output/
 
 # Byte-compiled / optimized / DLL files
