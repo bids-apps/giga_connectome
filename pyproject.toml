@@ -44,7 +44,7 @@ test = [
 tests = ["giga_connectome[test]"]
 
 [project.urls]
-"Homepage" = "https://github.com/htwangtw/giga_connectome"
+"Homepage" = "https://github.com/simexp/giga_connectome"
 
 [tool.hatch.version]
 source = "vcs"
@@ -59,7 +59,7 @@ exclude = [".git_archival.txt"]
 packages = ["giga_connectome"]
 exclude = [
   ".github",
-  "giga_connectome/data/test_data",
+  "giga_connectome/data/test_data"
 ]
 
 [tool.black]
