@@ -1,6 +1,4 @@
 from pathlib import Path
-import pandas as pd
-import numpy as np
 from bids.tests import get_test_data_path
 from giga_connectome import utils
 

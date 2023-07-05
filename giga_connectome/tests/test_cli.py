@@ -3,39 +3,86 @@ Simple code to smoke test the functionality.
 """
 from pathlib import Path
 from pkg_resources import resource_filename
-from giga_connectome.workflow import workflow
+from giga_connectome.run import main
+from giga_connectome import __version__
 
-import argparse
 import pytest
-import os
 
-IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
+import h5py
 
 
-@pytest.mark.skipif(
-    IN_GITHUB_ACTIONS, reason="Test doesn't work in Github Actions."
-)
-def test_smoke(tmp_path):
+def test_version(capsys):
+    try:
+        main(["-v"])
+    except SystemExit:
+        pass
+    captured = capsys.readouterr()
+    assert __version__ == captured.out.split()[0]
+
+
+def test_help(capsys):
+    try:
+        main(["-h"])
+    except SystemExit:
+        pass
+    captured = capsys.readouterr()
+    assert "Generate connectome" in captured.out
+
+
+@pytest.mark.smoke
+def test_smoke(tmp_path, capsys):
+
     bids_dir = resource_filename(
-        "giga_connectome", "data/test_data/ds000017-fmriprep22.0.1-downsampled"
+        "giga_connectome",
+        "data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface",
+    )
+    output_dir = tmp_path / "output"
+    work_dir = tmp_path / "output/work"
+
+    if not Path(output_dir).exists:
+        Path(output_dir).mkdir()
+
+    main(
+        [
+            "--participant_label",
+            "1",
+            "-w",
+            str(work_dir),
+            "--atlas",
+            "Schaefer20187Networks",
+            "--denoise-strategy",
+            "simple",
+            "--standardize",
+            "zscore",
+            "--reindex-bids",
+            str(bids_dir),
+            str(output_dir),
+            "participant",
+        ]
     )
 
-    args = argparse.Namespace(
-        bids_dir=Path(bids_dir),
-        output_dir=tmp_path / "output",
-        work_dir=tmp_path / "output/work",
-        atlas="Schaefer20187Networks",
-        standardize="zscore",
-        smoothing_fwhm=5.0,
-        denoise_strategy="simple",
-        analysis_level="participant",
-        participant_label=[],
+    main(
+        [
+            "-w",
+            str(work_dir),
+            "--atlas",
+            "Schaefer20187Networks",
+            "--denoise-strategy",
+            "simple",
+            "--standardize",
+            "psc",
+            str(bids_dir),
+            str(output_dir),
+            "group",
+        ]
     )
-    if not Path(args.output_dir).exists:
-        Path(args.output_dir).mkdir()
-    workflow(args)
-    # test the group level
-    # Smoke test the group level
-    args.analysis_level = "group"
-    args.standardize = "psc"
-    workflow(args)
+
+    # check output
+    output_group = output_dir / "atlas-Schaefer20187Networks_desc-simple.h5"
+    basename = (
+        "sub-1_ses-timepoint1_task-probabilisticclassification_run-01_"
+        "atlas-Schaefer20187Networks_desc-100Parcels7Networks_timeseries"
+    )
+    with h5py.File(output_group, "r") as f:
+        data = f[f"sub-1/ses-timepoint1/{basename}"]
+        assert data.attrs.get("RepetitionTime") == 2.0
