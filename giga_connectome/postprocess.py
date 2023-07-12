@@ -1,4 +1,3 @@
-import json
 from typing import Union, List
 from pathlib import Path
 
@@ -7,62 +6,9 @@ from tqdm import tqdm
 import numpy as np
 from nibabel import Nifti1Image
 from nilearn.connectome import ConnectivityMeasure
-from nilearn.interfaces import fmriprep
 from nilearn.maskers import NiftiMasker, NiftiLabelsMasker, NiftiMapsMasker
 from bids.layout import BIDSImageFile
 from giga_connectome import utils
-from pkg_resources import resource_filename
-
-
-PRESET_STRATEGIES = [
-    "simple",
-    "simple+gsr",
-    "scrubbing.2",
-    "scrubbing.2+gsr",
-    "scrubbing.5",
-    "scrubbing.5+gsr",
-    "acompcor50",
-    "icaaroma",
-]
-
-
-def get_denoise_strategy_parameters(
-    strategy: str,
-) -> dict:
-    """
-    Select denoise strategies and associated parameters.
-    The strategy parameters are designed to pass to load_confounds_strategy.
-
-    Parameter
-    ---------
-
-    strategy : str
-        Name of the denoising strategy options:
-        simple, simple+gsr, scrubbing.5, scrubbing.5+gsr,
-        scrubbing.2, scrubbing.2+gsr, acompcor50, icaaroma.
-        Or the path to a configuration json file.
-
-    Return
-    ------
-
-    dict
-        Denosing strategy parameter to pass to load_confounds_strategy.
-    """
-    if strategy in PRESET_STRATEGIES:
-        config_path = resource_filename(
-            "giga_connectome", f"data/denoise_strategy/{strategy}.json"
-        )
-    elif Path(strategy).exists():
-        config_path = Path(strategy)
-    else:
-        raise ValueError(f"Invalid input: {strategy}")
-
-    with open(config_path, "r") as file:
-        benchmark_strategy = json.load(file)
-
-    lc_function = getattr(fmriprep, benchmark_strategy["function"])
-    benchmark_strategy.update({"function": lc_function})
-    return benchmark_strategy
 
 
 def run_postprocessing_dataset(
