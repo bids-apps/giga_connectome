@@ -23,8 +23,10 @@ def get_bids_images(subjects, template, bids_dir, reindex_bids, bids_filters):
     layout_get_kwargs = {
         "return_type": "object",
         "subject": subjects,
+        "session": Query.ANY,
         "space": template,
         "task": Query.ANY,
+        "run": Query.ANY,
         "extension": ".nii.gz",
     }
     queries = {
@@ -38,12 +40,18 @@ def get_bids_images(subjects, template, bids_dir, reindex_bids, bids_filters):
             "datatype": "func",
         },
     }
+
+    # update individual queries first
     for suffix, entities in bids_filters.items():
         queries[suffix].update(entities)
-        for entity in list(layout_get_kwargs.keys()):
+
+    # now go through the shared entities in layout_get_kwargs
+    for entity in list(layout_get_kwargs.keys()):
+        for suffix, entities in bids_filters.items():
             if entity in entities:
                 # avoid clobbering layout.get
-                del layout_get_kwargs[entity]
+                layout_get_kwargs.update({entity: entities[entity]})
+                del queries[suffix][entity]
 
     subj_data = {
         dtype: layout.get(**layout_get_kwargs, **query)

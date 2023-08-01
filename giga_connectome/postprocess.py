@@ -1,8 +1,9 @@
-from typing import Union, List
+from typing import Union, List, Optional
 from pathlib import Path
 
 import h5py
 from tqdm import tqdm
+import pandas as pd
 import numpy as np
 from nibabel import Nifti1Image
 from nilearn.connectome import ConnectivityMeasure
@@ -23,6 +24,16 @@ def run_postprocessing_dataset(
 ) -> None:
     """
     Generate subject and group level timeseries and connectomes.
+
+    The time series data is denoised as follow:
+    Denoising steps are performed on the voxel level:
+    - spatial smoothing
+    - detrend, only if high pass filter is not applied through confounds
+    - Regress out confounds
+    - standardize
+
+    Time series extractions through label or map maskers are performed
+    on the denoised nifti file.
 
     Parameters
     ----------
@@ -51,14 +62,6 @@ def run_postprocessing_dataset(
             output_dir / atlas-<atlas>_desc-<strategy_name>.h5
     """
     atlas = output_path.name.split("atlas-")[-1].split("_")[0]
-    print("set up masker objects")
-    group_masker = NiftiMasker(
-        mask_img=group_mask,
-        detrend=True,
-        standardize=standardize,
-        smoothing_fwhm=smoothing_fwhm,
-    )
-
     atlas_maskers, connectomes = {}, {}
     for atlas_path in resampled_atlases:
         if isinstance(atlas_path, str):
@@ -75,7 +78,9 @@ def run_postprocessing_dataset(
     print("processing subjects")
     for img in tqdm(images):
         # process timeseries
-        denoised_img = _denoise_nifti_voxel(strategy, group_masker, img.path)
+        denoised_img = _denoise_nifti_voxel(
+            strategy, group_mask, standardize, smoothing_fwhm, img.path
+        )
         # parse file name
         subject, session, specifier = utils.parse_bids_name(img.path)
         for desc, masker in atlas_maskers.items():
@@ -137,13 +142,27 @@ def _generate_subject_timeseries_connectome(
 
 
 def _denoise_nifti_voxel(
-    strategy: dict, group_masker: NiftiMasker, img: str
+    strategy: dict,
+    group_mask: Union[str, Path],
+    standardize: Union[str, bool],
+    smoothing_fwhm: float,
+    img: str,
 ) -> Nifti1Image:
     """Denoise voxel level data per nifti image."""
-
     cf, sm = strategy["function"](img, **strategy["parameters"])
     if _check_exclusion(cf, sm):
         return None
+
+    # if high pass filter is not applied through cosines regressors,
+    # then detrend
+    detrend = "cosine00" not in cf.columns
+    group_masker = NiftiMasker(
+        mask_img=group_mask,
+        detrend=detrend,
+        standardize=standardize,
+        smoothing_fwhm=smoothing_fwhm,
+    )
+
     time_series_voxel = group_masker.fit_transform(
         img, confounds=cf, sample_mask=sm
     )
@@ -151,13 +170,15 @@ def _denoise_nifti_voxel(
     return denoised_img
 
 
-def _check_exclusion(reduced_confounds, sample_mask):
+def _check_exclusion(
+    reduced_confounds: pd.DataFrame, sample_mask: Optional[np.ndarray]
+) -> bool:
     """For scrubbing based strategy, check if regression can be performed."""
     if sample_mask is not None:
         kept_vol = len(sample_mask)
     else:
         kept_vol = reduced_confounds.shape[0]
-    # more noise regressors than volume
+    # if more noise regressors than volume, this data is not denoisable
     remove = kept_vol < reduced_confounds.shape[1]
     return remove
 
