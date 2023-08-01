@@ -105,7 +105,7 @@ def parse_bids_filter(value):
 
 def parse_standardize_options(standardize):
     if standardize not in ["zscore", "psc"]:
-        raise ValueError(f"{standardize} is no valid standardize strategy.")
+        raise ValueError(f"{standardize} is not a valid standardize strategy.")
     if standardize == "psc":
         return standardize
     else:

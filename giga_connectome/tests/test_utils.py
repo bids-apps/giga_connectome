@@ -52,3 +52,9 @@ def test_get_subject_lists():
     )
     assert len(subjects) == 1
     assert subjects[0] == "01"
+
+
+def test_parse_standardize_options():
+    with pytest.raises(ValueError) as msg:
+        utils.parse_standardize_options(True)
+    assert "True is not a" in str(msg.value)
