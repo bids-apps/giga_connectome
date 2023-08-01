@@ -1,10 +1,9 @@
 import os
 import re
-import json
 from typing import Optional, Union, List, Tuple
+from bids.layout import BIDSImageFile
 
 from pathlib import Path
-from tqdm import tqdm
 import nibabel as nib
 from nilearn.masking import compute_multi_epi_mask
 from nilearn.image import (
@@ -18,61 +17,45 @@ from nibabel import Nifti1Image
 import numpy as np
 from scipy.ndimage import binary_closing
 
-from pkg_resources import resource_filename
+from giga_connectome.atlas import resample_atlas_collection
 
 
-PRESET_ATLAS = ["DiFuMo", "MIST", "Schaefer20187Networks"]
-
-
-def resample_atlas_collection(
+def generate_gm_mask_atlas(
+    working_dir: Path,
+    atlas: dict,
     template: str,
-    atlas_config: dict,
-    group_mask_dir: Path,
-    group_mask: Nifti1Image,
-) -> List[Path]:
-    """
-    Resample a atlas collection to group grey matter mask.
+    masks: List[BIDSImageFile],
+) -> Tuple[Path, List[Path]]:
+    """ """
+    # check masks; isolate this part and make sure to make it a validate
+    # templateflow template with a config file
 
-    Parameters
-    ----------
+    group_mask_dir = working_dir / "groupmasks" / f"tpl-{template}"
+    group_mask_dir.mkdir(exist_ok=True, parents=True)
 
-    template: str
-        Templateflow template name. This template should match the template of
-        `all_masks`.
-
-    atlas_config: dict
-        Atlas name. Currently support Schaefer20187Networks, MIST, DiFuMo.
-
-    group_mask_dir: pathlib.Path
-        Path to where the outputs are saved.
-
-    group_mask : nibabel.nifti1.Nifti1Image
-        EPI (grey matter) mask for the current group of subjects.
-
-    Returns
-    -------
-
-    List of pathlib.Path
-        Paths to atlases sampled to group level grey matter mask.
-    """
-    print("Resample atlas to group grey matter mask.")
-    resampled_atlases = []
-    for desc in tqdm(atlas_config["file_paths"]):
-        parcellation = atlas_config["file_paths"][desc]
-        parcellation_resampled = resample_to_img(
-            parcellation, group_mask, interpolation="nearest"
+    group_mask, resampled_atlases = None, None
+    if group_mask_dir.exists():
+        group_mask, resampled_atlases = _check_pregenerated_masks(
+            template, working_dir, atlas
         )
-        filename = (
-            f"tpl-{template}_"
-            f"atlas-{atlas_config['name']}_"
-            "res-dataset_"
-            f"desc-{desc}_"
-            f"{atlas_config['type']}.nii.gz"
+
+    if not group_mask:
+        # grey matter group mask is only supplied in MNI152NLin2009c(A)sym
+        group_mask_nii = generate_group_mask(
+            [m.path for m in masks], "MNI152NLin2009cAsym"
         )
-        save_path = group_mask_dir / filename
-        nib.save(parcellation_resampled, save_path)
-        resampled_atlases.append(save_path)
-    return resampled_atlases
+        current_file_name = (
+            f"tpl-{template}_res-dataset_label-GM_desc-group_mask.nii.gz"
+        )
+        group_mask = group_mask_dir / current_file_name
+        nib.save(group_mask_nii, group_mask)
+
+    if not resampled_atlases:
+        resampled_atlases = resample_atlas_collection(
+            template, atlas, group_mask_dir, group_mask
+        )
+
+    return group_mask, resampled_atlases
 
 
 def generate_group_mask(
@@ -187,94 +170,6 @@ def generate_group_mask(
     return math_img("img1 & img2", img1=group_epi_mask, img2=mni_gm_mask_img)
 
 
-def load_atlas_setting(atlas: Union[str, Path, dict]):
-    """
-    Load atlas details for templateflow api to fetch.
-    The setting file can be configured for atlases not included in the
-    templateflow collections, but user has to organise their files to
-    templateflow conventions to use the tool.
-
-    Parameters
-    ----------
-
-    atlas: str or pathlib.Path or dict
-        Path to atlas configuration json file or a python dictionary.
-        It should contain the following fields:
-            - name : name of the atlas.
-            - parameters : BIDS entities that fits templateflow conventions
-            except desc.
-            - desc : templateflow entities description. Can be a list if user
-            wants to include multiple resolutions of the atlas.
-            - templateflow_dir : Path to templateflow director.
-                If null, use the system default.
-
-    Returns
-    -------
-    dict
-        Path to the atlas files.
-    """
-    atlas_config = _load_config(atlas)
-    print(atlas_config)
-
-    # load template flow
-    templateflow_dir = atlas_config.get("templateflow_dir")
-    if isinstance(templateflow_dir, str):
-        templateflow_dir = Path(templateflow_dir)
-        if templateflow_dir.exists():
-            os.environ["TEMPLATEFLOW_HOME"] = str(templateflow_dir.resolve())
-        else:
-            raise FileNotFoundError
-
-    import templateflow
-
-    if isinstance(atlas_config["desc"], str):
-        desc = [atlas_config["desc"]]
-    else:
-        desc = atlas_config["desc"]
-
-    parcellation = {}
-    for d in desc:
-        p = templateflow.api.get(
-            **atlas_config["parameters"],
-            raise_empty=True,
-            desc=d,
-            extension="nii.gz",
-        )
-        parcellation[d] = p
-    return {
-        "name": atlas_config["name"],
-        "file_paths": parcellation,
-        "type": atlas_config["parameters"]["suffix"],
-    }
-
-
-def _load_config(atlas: Union[str, Path, dict]) -> dict:
-    """Load the configuration file."""
-    if isinstance(atlas, (str, Path)):
-        if atlas in PRESET_ATLAS:
-            config_path = resource_filename(
-                "giga_connectome", f"data/atlas/{atlas}.json"
-            )
-        elif Path(atlas).exists():
-            config_path = Path(atlas)
-
-        with open(config_path, "r") as file:
-            atlas_config = json.load(file)
-    elif isinstance(atlas, dict):
-        if "parameters" in atlas:
-            atlas_config = atlas.copy()
-        else:
-            raise ValueError(
-                "Invalid dictionary input. Input should"
-                " contain the following keys: 'name', "
-                "'parameters', 'templateflow_dir'. Found "
-                f"{list(atlas.keys())}"
-            )
-    else:
-        raise ValueError(f"Invalid input: {atlas}")
-    return atlas_config
-
-
 def _get_consistent_masks(
     mask_imgs: List[Union[Path, str, Nifti1Image]], exclude: List[int]
 ) -> Tuple[List[int], List[str]]:
@@ -377,3 +272,37 @@ def _check_mask_affine(
             "different affine matrix. Ignore when creating group mask."
         )
     return sorted(exclude)
+
+
+def _check_pregenerated_masks(template, working_dir, atlas):
+    """Check if the working directory is populated with needed files."""
+    output_dir = working_dir / "groupmasks" / f"tpl-{template}"
+    group_mask = (
+        output_dir
+        / f"tpl-{template}_res-dataset_label-GM_desc-group_mask.nii.gz"
+    )
+    if not group_mask.exists():
+        group_mask = None
+    else:
+        print(f"Found pregenerated group level grey matter mask: {group_mask}")
+
+    # atlas
+    resampled_atlases = []
+    for desc in atlas["file_paths"]:
+        filename = (
+            f"tpl-{template}_"
+            f"atlas-{atlas['name']}_"
+            "res-dataset_"
+            f"desc-{desc}_"
+            f"{atlas['type']}.nii.gz"
+        )
+        resampled_atlases.append(output_dir / filename)
+    all_exist = [file_path.exists() for file_path in resampled_atlases]
+    if not all(all_exist):
+        resampled_atlases = None
+    else:
+        print(
+            f"Found resampled atlases: {resampled_atlases}. Skipping group "
+            "level mask generation step."
+        )
+    return group_mask, resampled_atlases
