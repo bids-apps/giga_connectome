@@ -101,3 +101,10 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     workflow(args)
+
+
+if __name__ == "__main__":
+    raise RuntimeError(
+        "run.py should not be run directly;\n"
+        "Please `pip install` and use the `giga_connectome` command"
+    )

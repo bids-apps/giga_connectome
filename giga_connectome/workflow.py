@@ -37,38 +37,19 @@ def workflow(args):
     )
     print("Indexing BIDS directory")
 
-    subj_data, fmriprep_bids_layout = utils.get_bids_images(
-        subjects, template, bids_dir, args.reindex_bids, bids_filters
-    )
-
-    group_mask, resampled_atlases = generate_gm_mask_atlas(
-        working_dir, atlas, template, subj_data["mask"]
-    )
-
     # create subject ts and connectomes
-    if analysis_level == "group":
-        connectome_path = (
-            output_dir / f"atlas-{atlas['name']}_desc-{strategy['name']}.h5"
-        )
-        connectome_path = utils.check_path(connectome_path, verbose=True)
-        print(connectome_path)
-        print("Generate subject level connectomes")
-        run_postprocessing_dataset(
-            strategy,
-            resampled_atlases,
-            subj_data["bold"],
-            group_mask,
-            standardize,
-            smoothing_fwhm,
-            connectome_path,
-            analysis_level,
-        )
-    elif analysis_level == "participant":
-        for img in subj_data["bold"]:
-            subject, session, specifier = utils.parse_bids_name(img.path)
-            basename = f"{subject}_{session}_{specifier}_space-{template}"
+    # refactor the two cases into one
+
+    if analysis_level == "participant":
+        for subject in subjects:
+            subj_data, fmriprep_bids_layout = utils.get_bids_images(
+                [subject], template, bids_dir, args.reindex_bids, bids_filters
+            )
+            group_mask, resampled_atlases = generate_gm_mask_atlas(
+                working_dir, atlas, template, subj_data["mask"]
+            )
             connectome_path = output_dir / (
-                f"{basename}_atlas-{atlas['name']}"
+                f"sub-{subject}_atlas-{atlas['name']}"
                 f"_desc-{strategy['name']}.h5"
             )
             connectome_path = utils.check_path(connectome_path, verbose=True)
@@ -76,10 +57,35 @@ def workflow(args):
             run_postprocessing_dataset(
                 strategy,
                 resampled_atlases,
-                [img],
+                subj_data["bold"],
                 group_mask,
                 standardize,
                 smoothing_fwhm,
                 connectome_path,
                 analysis_level,
             )
+        return
+
+    # group level
+    subj_data, fmriprep_bids_layout = utils.get_bids_images(
+        subjects, template, bids_dir, args.reindex_bids, bids_filters
+    )
+    group_mask, resampled_atlases = generate_gm_mask_atlas(
+        working_dir, atlas, template, subj_data["mask"]
+    )
+    connectome_path = (
+        output_dir / f"atlas-{atlas['name']}_desc-{strategy['name']}.h5"
+    )
+    connectome_path = utils.check_path(connectome_path, verbose=True)
+    print(connectome_path)
+    print("Generate subject level connectomes")
+    run_postprocessing_dataset(
+        strategy,
+        resampled_atlases,
+        subj_data["bold"],
+        group_mask,
+        standardize,
+        smoothing_fwhm,
+        connectome_path,
+        analysis_level,
+    )

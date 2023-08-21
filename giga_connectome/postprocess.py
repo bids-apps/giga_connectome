@@ -96,9 +96,7 @@ def run_postprocessing_dataset(
                 # dump to h5
                 flag = _set_file_flag(output_path)
                 with h5py.File(output_path, flag) as f:
-                    group = _fetch_h5_group(
-                        f, subject, session, analysis_level
-                    )
+                    group = _fetch_h5_group(f, subject, session)
                     timeseries_dset = group.create_dataset(
                         f"{attribute_name}_timeseries", data=time_series_atlas
                     )
@@ -192,31 +190,23 @@ def _set_file_flag(output_path: Path) -> str:
 
 
 def _fetch_h5_group(
-    f: h5py.File, subject: str, session: str, analysis_level: str
+    f: h5py.File, subject: str, session: str
 ) -> Union[h5py.File, h5py.Group]:
     """Determine the level of grouping based on BIDS standard."""
-    if analysis_level == "group":
-        if subject not in f:
-            return (
-                f.create_group(f"{subject}/{session}")
-                if session
-                else f.create_group(f"{subject}")
-            )
-        elif session:
-            return (
-                f[f"{subject}"].create_group(f"{session}")
-                if session not in f[f"{subject}"]
-                else f[f"{subject}/{session}"]
-            )
-        else:
-            return f[f"{subject}"]
-    # subject level
-    if not session:
-        return f
-    elif session not in f:
-        return f.create_group(f"{session}")
+    if subject not in f:
+        return (
+            f.create_group(f"{subject}/{session}")
+            if session
+            else f.create_group(f"{subject}")
+        )
+    elif session:
+        return (
+            f[f"{subject}"].create_group(f"{session}")
+            if session not in f[f"{subject}"]
+            else f[f"{subject}/{session}"]
+        )
     else:
-        return f[f"{session}"]
+        return f[f"{subject}"]
 
 
 def _get_masker(atlas_path: Path) -> Union[NiftiLabelsMasker, NiftiMapsMasker]:
