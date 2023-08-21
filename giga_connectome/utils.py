@@ -1,11 +1,17 @@
-from typing import List
+from typing import List, Tuple, Union
 from pathlib import Path
 from nilearn.interfaces.bids import parse_bids_filename
 from bids.layout import Query
 from bids import BIDSLayout
 
 
-def get_bids_images(subjects, template, bids_dir, reindex_bids, bids_filters):
+def get_bids_images(
+    subjects: List[str],
+    template: str,
+    bids_dir: Path,
+    reindex_bids: bool,
+    bids_filters: dict,
+) -> Tuple[dict, BIDSLayout]:
     """
     Apply BIDS filter to the base filter we are using.
     Modified from fmripprep
@@ -60,7 +66,7 @@ def get_bids_images(subjects, template, bids_dir, reindex_bids, bids_filters):
     return subj_data, layout
 
 
-def check_filter(bids_filters):
+def check_filter(bids_filters: dict) -> dict:
     """Should only have bold and mask."""
     if not bids_filters:
         return {}
@@ -76,7 +82,7 @@ def check_filter(bids_filters):
     return bids_filters
 
 
-def _filter_pybids_none_any(dct):
+def _filter_pybids_none_any(dct: dict) -> dict:
     import bids
 
     return {
@@ -87,14 +93,14 @@ def _filter_pybids_none_any(dct):
     }
 
 
-def parse_bids_filter(value):
+def parse_bids_filter(value: Path) -> dict:
     from json import JSONDecodeError, loads
 
     if value:
-        if Path(value).exists():
+        if value.exists():
             try:
                 return loads(
-                    Path(value).read_text(),
+                    value.read_text(),
                     object_hook=_filter_pybids_none_any,
                 )
             except JSONDecodeError:
@@ -103,7 +109,7 @@ def parse_bids_filter(value):
             raise FileNotFoundError(f"Path does not exist: <{value}>.")
 
 
-def parse_standardize_options(standardize):
+def parse_standardize_options(standardize: str) -> Union[str, bool]:
     if standardize not in ["zscore", "psc"]:
         raise ValueError(f"{standardize} is not a valid standardize strategy.")
     if standardize == "psc":
