@@ -64,6 +64,7 @@ def workflow(args):
                 connectome_path,
                 analysis_level,
             )
+        return
 
     # group level
     subj_data, fmriprep_bids_layout = utils.get_bids_images(
