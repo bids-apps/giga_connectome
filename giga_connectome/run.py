@@ -97,6 +97,13 @@ def main(argv=None):
         "how-do-i-select-only-certain-files-to-be-input-to-fmriprep"
         "However, the query filed should always be 'bold'",
     )
+    parser.add_argument(
+        "--calculate-intranetwork-average-connectivity",
+        help="Calculate average connectivity within each network. This is a "
+        "python implementation of the matlab code from the NIAK connectome "
+        "pipeline. The default is False.",
+        action="store_true",
+    )
 
     args = parser.parse_args(argv)
 

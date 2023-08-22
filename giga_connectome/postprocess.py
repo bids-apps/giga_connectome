@@ -9,7 +9,7 @@ from nibabel import Nifti1Image
 from nilearn.connectome import ConnectivityMeasure
 from nilearn.maskers import NiftiMasker, NiftiLabelsMasker, NiftiMapsMasker
 from bids.layout import BIDSImageFile
-from giga_connectome import utils
+from giga_connectome import utils, average_conn
 
 
 def run_postprocessing_dataset(
@@ -21,6 +21,7 @@ def run_postprocessing_dataset(
     smoothing_fwhm: float,
     output_path: Path,
     analysis_level: str,
+    calculate_afc: bool = False,
 ) -> None:
     """
     Generate subject and group level timeseries and connectomes.
@@ -89,9 +90,33 @@ def run_postprocessing_dataset(
                 (
                     time_series_atlas,
                     correlation_matrix,
+                    masker_labels,
                 ) = _generate_subject_timeseries_connectome(
                     masker, correlation_measure, denoised_img
                 )
+
+                # average functional connectivity
+                if calculate_afc:
+                    # for average functional connectivity
+                    atlas_voxel_flatten = NiftiMasker(
+                        standardize=False, mask_img=group_mask
+                    ).fit_transform(masker.labels_img)
+                    size_parcels = average_conn.build_size_roi(
+                        atlas_voxel_flatten, masker_labels
+                    )
+                    var_parcels = time_series_atlas.var(axis=0)
+                    var_parcels = np.reshape(
+                        var_parcels, (var_parcels.shape[0], 1)
+                    )
+                    mask_empty = (size_parcels == 0) | (size_parcels == 1)
+                    afc = (
+                        (size_parcels * size_parcels) * var_parcels
+                        - size_parcels
+                    ) / (size_parcels * (size_parcels - 1))
+                    afc[mask_empty] = 0
+                    # replace the diagnonal with average functional correlation
+                    idx_diag = np.diag_indices(correlation_matrix.shape[0])
+                    correlation_matrix[idx_diag] = afc.reshape(-1)
                 connectomes[desc].append(correlation_matrix)
                 # dump to h5
                 flag = _set_file_flag(output_path)
@@ -136,7 +161,7 @@ def _generate_subject_timeseries_connectome(
     # float 32 instead of 64
     time_series_atlas = time_series_atlas.astype(np.float32)
     correlation_matrix = correlation_matrix.astype(np.float32)
-    return time_series_atlas, correlation_matrix
+    return time_series_atlas, correlation_matrix, masker.labels_
 
 
 def _denoise_nifti_voxel(

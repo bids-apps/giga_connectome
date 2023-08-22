@@ -58,6 +58,7 @@ def test_smoke(tmp_path, capsys):
             "--standardize",
             "zscore",
             "--reindex-bids",
+            "--calculate-intranetwork-average-connectivity",
             str(bids_dir),
             str(output_dir),
             "participant",
