@@ -56,8 +56,8 @@ def main(argv=None):
         help="The choice of atlas for time series extraction. Default atlas "
         "choices are: 'Schaefer20187Networks, 'MIST', 'DiFuMo'. User can pass "
         "a path to a json file containing configuration for their own choice "
-        "of atlas. The default is 'DiFuMo'.",
-        default="DiFuMo",
+        "of atlas. The default is 'MIST'.",
+        default="MIST",
     )
     parser.add_argument(
         "--denoise-strategy",
