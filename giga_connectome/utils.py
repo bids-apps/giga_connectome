@@ -60,7 +60,9 @@ def get_bids_images(
                 del queries[suffix][entity]
 
     subj_data = {
-        dtype: layout.get(**layout_get_kwargs, **query, scope="self")
+        dtype: layout.get(
+            **layout_get_kwargs, **query, invalid_filters="allow"
+        )
         for dtype, query in queries.items()
     }
     return subj_data, layout
