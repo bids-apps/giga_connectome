@@ -190,7 +190,7 @@ jobs:
           key: ds000017
       - name: Test the Docker image
         run: |
-          docker load -i /tmp/workspace/docker/image.tar
+          docker load -i ${HOME}/docker/image.tar
           docker run --rm --read-only bids/giga_connectome --help
       - name: Upload output artifact
         uses: actions/upload-artifact@v3
