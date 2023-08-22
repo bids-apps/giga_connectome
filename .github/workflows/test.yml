@@ -202,8 +202,7 @@ jobs:
             participant \
             -w /work \
             --participant_label 1 \
-            --reindex-bids \
-            --bids-filter-file /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data/bids_filter.json
+            --reindex-bids
 
       - name: Upload output artifact
         uses: actions/upload-artifact@v3
