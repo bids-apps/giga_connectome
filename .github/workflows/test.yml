@@ -193,7 +193,7 @@ jobs:
         run: |
           docker load -i ${HOME}/docker/image.tar
           docker run --rm --read-only \
-            -v /home/haoting/projects/giga_connectome/giga_connectome/data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface:/bids_dataset \
+            -v /home/runner/work/giga_connectome/giga_connectome/data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface:/bids_dataset \
             -v ./outputs:/outputs \
             -v ./outputs/working_dir:/work \
             bids/giga_connectome \
