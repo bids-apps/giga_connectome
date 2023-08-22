@@ -185,7 +185,7 @@ jobs:
           key: ds000017
       - name: Test the Docker image
         run: |
-          docker run -ti --rm --read-only \
+          docker run --rm --read-only \
             -v /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface/:/bids_dataset \
             -v ./outputs:/outputs \
             -v ./outputs/working_dir:/work \
@@ -195,7 +195,7 @@ jobs:
             participant \
             -w /work \
             --participant_label 1 \
-            --bids-filter-file /bids_dataset/code/bids_filter.json \
+            --bids-filter-file /bids_dataset/code/bids_filter.json
       - name: Upload output artifact
         uses: actions/upload-artifact@v3
         with:
