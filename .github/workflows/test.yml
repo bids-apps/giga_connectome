@@ -193,7 +193,7 @@ jobs:
         run: |
           docker load -i ${HOME}/docker/image.tar
           docker run --rm --read-only \
-            -v /home/runner/work/giga_connectome/giga_connectome/data/test_data:/test_data \
+            -v /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data:/test_data \
             -v ./outputs:/outputs \
             -v ./outputs/working_dir:/work \
             bids/giga_connectome \
@@ -203,7 +203,7 @@ jobs:
             -w /work \
             --participant_label 1 \
             --reindex-bids \
-            --bids-filter-file /home/runner/work/giga_connectome/giga_connectome/data/test_data/bids_filter.json
+            --bids-filter-file /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data/bids_filter.json
 
       - name: Upload output artifact
         uses: actions/upload-artifact@v3
