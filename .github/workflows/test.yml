@@ -193,7 +193,7 @@ jobs:
         run: |
           docker load -i ${HOME}/docker/image.tar
           docker run --rm --read-only \
-            -v /home/haoting/projects/giga_auto_qc/giga_auto_qc/data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface:/bids_dataset \
+            -v /home/haoting/projects/giga_connectome/giga_connectome/data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface:/bids_dataset \
             -v ./outputs:/outputs \
             -v ./outputs/working_dir:/work \
             bids/giga_connectome \
@@ -202,7 +202,8 @@ jobs:
             participant \
             -w /work \
             --participant_label 1 \
-            --reindex-bids
+            --reindex-bids \
+            --bids-filter-file /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data/bids_filter_file.json \
 
       - name: Upload output artifact
         uses: actions/upload-artifact@v3
