@@ -188,15 +188,32 @@ jobs:
         with:
           path: /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data
           key: ds000017
+
       - name: Test the Docker image
         run: |
           docker load -i ${HOME}/docker/image.tar
-          docker run --rm --read-only bids/giga_connectome --help
+          docker run --rm --read-only \
+            -v /home/haoting/projects/giga_auto_qc/giga_auto_qc/data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface/:/bids_dataset \
+            -v ./outputs:/outputs \
+            -v ./outputs/working_dir:/work \
+            bids/giga_connectome \
+            /bids_dataset \
+            /outputs \
+            participant \
+            -w /work \
+            --participant_label 1 \
+            --reindex-bids
+
       - name: Upload output artifact
         uses: actions/upload-artifact@v3
         with:
           name: connectome
           path: ./outputs/
+      - name: Upload docker image artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: docker-image
+          path: ${HOME}/docker/image.tar
 
   # publish:
   #   runs-on: ubuntu-latest
