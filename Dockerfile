@@ -9,7 +9,7 @@ RUN apt-get update -qq && \
 
 ARG TEMPLATEFLOW_HOME="/templateflow"
 
-RUN pip3 install nilearn==0.9.2 templateflow pybids h5py tqdm&& \
+RUN pip3 install nilearn==0.9.2 templateflow pybids==1.15.6 h5py tqdm && \
     mkdir -p /code && mkdir -p /templateflow
 
 WORKDIR /code
