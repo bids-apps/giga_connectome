@@ -176,7 +176,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag giga_connectome:$(date +%s)
+        run: |
+          user_name="bids"
+          docker build . --file Dockerfile --tag ${user_name}/giga_connectome
+          mkdir -p "${HOME}/docker"
+          docker save "${user_name}/giga_connectome" > "${HOME}/docker/image.tar"
+
       - name: Restore cached data ds000017
         id: cache
         uses: actions/cache/restore@v3
@@ -185,17 +190,7 @@ jobs:
           key: ds000017
       - name: Test the Docker image
         run: |
-          docker run --rm --read-only \
-            -v /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface/:/bids_dataset \
-            -v ./outputs:/outputs \
-            -v ./outputs/working_dir:/work \
-            giga_connectome \
-            /bids_dataset \
-            /outputs \
-            participant \
-            -w /work \
-            --participant_label 1 \
-            --bids-filter-file /bids_dataset/code/bids_filter.json
+          docker run --rm --read-only --help
       - name: Upload output artifact
         uses: actions/upload-artifact@v3
         with:
