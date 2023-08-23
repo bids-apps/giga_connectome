@@ -1,9 +1,10 @@
 import argparse
 from pathlib import Path
 from giga_connectome.workflow import workflow
+from giga_connectome import __version__
 
 
-def main():
+def main(argv=None):
     """Entry point."""
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter,
@@ -32,6 +33,9 @@ def main():
         choices=["participant", "group"],
     )
     parser.add_argument(
+        "-v", "--version", action="version", version=__version__
+    )
+    parser.add_argument(
         "--participant_label",
         help="The label(s) of the participant(s) that should be analyzed. The "
         "label corresponds to sub-<participant_label> from the BIDS spec (so "
@@ -53,8 +57,8 @@ def main():
         help="The choice of atlas for time series extraction. Default atlas "
         "choices are: 'Schaefer20187Networks, 'MIST', 'DiFuMo'. User can pass "
         "a path to a json file containing configuration for their own choice "
-        "of atlas.",
-        default="DiFuMo",
+        "of atlas. The default is 'MIST'.",
+        default="MIST",
     )
     parser.add_argument(
         "--denoise-strategy",
@@ -62,8 +66,28 @@ def main():
         "choices are: 'simple', 'simple+gsr', 'scrubbing.2', "
         "'scrubbing.2+gsr', 'scrubbing.5', 'scrubbing.5+gsr', 'acompcor50', "
         "'icaaroma'. User can pass a path to a json file containing "
-        "configuration for their own choice of denoising strategy.",
+        "configuration for their own choice of denoising strategy. The default"
+        "is 'simple'.",
         default="simple",
+    )
+    parser.add_argument(
+        "--standardize",
+        help="The choice of signal standardization. The choices are z score "
+        "or percent signal change (psc). The default is 'zscore'.",
+        choices=["zscore", "psc"],
+        default="zscore",
+    )
+    parser.add_argument(
+        "--smoothing_fwhm",
+        help="Size of the full-width at half maximum in millimeters of "
+        "the spatial smoothing to apply to the signal. The default is 5.0.",
+        type=float,
+        default=5.0,
+    )
+    parser.add_argument(
+        "--reindex-bids",
+        help="Reindex BIDS data set, even if layout has already been created.",
+        action="store_true",
     )
     parser.add_argument(
         "--bids-filter-file",
@@ -71,8 +95,17 @@ def main():
         help="A JSON file describing custom BIDS input filters using PyBIDS."
         "We use the same format as described in fMRIPrep documentation: "
         "https://fmriprep.org/en/latest/faq.html#"
-        "how-do-i-select-only-certain-files-to-be-input-to-fmriprep",
+        "how-do-i-select-only-certain-files-to-be-input-to-fmriprep"
+        "However, the query filed should always be 'bold'",
     )
-    args = parser.parse_args()
+
+    args = parser.parse_args(argv)
 
     workflow(args)
+
+
+if __name__ == "__main__":
+    raise RuntimeError(
+        "run.py should not be run directly;\n"
+        "Please `pip install` and use the `giga_connectome` command"
+    )

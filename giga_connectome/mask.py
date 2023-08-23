@@ -1,72 +1,61 @@
 import os
 import re
-import json
-from typing import Optional, Union, List
+from typing import Optional, Union, List, Tuple
+from bids.layout import BIDSImageFile
 
 from pathlib import Path
-from tqdm import tqdm
 import nibabel as nib
-
 from nilearn.masking import compute_multi_epi_mask
-from nilearn.image import resample_to_img, new_img_like, get_data, math_img
+from nilearn.image import (
+    resample_to_img,
+    new_img_like,
+    get_data,
+    math_img,
+    load_img,
+)
 from nibabel import Nifti1Image
+import numpy as np
 from scipy.ndimage import binary_closing
 
-from pkg_resources import resource_filename
+from giga_connectome.atlas import resample_atlas_collection
 
 
-PRESET_ATLAS = ["DiFuMo", "MIST", "Schaefer20187Networks"]
-
-
-def resample_atlas_collection(
+def generate_gm_mask_atlas(
+    working_dir: Path,
+    atlas: dict,
     template: str,
-    atlas_config: dict,
-    group_mask_dir: Path,
-    group_mask: Nifti1Image,
-) -> List[Path]:
-    """
-    Resample a atlas collection to group grey matter mask.
+    masks: List[BIDSImageFile],
+) -> Tuple[Path, List[Path]]:
+    """ """
+    # check masks; isolate this part and make sure to make it a validate
+    # templateflow template with a config file
 
-    Parameters
-    ----------
+    group_mask_dir = working_dir / "groupmasks" / f"tpl-{template}"
+    group_mask_dir.mkdir(exist_ok=True, parents=True)
 
-    template: str
-        Templateflow template name. This template should match the template of
-        `all_masks`.
-
-    atlas_config: dict
-        Atlas name. Currently support Schaefer20187Networks, MIST, DiFuMo.
-
-    group_mask_dir: pathlib.Path
-        Path to where the outputs are saved.
-
-    group_mask : nibabel.nifti1.Nifti1Image
-        EPI (grey matter) mask for the current group of subjects.
-
-    Returns
-    -------
-
-    List of pathlib.Path
-        Paths to atlases sampled to group level grey matter mask.
-    """
-    print("Resample atlas to group grey matter mask.")
-    resampled_atlases = []
-    for desc in tqdm(atlas_config["file_paths"]):
-        parcellation = atlas_config["file_paths"][desc]
-        parcellation_resampled = resample_to_img(
-            parcellation, group_mask, interpolation="nearest"
+    group_mask, resampled_atlases = None, None
+    if group_mask_dir.exists():
+        group_mask, resampled_atlases = _check_pregenerated_masks(
+            template, working_dir, atlas
         )
-        filename = (
-            f"tpl-{template}_"
-            f"atlas-{atlas_config['name']}_"
-            "res-dataset_"
-            f"desc-{desc}_"
-            f"{atlas_config['type']}.nii.gz"
+
+    if not group_mask:
+        # grey matter group mask is only supplied in MNI152NLin2009c(A)sym
+        group_mask_nii = generate_group_mask(
+            [m.path for m in masks], "MNI152NLin2009cAsym"
         )
-        save_path = group_mask_dir / filename
-        nib.save(parcellation_resampled, save_path)
-        resampled_atlases.append(save_path)
-    return resampled_atlases
+        current_file_name = (
+            f"tpl-{template}_res-dataset_label-GM_desc-group_mask.nii.gz"
+        )
+        group_mask = group_mask_dir / current_file_name
+        nib.save(group_mask_nii, group_mask)
+
+    if not resampled_atlases:
+        resampled_atlases = resample_atlas_collection(
+            template, atlas, group_mask_dir, group_mask
+        )
+
+    return group_mask, resampled_atlases
 
 
 def generate_group_mask(
@@ -74,6 +63,7 @@ def generate_group_mask(
     template: str = "MNI152NLin2009cAsym",
     templateflow_dir: Optional[Path] = None,
     n_iter: int = 2,
+    verbose: int = 1,
 ) -> Nifti1Image:
     """
     Generate a group EPI grey matter mask, and overlaid with a MNI grey
@@ -98,6 +88,9 @@ def generate_group_mask(
         Number of repetitions of dilation and erosion steps performed in
         scipy.ndimage.binary_closing function.
 
+    verbose :
+        Level of verbosity.
+
     Keyword Arguments
     -----------------
     Used to filter the cirret
@@ -109,7 +102,12 @@ def generate_group_mask(
     nibabel.nifti1.Nifti1Image
         EPI (grey matter) mask for the current group of subjects.
     """
-    # TODO: subject native space grey matter mask???
+    if verbose > 1:
+        print(f"Found {len(imgs)} masks")
+    if exclude := _check_mask_affine(imgs, verbose):
+        imgs, __annotations__ = _get_consistent_masks(imgs, exclude)
+        if verbose > 1:
+            print(f"Remaining: {len(imgs)} masks")
 
     # templateflow environment setting to get around network issue
     if templateflow_dir and templateflow_dir.exists():
@@ -172,89 +170,139 @@ def generate_group_mask(
     return math_img("img1 & img2", img1=group_epi_mask, img2=mni_gm_mask_img)
 
 
-def load_atlas_setting(atlas: Union[str, Path, dict]):
-    """
-    Load atlas details for templateflow api to fetch.
-    The setting file can be configured for atlases not included in the
-    templateflow collections, but user has to organise their files to
-    templateflow conventions to use the tool.
+def _get_consistent_masks(
+    mask_imgs: List[Union[Path, str, Nifti1Image]], exclude: List[int]
+) -> Tuple[List[int], List[str]]:
+    """Create a list of masks that has the same affine.
 
     Parameters
     ----------
 
-    atlas: str or pathlib.Path or dict
-        Path to atlas configuration json file or a python dictionary.
-        It should contain the following fields:
-            - name : name of the atlas.
-            - parameters : BIDS entities that fits templateflow conventions
-            except desc.
-            - desc : templateflow entities description. Can be a list if user
-            wants to include multiple resolutions of the atlas.
-            - templateflow_dir : Path to templateflow director.
-                If null, use the system default.
+    mask_imgs :
+        The original list of functional masks
+
+    exclude :
+        List of index to exclude.
 
     Returns
     -------
-    dict
-        Path to the atlas files.
+    List of str
+        Functional masks with the same affine.
+
+    List of str
+        Identidiers of scans with a different affine.
     """
-    atlas_config = _load_config(atlas)
-    print(atlas_config)
+    weird_mask_identifiers = []
+    odd_masks = np.array(mask_imgs)[np.array(exclude)]
+    odd_masks = odd_masks.tolist()
+    for odd_file in odd_masks:
+        identifier = Path(odd_file).name.split("_space")[0]
+        weird_mask_identifiers.append(identifier)
+    cleaned_func_masks = set(mask_imgs) - set(odd_masks)
+    cleaned_func_masks = list(cleaned_func_masks)
+    return cleaned_func_masks, weird_mask_identifiers
 
-    # load template flow
-    templateflow_dir = atlas_config.get("templateflow_dir")
-    if isinstance(templateflow_dir, str):
-        templateflow_dir = Path(templateflow_dir)
-        if templateflow_dir.exists():
-            os.environ["TEMPLATEFLOW_HOME"] = str(templateflow_dir.resolve())
-        else:
-            raise FileNotFoundError
 
-    import templateflow
+def _check_mask_affine(
+    mask_imgs: List[Union[Path, str, Nifti1Image]], verbose: int = 1
+) -> Union[list, None]:
+    """Given a list of input mask images, show the most common affine matrix
+    and subjects with different values.
 
-    if isinstance(atlas_config["desc"], str):
-        desc = [atlas_config["desc"]]
+    Parameters
+    ----------
+    mask_imgs : :obj:`list` of Niimg-like objects
+        See :ref:`extracting_data`.
+        3D or 4D EPI image with same affine.
+
+    verbose :
+        Level of verbosity.
+
+    Returns
+    -------
+
+    List or None
+        Index of masks with odd affine matrix. Return None when all masks have
+        the same affine matrix.
+    """
+    # save all header and affine info in hashable type...
+    header_info = {"affine": []}
+    key_to_header = {}
+    for this_mask in mask_imgs:
+        img = load_img(this_mask)
+        affine = img.affine
+        affine_hashable = str(affine)
+        header_info["affine"].append(affine_hashable)
+        if affine_hashable not in key_to_header:
+            key_to_header[affine_hashable] = affine
+
+    if isinstance(mask_imgs[0], Nifti1Image):
+        mask_imgs = np.arange(len(mask_imgs))
     else:
-        desc = atlas_config["desc"]
-
-    parcellation = {}
-    for d in desc:
-        p = templateflow.api.get(
-            **atlas_config["parameters"],
-            raise_empty=True,
-            desc=d,
-            extension="nii.gz",
+        mask_imgs = np.array(mask_imgs)
+    # get most common values
+    common_affine = max(
+        set(header_info["affine"]), key=header_info["affine"].count
+    )
+    if verbose > 0:
+        print(
+            f"We found {len(set(header_info['affine']))} unique affine "
+            f"matrices. The most common one is "
+            f"{key_to_header[common_affine]}"
         )
-        parcellation[d] = p
-    return {
-        "name": atlas_config["name"],
-        "file_paths": parcellation,
-        "type": atlas_config["parameters"]["suffix"],
-    }
+    odd_balls = set(header_info["affine"]) - {common_affine}
+    if not odd_balls:
+        return None
 
-
-def _load_config(atlas: Union[str, Path, dict]) -> dict:
-    """Load the configuration file."""
-    if isinstance(atlas, (str, Path)):
-        if atlas in PRESET_ATLAS:
-            config_path = resource_filename(
-                "giga_connectome", f"data/atlas/{atlas}.json"
+    exclude = []
+    for ob in odd_balls:
+        ob_index = [
+            i for i, aff in enumerate(header_info["affine"]) if aff == ob
+        ]
+        if verbose > 1:
+            print(
+                "The following subjects has a different affine matrix "
+                f"({key_to_header[ob]}) comparing to the most common value: "
+                f"{mask_imgs[ob_index]}."
             )
-        elif Path(atlas).exists():
-            config_path = Path(atlas)
+        exclude += ob_index
+    if verbose > 0:
+        print(
+            f"{len(exclude)} out of {len(mask_imgs)} has "
+            "different affine matrix. Ignore when creating group mask."
+        )
+    return sorted(exclude)
 
-        with open(config_path, "r") as file:
-            atlas_config = json.load(file)
-    elif isinstance(atlas, dict):
-        if "parameters" in atlas:
-            atlas_config = atlas.copy()
-        else:
-            raise ValueError(
-                "Invalid dictionary input. Input should"
-                " contain the following keys: 'name', "
-                "'parameters', 'templateflow_dir'. Found "
-                f"{list(atlas.keys())}"
-            )
+
+def _check_pregenerated_masks(template, working_dir, atlas):
+    """Check if the working directory is populated with needed files."""
+    output_dir = working_dir / "groupmasks" / f"tpl-{template}"
+    group_mask = (
+        output_dir
+        / f"tpl-{template}_res-dataset_label-GM_desc-group_mask.nii.gz"
+    )
+    if not group_mask.exists():
+        group_mask = None
     else:
-        raise ValueError(f"Invalid input: {atlas}")
-    return atlas_config
+        print(f"Found pregenerated group level grey matter mask: {group_mask}")
+
+    # atlas
+    resampled_atlases = []
+    for desc in atlas["file_paths"]:
+        filename = (
+            f"tpl-{template}_"
+            f"atlas-{atlas['name']}_"
+            "res-dataset_"
+            f"desc-{desc}_"
+            f"{atlas['type']}.nii.gz"
+        )
+        resampled_atlases.append(output_dir / filename)
+    all_exist = [file_path.exists() for file_path in resampled_atlases]
+    if not all(all_exist):
+        resampled_atlases = None
+    else:
+        print(
+            f"Found resampled atlases: {resampled_atlases}. Skipping group "
+            "level mask generation step."
+        )
+    return group_mask, resampled_atlases
