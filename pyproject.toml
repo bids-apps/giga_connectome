@@ -35,10 +35,18 @@ dev = [
   "black",
   "pre-commit",
   "giga_connectome[test]",
+  "giga_connectome[docs]",
 ]
 test = [
   "pytest",
   "pytest-cov",
+]
+docs = [
+  "sphinx",
+  "sphinx_rtd_theme",
+  "myst-parser",
+  "sphinx-autodoc",
+  "sphinx-autosummary",
 ]
 # Aliases
 tests = ["giga_connectome[test]"]
