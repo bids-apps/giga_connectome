@@ -9,8 +9,8 @@ def main(argv=None):
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter,
         description=(
-            "Generate connectome based on denoising strategy for "
-            "fmriprep processed dataset."
+            "Generate denoised timeseries and Pearson's correlation based "
+            "connectomes from fmriprep processed dataset."
         ),
     )
     parser.add_argument(
@@ -98,10 +98,10 @@ def main(argv=None):
         "However, the query filed should always be 'bold'",
     )
     parser.add_argument(
-        "--calculate-intranetwork-average-connectivity",
-        help="Calculate average connectivity within each network. This is a "
+        "--calculate-intranetwork-average-correlation",
+        help="Calculate average correlation within each network. This is a "
         "python implementation of the matlab code from the NIAK connectome "
-        "pipeline. The default is False.",
+        "pipeline (option A). The default is False.",
         action="store_true",
     )
 

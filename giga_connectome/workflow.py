@@ -21,7 +21,9 @@ def workflow(args):
     analysis_level = args.analysis_level
     standardize = utils.parse_standardize_options(args.standardize)
     smoothing_fwhm = args.smoothing_fwhm
-    calculate_afc = args.calculate_intranetwork_average_connectivity
+    calculate_average_correlation = (
+        args.calculate_intranetwork_average_correlation
+    )
     bids_filters = utils.parse_bids_filter(args.bids_filter_file)
 
     subjects = utils.get_subject_lists(args.participant_label, bids_dir)
@@ -64,7 +66,7 @@ def workflow(args):
                 smoothing_fwhm,
                 connectome_path,
                 analysis_level,
-                calculate_afc,
+                calculate_average_correlation,
             )
         return
 
@@ -90,5 +92,5 @@ def workflow(args):
         smoothing_fwhm,
         connectome_path,
         analysis_level,
-        calculate_afc,
+        calculate_average_correlation,
     )

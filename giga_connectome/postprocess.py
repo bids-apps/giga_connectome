@@ -1,15 +1,15 @@
-from typing import Union, List, Optional
+from typing import Union, List
 from pathlib import Path
 
 import h5py
 from tqdm import tqdm
-import pandas as pd
 import numpy as np
-from nibabel import Nifti1Image
 from nilearn.connectome import ConnectivityMeasure
-from nilearn.maskers import NiftiMasker, NiftiLabelsMasker, NiftiMapsMasker
+from nilearn.maskers import NiftiLabelsMasker, NiftiMapsMasker
 from bids.layout import BIDSImageFile
-from giga_connectome import utils, average_conn
+from giga_connectome import utils
+from giga_connectome.connectome import generate_timeseries_connectomes
+from giga_connectome.denoise import denoise_nifti_voxel
 
 
 def run_postprocessing_dataset(
@@ -21,7 +21,7 @@ def run_postprocessing_dataset(
     smoothing_fwhm: float,
     output_path: Path,
     analysis_level: str,
-    calculate_afc: bool = False,
+    calculate_average_correlation: bool = False,
 ) -> None:
     """
     Generate subject and group level timeseries and connectomes.
@@ -61,6 +61,12 @@ def run_postprocessing_dataset(
     output_path:
         Full path to output file, named in the following format:
             output_dir / atlas-<atlas>_desc-<strategy_name>.h5
+
+    analysis_level : str
+        Level of analysis, either "participant" or "group".
+
+    calculate_average_correlation : bool
+        Whether to calculate average correlation within each parcel.
     """
     atlas = output_path.name.split("atlas-")[-1].split("_")[0]
     atlas_maskers, connectomes = {}, {}
@@ -72,68 +78,51 @@ def run_postprocessing_dataset(
         connectomes[desc] = []
 
     correlation_measure = ConnectivityMeasure(
-        kind="correlation", discard_diagonal=True
+        kind="correlation", vectorize=False, discard_diagonal=False
     )
 
     # transform data
     print("processing subjects")
     for img in tqdm(images):
         # process timeseries
-        denoised_img = _denoise_nifti_voxel(
+        denoised_img = denoise_nifti_voxel(
             strategy, group_mask, standardize, smoothing_fwhm, img.path
         )
         # parse file name
         subject, session, specifier = utils.parse_bids_name(img.path)
         for desc, masker in atlas_maskers.items():
             attribute_name = f"{subject}_{specifier}_atlas-{atlas}_desc-{desc}"
-            if denoised_img:
-                (
-                    time_series_atlas,
-                    correlation_matrix,
-                    masker_labels,
-                ) = _generate_subject_timeseries_connectome(
-                    masker, correlation_measure, denoised_img
-                )
-
-                # average functional connectivity
-                if calculate_afc:
-                    # for average functional connectivity
-                    atlas_voxel_flatten = NiftiMasker(
-                        standardize=False, mask_img=group_mask
-                    ).fit_transform(masker.labels_img)
-                    size_parcels = average_conn.build_size_roi(
-                        atlas_voxel_flatten, masker_labels
-                    )
-                    var_parcels = time_series_atlas.var(axis=0)
-                    var_parcels = np.reshape(
-                        var_parcels, (var_parcels.shape[0], 1)
-                    )
-                    mask_empty = (size_parcels == 0) | (size_parcels == 1)
-                    afc = (
-                        (size_parcels * size_parcels) * var_parcels
-                        - size_parcels
-                    ) / (size_parcels * (size_parcels - 1))
-                    afc[mask_empty] = 0
-                    # replace the diagnonal with average functional correlation
-                    idx_diag = np.diag_indices(correlation_matrix.shape[0])
-                    correlation_matrix[idx_diag] = afc.reshape(-1)
-                connectomes[desc].append(correlation_matrix)
-                # dump to h5
-                flag = _set_file_flag(output_path)
-                with h5py.File(output_path, flag) as f:
-                    group = _fetch_h5_group(f, subject, session)
-                    timeseries_dset = group.create_dataset(
-                        f"{attribute_name}_timeseries", data=time_series_atlas
-                    )
-                    timeseries_dset.attrs["RepetitionTime"] = img.entities[
-                        "RepetitionTime"
-                    ]
-                    group.create_dataset(
-                        f"{attribute_name}_connectome", data=correlation_matrix
-                    )
-            else:
+            if not denoised_img:
                 time_series_atlas, correlation_matrix = None, None
                 print(f"{attribute_name}: no volume after scrubbing")
+                continue
+
+            # extract timeseries and connectomes
+            (
+                correlation_matrix,
+                time_series_atlas,
+            ) = generate_timeseries_connectomes(
+                masker,
+                denoised_img,
+                group_mask,
+                correlation_measure,
+                calculate_average_correlation,
+            )
+            connectomes[desc].append(correlation_matrix)
+
+            # dump to h5
+            flag = _set_file_flag(output_path)
+            with h5py.File(output_path, flag) as f:
+                group = _fetch_h5_group(f, subject, session)
+                timeseries_dset = group.create_dataset(
+                    f"{attribute_name}_timeseries", data=time_series_atlas
+                )
+                timeseries_dset.attrs["RepetitionTime"] = img.entities[
+                    "RepetitionTime"
+                ]
+                group.create_dataset(
+                    f"{attribute_name}_connectome", data=correlation_matrix
+                )
 
     if analysis_level == "group":
         print("create group connectome")
@@ -146,64 +135,6 @@ def run_postprocessing_dataset(
                     f"atlas-{atlas}_desc-{desc}_connectome",
                     data=average_connectome,
                 )
-
-
-def _generate_subject_timeseries_connectome(
-    masker: Union[NiftiMapsMasker, NiftiLabelsMasker],
-    correlation_measure: ConnectivityMeasure,
-    denoised_img: Nifti1Image,
-) -> List[np.array]:
-    """Generate connectome and timeseries per nifti image."""
-    time_series_atlas = masker.fit_transform(denoised_img)
-    correlation_matrix = correlation_measure.fit_transform(
-        [time_series_atlas]
-    )[0]
-    # float 32 instead of 64
-    time_series_atlas = time_series_atlas.astype(np.float32)
-    correlation_matrix = correlation_matrix.astype(np.float32)
-    return time_series_atlas, correlation_matrix, masker.labels_
-
-
-def _denoise_nifti_voxel(
-    strategy: dict,
-    group_mask: Union[str, Path],
-    standardize: Union[str, bool],
-    smoothing_fwhm: float,
-    img: str,
-) -> Nifti1Image:
-    """Denoise voxel level data per nifti image."""
-    cf, sm = strategy["function"](img, **strategy["parameters"])
-    if _check_exclusion(cf, sm):
-        return None
-
-    # if high pass filter is not applied through cosines regressors,
-    # then detrend
-    detrend = "cosine00" not in cf.columns
-    group_masker = NiftiMasker(
-        mask_img=group_mask,
-        detrend=detrend,
-        standardize=standardize,
-        smoothing_fwhm=smoothing_fwhm,
-    )
-
-    time_series_voxel = group_masker.fit_transform(
-        img, confounds=cf, sample_mask=sm
-    )
-    denoised_img = group_masker.inverse_transform(time_series_voxel)
-    return denoised_img
-
-
-def _check_exclusion(
-    reduced_confounds: pd.DataFrame, sample_mask: Optional[np.ndarray]
-) -> bool:
-    """For scrubbing based strategy, check if regression can be performed."""
-    if sample_mask is not None:
-        kept_vol = len(sample_mask)
-    else:
-        kept_vol = reduced_confounds.shape[0]
-    # if more noise regressors than volume, this data is not denoisable
-    remove = kept_vol < reduced_confounds.shape[1]
-    return remove
 
 
 def _set_file_flag(output_path: Path) -> str:
