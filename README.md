@@ -1,6 +1,5 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![codecov](https://codecov.io/github/SIMEXP/giga_connectome/branch/main/graph/badge.svg?token=TYE4UURNTQ)](https://codecov.io/github/SIMEXP/giga_auto_qc)
-
+[![codecov](https://codecov.io/gh/SIMEXP/giga_connectome/branch/main/graph/badge.svg?token=P4EGV7NKZ8)](https://codecov.io/gh/SIMEXP/giga_connectome)
 # giga_connectome
 
 This is a BIDS-App to extract signal from a parcellation with nilearn,
