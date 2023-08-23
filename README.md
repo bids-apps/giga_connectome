@@ -16,57 +16,54 @@ The workflow comes with several built in denoising strategies and three choices 
 (MIST, Schaefer 7 networks, DiFuMo).
 Users can customise their own strategies and atlases using the configuration json files.
 
+## Quick start
+
+Clone the project and build from `Dockerfile` (Recommended)
+
+```
+git clone git@github.com:SIMEXP/giga_connectome.git
+cd giga_connectome
+docker build . --file Dockerfile
+docker run -ti --rm --read-only giga_connectome --help
+```
+
 ## Usage
 
 ```
-giga_connectome [-h] [-v] [--participant_label PARTICIPANT_LABEL [PARTICIPANT_LABEL ...]]
-                [-w WORK_DIR] [--atlas ATLAS] [--denoise-strategy DENOISE_STRATEGY]
-                [--standardize {zscore,psc}] [--smoothing_fwhm SMOOTHING_FWHM]
-                bids_dir output_dir {participant,group}
+usage: giga_connectome [-h] [-v] [--participant_label PARTICIPANT_LABEL [PARTICIPANT_LABEL ...]] [-w WORK_DIR] [--atlas ATLAS]
+                       [--denoise-strategy DENOISE_STRATEGY] [--standardize {zscore,psc}] [--smoothing_fwhm SMOOTHING_FWHM] [--reindex-bids]
+                       [--bids-filter-file BIDS_FILTER_FILE]
+                       bids_dir output_dir {participant,group}
 
 Generate connectome based on denoising strategy for fmriprep processed dataset.
 
 positional arguments:
-  bids_dir              The directory with the input dataset (e.g. fMRIPrep derivative)formatted
-                        according to the BIDS standard.
+  bids_dir              The directory with the input dataset (e.g. fMRIPrep derivative)formatted according to the BIDS standard.
   output_dir            The directory where the output files should be stored.
-  {participant,group}   Level of the analysis that will be performed.
+  {participant,group}   Level of the analysis that will be performed. Only group level is allowed as we need to generate a dataset inclusive brain mask.
 
 optional arguments:
   -h, --help            show this help message and exit
   -v, --version         show program's version number and exit
   --participant_label PARTICIPANT_LABEL [PARTICIPANT_LABEL ...]
-                        The label(s) of the participant(s) that should be analyzed. The label
-                        corresponds to sub-<participant_label> from the BIDS spec
-                        (so it does not include 'sub-'). If this parameter is not provided all
-                        subjects should be analyzed. Multiple participants can be specified with
-                        a space separated list.
+                        The label(s) of the participant(s) that should be analyzed. The label corresponds to sub-<participant_label> from the BIDS spec (so it does not include 'sub-'). If this parameter is not provided all subjects should be analyzed. Multiple participants can be specified with a space separated list.
   -w WORK_DIR, --work-dir WORK_DIR
                         Path where intermediate results should be stored.
-  --atlas ATLAS         The choice of atlas for time series extraction. Default atlas choices
-                        are: 'Schaefer20187Networks, 'MIST', 'DiFuMo'. User can pass a path to a
-                        json file containing configuration for their own choice of atlas.
-                        The default is 'DiFuMo'.
+  --atlas ATLAS         The choice of atlas for time series extraction. Default atlas choices are: 'Schaefer20187Networks, 'MIST', 'DiFuMo'. User can pass a path to a json file containing configuration for their own choice of atlas. The default is 'MIST'.
   --denoise-strategy DENOISE_STRATEGY
-                        The choice of post-processing for denoising. The default choices are:
-                        'simple', 'simple+gsr', 'scrubbing.2', 'scrubbing.2+gsr', 'scrubbing.5',
-                        'scrubbing.5+gsr', 'acompcor50', 'icaaroma'.
-                        User can pass a path to a json file containing configuration for their
-                        own choice of denoising strategy.
-                        The defaultis 'simple'.
+                        The choice of post-processing for denoising. The default choices are: 'simple', 'simple+gsr', 'scrubbing.2', 'scrubbing.2+gsr', 'scrubbing.5', 'scrubbing.5+gsr', 'acompcor50', 'icaaroma'. User can pass a path to a json file containing configuration for their own choice of denoising strategy. The defaultis 'simple'.
   --standardize {zscore,psc}
-                        The choice of signal standardization. The choices are z score or
-                        percent signal change (psc).
-                        The default is 'zscore'.
+                        The choice of signal standardization. The choices are z score or percent signal change (psc). The default is 'zscore'.
   --smoothing_fwhm SMOOTHING_FWHM
-                        Size of the full-width at half maximum in millimeters of the spatial
-                        smoothing to apply to the signal.
-                        The default is 5.0.
+                        Size of the full-width at half maximum in millimeters of the spatial smoothing to apply to the signal. The default is 5.0.
+  --reindex-bids        Reindex BIDS data set, even if layout has already been created.
+  --bids-filter-file BIDS_FILTER_FILE
+                        A JSON file describing custom BIDS input filters using PyBIDS.We use the same format as described in fMRIPrep documentation: https://fmriprep.org/en/latest/faq.html#how-do-i-select-only-certain-files-to-be-input-to-fmriprepHowever, the query filed should always be 'bold'
 
 ```
 
 When performing `participant` level analysis, the output is a HDF5 file per participant that was passed to `--participant_label` or all subjects under `bids_dir`.
-The output file name is: `sub-<participant_id>[_ses-<session>]_task-<task>[_run-<run>]_space-<template>_atlas-<atlas_name>_desc-<denoising_strategy>.h5`
+The output file name is: `sub-<participant_id>_atlas-<atlas_name>_desc-<denoising_strategy>.h5`
 
 When performing `group` level analysis, the output is a HDF5 file per participant that was passed to `--participant_label` or all subjects under `bids_dir`.
 The output file name is: `atlas-<atlas_name>_desc-<denoising_strategy>.h5`
@@ -140,7 +137,9 @@ See examples in `giga_connectome/data/atlas`.
 
 4. Use the new input specific grey matter mask and atlas to extract time series and connectomes for each subject.
 
-5. Create a group average connectome (if analysis level is `group`).
+5. Calculate intranetwork correlation of each parcel. The values replace the diagonal of the connectomes.
+
+6. Create a group average connectome (if analysis level is `group`).
 
 ## How to report errors
 
@@ -155,6 +154,12 @@ If you submit a new pull request please be as detailed as possible in your comme
 
 ## Installation
 
+Build from `Dockerfile` (Recommended):
+```
+docker build . --file Dockerfile
+```
+
+Install the project in a Python environment:
 ```
 pip install .
 ```
@@ -163,40 +168,6 @@ For development:
 ```
 pip install -e .[dev]
 ```
-
-## Usage
-
-```
-giga_connectome [-h] [--participant_label PARTICIPANT_LABEL [PARTICIPANT_LABEL ...]] [-w WORK_DIR] [--atlas ATLAS] [--denoise-strategy DENOISE_STRATEGY] [--bids-filter-file BIDS_FILTER_FILE] bids_dir output_dir {participant,group}
-
-Generate connectome based on denoising strategy for fmriprep processed dataset.
-
-positional arguments:
-  bids_dir              The directory with the input dataset (e.g. fMRIPrep derivative)formatted according to the BIDS standard.
-  output_dir            The directory where the output files should be stored.
-  {participant,group}   Level of the analysis that will be performed.
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --participant_label PARTICIPANT_LABEL [PARTICIPANT_LABEL ...]
-                        The label(s) of the participant(s) that should be analyzed. The label corresponds to sub-<participant_label> from the BIDS spec (so it does not include 'sub-'). If this parameter is not provided all subjects should be analyzed. Multiple participants can be specified with a space separated list.
-  -w WORK_DIR, --work-dir WORK_DIR
-                        Path where intermediate results should be stored.
-  --atlas ATLAS         The choice of atlas for time series extraction. Default atlas choices are: 'Schaefer20187Networks, 'MIST', 'DiFuMo'. User can pass a path to a json file containing configuration for their own choice of atlas.
-  --denoise-strategy DENOISE_STRATEGY
-                        The choice of post-processing for denoising. The default choices are: 'simple', 'simple+gsr', 'scrubbing.2', 'scrubbing.2+gsr', 'scrubbing.5', 'scrubbing.5+gsr', 'acompcor50', 'icaaroma'. User can pass a path to a json file containing configuration for their own choice of denoising strategy.
-
-```
-
-When performing `participant` level analysis, the output is a HDF5 file per participant that was
-passed to `--participant_label` or all subjects under `bids_dir`.
-The output file name is:
-`sub-<participant_id>[_ses-<session>]_task-<task>[_run-<run>]_space-<template>_atlas-<atlas_name>_desc-<denoising_strategy>.h5`
-
-When performing `group` level analysis, the output is a HDF5 file per participant that was passed
-to `--participant_label` or all subjects under `bids_dir`.
-The output file name is: `atlas-<atlas_name>_desc-<denoising_strategy>.h5`
-The file will contain time series and connectomes of each subject, as well as group average connectomes.
 
 ## Acknowledgements
 
