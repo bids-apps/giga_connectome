@@ -26,7 +26,7 @@ def test_help(capsys):
     except SystemExit:
         pass
     captured = capsys.readouterr()
-    assert "Generate connectome" in captured.out
+    assert "Generate denoised timeseries" in captured.out
 
 
 @pytest.mark.smoke
