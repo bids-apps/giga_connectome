@@ -1,5 +1,17 @@
 # What’s new
 
+## 0.4.1dev
+
+Released MONTH YEAR
+
+### New
+
+- [DOCS] Improved documentation. (@htwangtw)
+
+### Fixes
+
+### Changes
+
 ## 0.4.0
 
 Released August 2023
