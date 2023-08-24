@@ -23,7 +23,14 @@ Users can customise their own strategies and atlases using the configuration jso
    usage.md
    workflow.md
    outputs.md
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Contribution and maintenance
+
+   contributing.md
    api.rst
+   changes.md
 
 Indices and tables
 ==================

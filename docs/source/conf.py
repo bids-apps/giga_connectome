@@ -36,3 +36,6 @@ exclude_patterns = []
 
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
+
+# -- Options for myst_parser -------------------------------------------------
+myst_enable_extensions = ["colon_fence"]
