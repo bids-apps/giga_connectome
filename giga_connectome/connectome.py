@@ -7,7 +7,7 @@ from nibabel import Nifti1Image
 
 
 def build_size_roi(mask, labels_roi):
-    """Extract labels and size of ROIs given a atlas.
+    """Extract labels and sizes of ROIs given an atlas.
     The atlas parcels must be discrete segmentations.
 
     Adapted from:
@@ -22,12 +22,12 @@ def build_size_roi(mask, labels_roi):
         positive integer).
 
     labels_roi : np.ndarray
-        Labels of of region I.
+        Labels of region I.
 
     Returns
     -------
     np.ndarray
-        Size of the ROI.
+        An array containing the sizes of the ROIs.
     """
 
     nb_roi = len(labels_roi)
@@ -45,7 +45,7 @@ def calculate_intranetwork_correlation(
     time_series_atlas: np.array,
     group_mask: Union[str, Path, Nifti1Image],
     atlas_image: Union[str, Path, Nifti1Image],
-) -> np.array:
+) -> Tuple[np.ndarray, np.ndarray]:
     """Calculate the average functional correlation within each parcel.
     Currently we only support discrete segmentations.
 
@@ -55,22 +55,24 @@ def calculate_intranetwork_correlation(
         N by N Pearson's correlation matrix.
 
     masker_labels : np.array
-        Labels of each parcels in the atlas.
+        Labels for each parcel in the atlas.
 
     time_series_atlas : np.array
-        Time series extracted from each parcels.
+        Time series extracted from each parcel.
 
     group_mask : Union[str, Path]
-        Group grey matter mask.
+        Path to the group grey matter mask.
 
     atlas_image : Union[str, Path, Nifti1Image]
         3D atlas image.
 
     Returns
     -------
-    np.array
-        Pearson's correlation matrix with the diagnonal replaced with
-        average correlation within each parcel.
+    Tuple[np.ndarray, np.ndarray]
+        A tuple containing the modified Pearson's correlation matrix with
+        the diagonal replaced by the average correlation within each parcel,
+        and an array of the computed average intranetwork correlations for 
+        each parcel.
     """
     if isinstance(atlas_image, (str, Path)):
         atlas_image = load_img(atlas_image)
@@ -85,7 +87,7 @@ def calculate_intranetwork_correlation(
     # calculate the standard deviation of time series in each parcel
     var_parcels = time_series_atlas.var(axis=0)
     var_parcels = np.reshape(var_parcels, (var_parcels.shape[0], 1))
-    # detact invalid parcels
+    # detect invalid parcels
     mask_empty = (size_parcels == 0) | (size_parcels == 1)
 
     # calculate average functional correlation within each parcel
@@ -94,7 +96,7 @@ def calculate_intranetwork_correlation(
     ) / (size_parcels * (size_parcels - 1))
     avg_intranetwork_correlation[mask_empty] = 0
     avg_intranetwork_correlation = avg_intranetwork_correlation.reshape(-1)
-    # replace the diagnonal with average functional correlation
+    # replace the diagonal with average functional correlation
     idx_diag = np.diag_indices(correlation_matrix.shape[0])
     correlation_matrix[idx_diag] = avg_intranetwork_correlation
     return correlation_matrix, avg_intranetwork_correlation
@@ -106,7 +108,26 @@ def generate_timeseries_connectomes(
     group_mask,
     correlation_measure,
     calculate_average_correlation,
-):
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Generate timeseries-based connectomes from functional data.
+    
+    Parameters
+    ----------
+    masker : NiftiMasker
+        NiftiMasker instance for extracting time series.
+    denoised_img : Nifti1Image
+        Denoised functional image.
+    group_mask : Union[str, Path]
+        Path to the group grey matter mask.
+    correlation_measure : ConnectivityMeasure
+        Connectivity measure for computing correlations.
+    calculate_average_correlation : bool
+        Flag indicating whether to calculate average parcel correlations.
+
+    Returns
+    -------
+    Tuple[np.ndarray, np.ndarray]
+        A tuple containing the correlation matrix and time series atlas.
     time_series_atlas = masker.fit_transform(denoised_img)
     correlation_matrix = correlation_measure.fit_transform(
         [time_series_atlas]
@@ -124,7 +145,7 @@ def generate_timeseries_connectomes(
             group_mask,
             masker.labels_img_,
         )
-    # float 32 instead of 64
+    # convert to float 32 instead of 64
     time_series_atlas = time_series_atlas.astype(np.float32)
     correlation_matrix = correlation_matrix.astype(np.float32)
     return correlation_matrix, time_series_atlas
