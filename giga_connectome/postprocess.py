@@ -27,14 +27,29 @@ def run_postprocessing_dataset(
     Generate subject and group level timeseries and connectomes.
 
     The time series data is denoised as follow:
-    Denoising steps are performed on the voxel level:
-    - spatial smoothing
-    - detrend, only if high pass filter is not applied through confounds
-    - Regress out confounds
-    - standardize
 
-    Time series extractions through label or map maskers are performed
-    on the denoised nifti file.
+    - Time series extractions through label or map maskers are performed \
+        on the denoised nifti file. Denoising steps are performed on the \
+        voxel level:
+
+        - spatial smoothing
+
+        - detrend, only if high pass filter is not applied through confounds
+
+        - Regress out confounds
+
+        - standardize
+
+    - Extract time series from atlas
+
+    - Compute correlation matrix
+
+    - Optional: average correlation within each parcel.
+
+    - Save timeseries and correlation matrix to h5 file
+
+    - Optional: Create average correlation matrix across subjects when using \
+        group level analysis.
 
     Parameters
     ----------
@@ -60,7 +75,7 @@ def run_postprocessing_dataset(
 
     output_path:
         Full path to output file, named in the following format:
-            output_dir / atlas-<atlas>_desc-<strategy_name>.h5
+        output_dir / atlas-<atlas>_desc-<strategy_name>.h5
 
     analysis_level : str
         Level of analysis, either "participant" or "group".
