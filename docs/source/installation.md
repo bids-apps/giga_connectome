@@ -2,26 +2,26 @@
 
 ## Quick start (Docker)
 
-Clone the project and build from `Dockerfile` (Recommended)
+Pull the latest image from docker hub, available for version > `0.4.0`(Recommended)
 
-```
-git clone git@github.com:SIMEXP/giga_connectome.git
-cd giga_connectome
-docker build . --file Dockerfile
-docker run -ti --rm --read-only giga_connectome --help
+Singularity:
+
+```bash
+singularity build giga_connectome.simg docker://haotingwang/giga_connectome:latest
 ```
 
-Build from `Dockerfile` (Recommended):
+Docker:
+```bash
+docker pull haotingwang/giga_connectome:latest
 ```
-docker build . --file Dockerfile
-```
+
+## Install as a python package
 
 Install the project in a Python environment:
-```
-pip install .
+
+```bash
+pip install git+https://github.com/SIMEXP/giga_connectome.git@0.4.0
 ```
 
-For development:
-```
-pip install -e .[dev]
-```
+This method is available for all versions.
+Change the tag based on version you would like to use.
