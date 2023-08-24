@@ -84,7 +84,27 @@ def denoise_nifti_voxel(
     smoothing_fwhm: float,
     img: str,
 ) -> Nifti1Image:
-    """Denoise voxel level data per nifti image."""
+    """Denoise voxel level data per nifti image.
+
+    Parameters
+    ----------
+    strategy : dict
+        Denoising strategy parameter to pass to load_confounds_strategy.
+    group_mask : Union[str, Path]
+        Path to the group mask.
+    standardize : Union[str, bool]
+        Standardize the data. If 'zscore', zscore the data. If 'psc', convert
+        the data to percent signal change. If False, do not standardize.
+    smoothing_fwhm : float
+        Smoothing kernel size in mm.
+    img : str
+        Path to the nifti image to denoise.
+
+    Returns
+    -------
+    Nifti1Image
+        Denoised nifti image.
+    """
     cf, sm = strategy["function"](img, **strategy["parameters"])
     if _check_exclusion(cf, sm):
         return None

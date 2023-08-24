@@ -1,12 +1,13 @@
 from pathlib import Path
-from typing import Union
+from typing import Union, Tuple
 import numpy as np
 from nilearn.maskers import NiftiMasker
 from nilearn.image import load_img
 from nibabel import Nifti1Image
+from nilearn.connectome import ConnectivityMeasure
 
 
-def build_size_roi(mask, labels_roi):
+def build_size_roi(mask: np.ndarray, labels_roi: np.ndarray) -> np.ndarray:
     """Extract labels and sizes of ROIs given an atlas.
     The atlas parcels must be discrete segmentations.
 
@@ -60,8 +61,8 @@ def calculate_intranetwork_correlation(
     time_series_atlas : np.array
         Time series extracted from each parcel.
 
-    group_mask : Union[str, Path]
-        Path to the group grey matter mask.
+    group_mask : Union[str, Path, Nifti1Image]
+        The group grey matter mask.
 
     atlas_image : Union[str, Path, Nifti1Image]
         3D atlas image.
@@ -71,7 +72,7 @@ def calculate_intranetwork_correlation(
     Tuple[np.ndarray, np.ndarray]
         A tuple containing the modified Pearson's correlation matrix with
         the diagonal replaced by the average correlation within each parcel,
-        and an array of the computed average intranetwork correlations for 
+        and an array of the computed average intranetwork correlations for
         each parcel.
     """
     if isinstance(atlas_image, (str, Path)):
@@ -103,24 +104,28 @@ def calculate_intranetwork_correlation(
 
 
 def generate_timeseries_connectomes(
-    masker,
-    denoised_img,
-    group_mask,
-    correlation_measure,
-    calculate_average_correlation,
+    masker: NiftiMasker,
+    denoised_img: Nifti1Image,
+    group_mask: Union[str, Path],
+    correlation_measure: ConnectivityMeasure,
+    calculate_average_correlation: bool,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Generate timeseries-based connectomes from functional data.
-    
+
     Parameters
     ----------
     masker : NiftiMasker
         NiftiMasker instance for extracting time series.
+
     denoised_img : Nifti1Image
         Denoised functional image.
+
     group_mask : Union[str, Path]
         Path to the group grey matter mask.
+
     correlation_measure : ConnectivityMeasure
         Connectivity measure for computing correlations.
+
     calculate_average_correlation : bool
         Flag indicating whether to calculate average parcel correlations.
 
@@ -128,6 +133,7 @@ def generate_timeseries_connectomes(
     -------
     Tuple[np.ndarray, np.ndarray]
         A tuple containing the correlation matrix and time series atlas.
+    """
     time_series_atlas = masker.fit_transform(denoised_img)
     correlation_matrix = correlation_measure.fit_transform(
         [time_series_atlas]
