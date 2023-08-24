@@ -7,6 +7,12 @@ atlas
 .. automodule:: giga_connectome.atlas
     :members:
 
+connectome
+::::::::::
+
+.. automodule:: giga_connectome.connectome
+    :members:
+
 denoise
 :::::::
 
@@ -29,10 +35,4 @@ utils
 :::::
 
 .. automodule:: giga_connectome.utils
-    :members:
-
-workflow
-::::::::
-
-.. automodule:: giga_connectome.workflow
     :members:
