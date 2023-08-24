@@ -26,7 +26,7 @@ def test_help(capsys):
     except SystemExit:
         pass
     captured = capsys.readouterr()
-    assert "Generate connectome" in captured.out
+    assert "Generate denoised timeseries" in captured.out
 
 
 @pytest.mark.smoke
@@ -58,6 +58,7 @@ def test_smoke(tmp_path, capsys):
             "--standardize",
             "zscore",
             "--reindex-bids",
+            "--calculate-intranetwork-average-correlation",
             str(bids_dir),
             str(output_dir),
             "participant",
