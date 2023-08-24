@@ -1,5 +1,5 @@
-API for developers
-==================
+API
+===
 
 atlas
 :::::
