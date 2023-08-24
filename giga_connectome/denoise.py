@@ -29,8 +29,8 @@ def get_denoise_strategy(
     ---------
 
     strategy : str
-        Name of the denoising strategy options:
-        simple, simple+gsr, scrubbing.5, scrubbing.5+gsr,
+        Name of the denoising strategy options: \
+        simple, simple+gsr, scrubbing.5, scrubbing.5+gsr, \
         scrubbing.2, scrubbing.2+gsr, acompcor50, icaaroma.
         Or the path to a configuration json file.
 
@@ -57,8 +57,19 @@ def get_denoise_strategy(
     return benchmark_strategy
 
 
-def is_ica_aroma(strategy):
-    """Check if the current strategy is ICA AROMA."""
+def is_ica_aroma(strategy: str) -> bool:
+    """Check if the current strategy is ICA AROMA.
+
+    Parameters
+    ----------
+    strategy : dict
+        Denoising strategy dictionary. See :func:`get_denoise_strategy`.
+
+    Returns
+    -------
+    bool
+        True if the strategy is ICA AROMA.
+    """
     strategy_preset = strategy["parameters"].get("denoise_strategy", False)
     strategy_user_define = strategy["parameters"].get("strategy", False)
     if strategy_preset or strategy_user_define:

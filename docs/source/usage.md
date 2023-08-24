@@ -1,6 +1,6 @@
 # Usage Notes
 
-```
+```bash
 usage: giga_connectome [-h] [-v] [--participant_label PARTICIPANT_LABEL [PARTICIPANT_LABEL ...]] [-w WORK_DIR] [--atlas ATLAS]
                        [--denoise-strategy DENOISE_STRATEGY] [--standardize {zscore,psc}] [--smoothing_fwhm SMOOTHING_FWHM] [--reindex-bids]
                        [--bids-filter-file BIDS_FILTER_FILE]

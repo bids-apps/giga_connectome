@@ -26,11 +26,14 @@ def load_atlas_setting(atlas: Union[str, Path, dict]):
         It should contain the following fields:
 
         - name : name of the atlas.
-        - parameters : BIDS entities that fits templateflow conventions
+
+        - parameters : BIDS entities that fits templateflow conventions \
             except desc.
-        - desc : templateflow entities description. Can be a list if user
+
+        - desc : templateflow entities description. Can be a list if user \
             wants to include multiple resolutions of the atlas.
-        - templateflow_dir : Path to templateflow director.
+
+        - templateflow_dir : Path to templateflow director. \
             If null, use the system default.
 
     Returns
