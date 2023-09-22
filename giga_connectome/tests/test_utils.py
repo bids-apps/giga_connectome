@@ -15,8 +15,8 @@ def test_get_bids_images():
     )
     reindex_bids = True
     bids_filters = {
-        "bold": {"task": "probabilisticclassification", "run": "1"}
-    }
+        "bold": {"task": "probabilisticclassification", "run": "1"},
+    }  # task and run should apply to both mask and bold
     subj_data, _ = utils.get_bids_images(
         subjects, template, bids_dir, reindex_bids, bids_filters
     )

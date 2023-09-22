@@ -29,10 +29,10 @@ def get_bids_images(
     layout_get_kwargs = {
         "return_type": "object",
         "subject": subjects,
-        "session": Query.ANY,
+        "session": Query.OPTIONAL,
         "space": template,
         "task": Query.ANY,
-        "run": Query.ANY,
+        "run": Query.OPTIONAL,
         "extension": ".nii.gz",
     }
     queries = {
