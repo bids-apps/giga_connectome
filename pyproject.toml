@@ -25,6 +25,7 @@ dependencies = [
   "pybids >=0.15.0, <0.16.0",
   "templateflow < 23.0.0",
   "tqdm",
+  "setuptools",
 ]
 dynamic = ["version"]
 
