@@ -115,6 +115,12 @@ def global_parser() -> argparse.ArgumentParser:
         type=int,
         nargs=1,
     )
+    return parser
+
+
+def main(argv=None):
+    """Entry point."""
+    parser = global_parser()
 
     args = parser.parse_args(argv)
 
