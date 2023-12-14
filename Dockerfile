@@ -9,14 +9,13 @@ RUN apt-get update -qq && \
 
 ARG TEMPLATEFLOW_HOME="/templateflow"
 
-RUN pip3 install nilearn==0.9.2 templateflow pybids h5py tqdm&& \
-    mkdir -p /code && mkdir -p /templateflow
-
 WORKDIR /code
 
-RUN python3 -c "from templateflow.api import get; get(['MNI152NLin2009cAsym', 'MNI152NLin6Asym'])"
-
 COPY [".", "/code"]
+
+RUN pip3 install -r requirements.txt
+
+RUN python3 -c "from templateflow.api import get; get(['MNI152NLin2009cAsym', 'MNI152NLin6Asym'])"
 
 RUN pip install --upgrade pip && pip3 install -e .
 
