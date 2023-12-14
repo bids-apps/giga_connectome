@@ -79,7 +79,7 @@ def workflow(args):
                 f"sub-{subject}_atlas-{atlas['name']}"
                 f"_desc-{strategy['name']}.h5"
             )
-            connectome_path = utils.check_path(connectome_path)
+            utils.check_path(connectome_path)
 
             gc_log.info(f"Generate subject level connectomes: sub-{subject}")
 
@@ -106,7 +106,7 @@ def workflow(args):
     connectome_path = (
         output_dir / f"atlas-{atlas['name']}_desc-{strategy['name']}.h5"
     )
-    connectome_path = utils.check_path(connectome_path)
+    utils.check_path(connectome_path)
 
     gc_log.info(connectome_path)
     gc_log.info("Generate subject level connectomes")
