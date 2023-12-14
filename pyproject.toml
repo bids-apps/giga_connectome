@@ -37,6 +37,7 @@ dev = [
   "black",
   "pre-commit",
   "giga_connectome[test]",
+  'tox',
 ]
 test = [
   "pytest",

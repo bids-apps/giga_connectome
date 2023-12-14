@@ -27,6 +27,14 @@ pip install -e .[dev]
 pre-commit install
 ```
 
+5. Install the data required for testing from zenodo
+
+This can be done using tox by running:
+
+```bash
+tox -e test_data
+```
+
 ## Contributing to code
 
 This is a very generic workflow.
@@ -51,7 +59,7 @@ git checkout -b your_branch
 5. Run the tests locally; you can run spectfic tests to speed up the process:
 
 ```bash
-pytest -v giga_connectome/tests/tests/test_connectome.py::test_calculate_intranetwork_correlation
+pytest -v giga_connectome/tests/test_connectome.py::test_calculate_intranetwork_correlation
 ```
 
 6. push your changes to your online fork. If this is the first commit, you might want to set up the remote tracking:
