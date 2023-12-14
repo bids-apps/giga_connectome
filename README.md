@@ -6,6 +6,8 @@
 This is a BIDS-App to extract signal from a parcellation with nilearn,
 typically useful in a context of resting-state data processing.
 
+foo
+
 ## Description
 
 Functional connectivity is a common approach in analysing resting state fMRI data. Python tool Nilearn
