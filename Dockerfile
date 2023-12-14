@@ -1,4 +1,5 @@
-FROM python:3.9
+#  https://hub.docker.com/layers/library/python/3.9-slim-bullseye/images/sha256-de58dcff6a8ccd752899e667aded074ad3e8f5fd552969ec11276adcb18930a4
+FROM python@sha256:de58dcff6a8ccd752899e667aded074ad3e8f5fd552969ec11276adcb18930a4
 
 ARG DEBIAN_FRONTEND="noninteractive"
 
@@ -9,16 +10,14 @@ RUN apt-get update -qq && \
 
 ARG TEMPLATEFLOW_HOME="/templateflow"
 
-RUN pip3 install nilearn==0.9.2 templateflow pybids h5py tqdm&& \
-    mkdir -p /code && mkdir -p /templateflow
-
 WORKDIR /code
-
-RUN python3 -c "from templateflow.api import get; get(['MNI152NLin2009cAsym', 'MNI152NLin6Asym'])"
 
 COPY [".", "/code"]
 
-RUN pip install --upgrade pip && pip3 install -e .
+RUN pip3 install --no-cache-dir pip==23.0.1 && \
+    pip3 install --no-cache-dir --requirement requirements.txt && \
+    python3 -c "from templateflow.api import get; get(['MNI152NLin2009cAsym', 'MNI152NLin6Asym'])" && \
+    pip3 --no-cache-dir install --editable .
 
 ENV TEMPLATEFLOW_HOME=${TEMPLATEFLOW_HOME}
 
