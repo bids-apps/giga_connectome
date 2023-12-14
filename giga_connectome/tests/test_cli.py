@@ -65,8 +65,17 @@ def test_smoke(tmp_path, capsys):
     )
     # check output
     output_group = (
-        output_dir / "sub-1_atlas-Schaefer20187Networks_desc-simple.h5"
+        output_dir
+        / "sub-1"
+        / "ses-timepoint1"
+        / "func"
+        / (
+            "sub-1_ses-timepoint1_task-probabilisticclassification_run-01_"
+            "space-MNI152NLin2009cAsym_res-2_"
+            "atlas-Schaefer20187Networks_desc-simple_relmat.h5"
+        )
     )
+    # sub-1_ses-timepoint1_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-simple_relmat.h5
     basename = (
         "sub-1_ses-timepoint1_task-probabilisticclassification_run-01_"
         "atlas-Schaefer20187Networks_desc-100Parcels7Networks_timeseries"
@@ -94,7 +103,11 @@ def test_smoke(tmp_path, capsys):
     )
 
     # check output
-    output_group = output_dir / "atlas-Schaefer20187Networks_desc-simple.h5"
+    output_group = (
+        output_dir
+        / "group"
+        / "atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-simple_relmat.h5"
+    )
     basename = (
         "atlas-Schaefer20187Networks_desc-100Parcels7Networks_connectome"
     )

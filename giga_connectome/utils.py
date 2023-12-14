@@ -257,6 +257,8 @@ def create_sidecar(output_path: Path) -> None:
 
 def output_filename(source_file: str, atlas: str, strategy: str) -> str:
     root = source_file.split("_")[:-1]
+    root = [x for x in root if "desc" not in x]
+    print(root)
     root = "_".join(root)
     if len(root) > 0:
         root += "_"

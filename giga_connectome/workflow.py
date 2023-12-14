@@ -28,7 +28,9 @@ def workflow(args):
 
     subjects = utils.get_subject_lists(args.participant_label, bids_dir)
     strategy = get_denoise_strategy(args.denoise_strategy)
-    atlas = load_atlas_setting(args.atlas)
+
+    atlas_name = args.atlas
+    atlas = load_atlas_setting(atlas_name)
 
     # check output path
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -61,6 +63,7 @@ def workflow(args):
             print("Generate subject level connectomes")
             run_postprocessing_dataset(
                 strategy,
+                atlas_name,
                 resampled_atlases,
                 subj_data["bold"],
                 group_mask,
@@ -82,6 +85,7 @@ def workflow(args):
     print("Generate subject level connectomes")
     run_postprocessing_dataset(
         strategy,
+        atlas_name,
         resampled_atlases,
         subj_data["bold"],
         group_mask,

@@ -14,6 +14,7 @@ from giga_connectome.denoise import denoise_nifti_voxel
 
 def run_postprocessing_dataset(
     strategy: dict,
+    atlas_name: str,
     resampled_atlases: List[Union[str, Path]],
     images: List[BIDSImageFile],
     group_mask: Union[str, Path],
@@ -57,6 +58,9 @@ def run_postprocessing_dataset(
     strategy : dict
         Parameters for `load_confounds_strategy` or `load_confounds`.
 
+    atlas_name : str
+        Name of the atlas used.
+
     resampled_atlases : list of str or pathlib.Path
         Atlas niftis resampled to the common space of the dataset.
 
@@ -84,7 +88,6 @@ def run_postprocessing_dataset(
     calculate_average_correlation : bool
         Whether to calculate average correlation within each parcel.
     """
-    atlas = output_path.name.split("atlas-")[-1].split("_")[0]
     atlas_maskers, connectomes = {}, {}
     for atlas_path in resampled_atlases:
         if isinstance(atlas_path, str):
@@ -111,13 +114,15 @@ def run_postprocessing_dataset(
         if session:
             connectome_path = connectome_path / session
         filename = utils.output_filename(
-            Path(img.filename).stem, atlas, strategy["name"]
+            Path(img.filename).stem, atlas_name, strategy["name"]
         )
         connectome_path = connectome_path / "func" / filename
         connectome_path = utils.check_path(connectome_path, verbose=True)
 
         for desc, masker in atlas_maskers.items():
-            attribute_name = f"{subject}_{specifier}_atlas-{atlas}_desc-{desc}"
+            attribute_name = (
+                f"{subject}_{specifier}_atlas-{atlas_name}_desc-{desc}"
+            )
             if not denoised_img:
                 time_series_atlas, correlation_matrix = None, None
                 print(f"{attribute_name}: no volume after scrubbing")
@@ -155,7 +160,7 @@ def run_postprocessing_dataset(
         connectome_path = (
             output_path
             / "group"
-            / utils.output_filename("", atlas, strategy["name"])
+            / utils.output_filename("", atlas_name, strategy["name"])
         )
         connectome_path = utils.check_path(connectome_path, verbose=True)
         print(connectome_path)
@@ -165,7 +170,7 @@ def run_postprocessing_dataset(
             ).astype(np.float32)
             with h5py.File(connectome_path, "a") as f:
                 f.create_dataset(
-                    f"atlas-{atlas}_desc-{desc}_connectome",
+                    f"atlas-{atlas_name}_desc-{desc}_connectome",
                     data=average_connectome,
                 )
 
