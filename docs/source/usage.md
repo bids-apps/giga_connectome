@@ -67,3 +67,29 @@ In a `json` file, define the customised atlas. We will use the atlas above as an
 ```
 
 See examples in [`giga_connectome/data`](https://github.com/SIMEXP/giga_connectome/tree/main/giga_connectome/data).
+
+
+## Example
+
+You can run a demo of the bids app by downloading some test data.
+
+Run the following from the root of the repository.
+
+```bash
+pip install tox
+tox -e test_data
+```
+
+```bash
+giga_connectome \
+    --atlas Schaefer20187Networks \
+    --denoise-strategy simple \
+    --standardize zscore \
+    --bids-filter giga_connectome/data/test_data/bids_filter.json  \
+    --reindex-bids \
+    --output-to-bids \
+    --calculate-intranetwork-average-correlation \
+    giga_connectome/data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface \
+    giga_connectome/data/test_data/output \
+    participant
+```

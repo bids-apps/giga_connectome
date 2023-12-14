@@ -32,7 +32,6 @@ def set_verbosity(verbosity: int | list[int]) -> None:
 
 
 def workflow(args):
-
     gc_log.info(vars(args))
 
     # set file paths
@@ -51,6 +50,8 @@ def workflow(args):
     strategy = get_denoise_strategy(args.denoise_strategy)
 
     atlas = load_atlas_setting(args.atlas)
+
+    output_to_bids = args.output_to_bids
 
     set_verbosity(args.verbosity)
 
@@ -102,6 +103,7 @@ def workflow(args):
                 output_dir,
                 analysis_level,
                 calculate_average_correlation,
+                output_to_bids,
             )
         return
 
@@ -131,4 +133,5 @@ def workflow(args):
         output_dir,
         analysis_level,
         calculate_average_correlation,
+        output_to_bids,
     )

@@ -27,6 +27,7 @@ def run_postprocessing_dataset(
     output_path: Path,
     analysis_level: str,
     calculate_average_correlation: bool = False,
+    output_to_bids: bool = False,
 ) -> None:
     """
     Generate subject and group level timeseries and connectomes.
@@ -107,8 +108,19 @@ def run_postprocessing_dataset(
     # transform data
     gc_log.info("Processing subject")
 
-    for img in tqdm(images):
+    # single output file per subject when output is not BIDS compliant
+    if not output_to_bids:
+        subject, _, _ = utils.parse_bids_name(images[0].path)
+        filename = utils.output_filename(
+            Path(images[0].filename).stem,
+            atlas["name"],
+            strategy["name"],
+            output_to_bids,
+        )
+        connectome_path = output_path / subject / "func" / filename
+        connectome_path = utils.check_path(connectome_path)
 
+    for img in tqdm(images):
         print()
         gc_log.info(f"Processing image:\n{img.filename}")
 
@@ -119,14 +131,19 @@ def run_postprocessing_dataset(
         # parse file name
         subject, session, specifier = utils.parse_bids_name(img.path)
 
-        connectome_path = output_path / subject
-        if session:
-            connectome_path = connectome_path / session
-        filename = utils.output_filename(
-            Path(img.filename).stem, atlas["name"], strategy["name"]
-        )
-        connectome_path = connectome_path / "func" / filename
-        connectome_path = utils.check_path(connectome_path)
+        # one output file per input file when output is BIDS compliant
+        if output_to_bids:
+            connectome_path = output_path / subject
+            if session:
+                connectome_path = connectome_path / session
+            filename = utils.output_filename(
+                Path(img.filename).stem,
+                atlas["name"],
+                strategy["name"],
+                output_to_bids,
+            )
+            connectome_path = connectome_path / "func" / filename
+            connectome_path = utils.check_path(connectome_path)
 
         for desc, masker in atlas_maskers.items():
             attribute_name = (
@@ -172,7 +189,12 @@ def run_postprocessing_dataset(
         connectome_path = (
             output_path
             / "group"
-            / utils.output_filename("", atlas["name"], strategy["name"])
+            / utils.output_filename(
+                "",
+                atlas["name"],
+                strategy["name"],
+                output_to_bids,
+            )
         )
         connectome_path = utils.check_path(connectome_path)
 
