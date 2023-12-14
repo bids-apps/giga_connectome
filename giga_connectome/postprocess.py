@@ -84,8 +84,6 @@ def run_postprocessing_dataset(
 
     output_path:
         Full path to output directory.
-        Will be used to name the output file in the following format:
-        [sub-<sub>][_ses-<ses>_]atlas-<atlas>_desc-<strategy_name>_relmat.h5
 
     analysis_level : str
         Level of analysis, either "participant" or "group".
