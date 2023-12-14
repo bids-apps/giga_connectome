@@ -13,7 +13,7 @@ from pkg_resources import resource_filename
 PRESET_ATLAS = ["DiFuMo", "MIST", "Schaefer20187Networks"]
 
 
-def load_atlas_setting(atlas: Union[str, Path, dict]):
+def load_atlas_setting(atlas: Union[str, Path, dict]) -> dict:
     """Load atlas details for templateflow api to fetch.
     The setting file can be configured for atlases not included in the
     templateflow collections, but user has to organise their files to
