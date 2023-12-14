@@ -45,7 +45,8 @@ test = [
 docs = [
   "sphinx",
   "sphinx_rtd_theme",
-  "myst-parser"
+  "myst-parser",
+  "sphinx-argparse"
 ]
 # Aliases
 tests = ["giga_connectome[test]"]

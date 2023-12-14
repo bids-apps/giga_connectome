@@ -75,7 +75,7 @@ The workflow is the same as code contributions, with some minor differences.
 1. Install the `[doc]` dependencies.
 
 ```bash
-pip install -e .[doc]
+pip install -e '.[doc]'
 ```
 
 2. After making changes, build the docs locally:
@@ -104,7 +104,7 @@ This tells the development team that your pull request is a "work-in-progress", 
 
 One your PR is ready a member of the development team will review your changes to confirm that they can be merged into the main codebase.
 
-## Making an release
+## Making a release
 
 Currently this project is not pushed to PyPi.
 We simply tag the version on the repository so users can reference the version of installation.
