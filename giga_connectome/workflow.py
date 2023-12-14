@@ -1,6 +1,8 @@
 """
 Process fMRIPrep outputs to timeseries based on denoising strategy.
 """
+from __future__ import annotations
+
 from giga_connectome import (
     generate_gm_mask_atlas,
     load_atlas_setting,
