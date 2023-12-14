@@ -7,9 +7,13 @@ import numpy as np
 from nilearn.connectome import ConnectivityMeasure
 from nilearn.maskers import NiftiLabelsMasker, NiftiMapsMasker
 from bids.layout import BIDSImageFile
+
 from giga_connectome import utils
 from giga_connectome.connectome import generate_timeseries_connectomes
 from giga_connectome.denoise import denoise_nifti_voxel
+from giga_connectome.logger import gc_logger
+
+gc_log = gc_logger()
 
 
 def run_postprocessing_dataset(
@@ -101,8 +105,13 @@ def run_postprocessing_dataset(
     )
 
     # transform data
-    print("processing subjects")
+    gc_log.info("Processing subject")
+
     for img in tqdm(images):
+
+        print()
+        gc_log.info(f"Processing image:\n{img.filename}")
+
         # process timeseries
         denoised_img = denoise_nifti_voxel(
             strategy, group_mask, standardize, smoothing_fwhm, img.path
@@ -125,7 +134,9 @@ def run_postprocessing_dataset(
             )
             if not denoised_img:
                 time_series_atlas, correlation_matrix = None, None
-                print(f"{attribute_name}: no volume after scrubbing")
+
+                gc_log.info(f"{attribute_name}: no volume after scrubbing")
+
                 continue
 
             # extract timeseries and connectomes
@@ -155,15 +166,19 @@ def run_postprocessing_dataset(
                     f"{attribute_name}_connectome", data=correlation_matrix
                 )
 
+        gc_log.info(f"Saved to:\n{output_path}")
+
     if analysis_level == "group":
-        print("create group connectome")
         connectome_path = (
             output_path
             / "group"
             / utils.output_filename("", atlas["name"], strategy["name"])
         )
         connectome_path = utils.check_path(connectome_path, verbose=True)
-        print(connectome_path)
+
+        gc_log.info("Create group connectome")
+        gc_log.info(connectome_path)
+
         for desc in connectomes:
             average_connectome = np.mean(
                 np.array(connectomes[desc]), axis=0

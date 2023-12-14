@@ -33,8 +33,7 @@ def test_check_mask_affine():
     weird = Nifti1Image(processed_vol, np.eye(4) * np.array([1, 1, 1.5, 1]).T)
     weird2 = Nifti1Image(processed_vol, np.eye(4) * np.array([1, 1, 1.6, 1]).T)
     exclude = mask._check_mask_affine(
-        [processed, processed, processed, processed, weird, weird, weird2],
-        verbose=2,
+        [processed, processed, processed, processed, weird, weird, weird2]
     )
     assert len(exclude) == 3
     assert exclude == [4, 5, 6]
