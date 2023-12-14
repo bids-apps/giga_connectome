@@ -126,7 +126,7 @@ def run_postprocessing_dataset(
             Path(img.filename).stem, atlas["name"], strategy["name"]
         )
         connectome_path = connectome_path / "func" / filename
-        connectome_path = utils.check_path(connectome_path, verbose=True)
+        connectome_path = utils.check_path(connectome_path)
 
         for desc, masker in atlas_maskers.items():
             attribute_name = (
@@ -166,7 +166,7 @@ def run_postprocessing_dataset(
                     f"{attribute_name}_connectome", data=correlation_matrix
                 )
 
-        gc_log.info(f"Saved to:\n{output_path}")
+        gc_log.info(f"Saved to:\n{connectome_path}")
 
     if analysis_level == "group":
         connectome_path = (
@@ -174,7 +174,7 @@ def run_postprocessing_dataset(
             / "group"
             / utils.output_filename("", atlas["name"], strategy["name"])
         )
-        connectome_path = utils.check_path(connectome_path, verbose=True)
+        connectome_path = utils.check_path(connectome_path)
 
         gc_log.info("Create group connectome")
         gc_log.info(connectome_path)
@@ -188,6 +188,8 @@ def run_postprocessing_dataset(
                     f"atlas-{atlas['name']}_desc-{desc}_connectome",
                     data=average_connectome,
                 )
+
+        gc_log.info(f"Saved to:\n{connectome_path}")
 
 
 def _set_file_flag(output_path: Path) -> str:
