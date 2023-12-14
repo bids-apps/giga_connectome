@@ -1,10 +1,11 @@
-FROM python:3.9
+#  https://hub.docker.com/layers/library/python/3.9-slim-bullseye/images/sha256-de58dcff6a8ccd752899e667aded074ad3e8f5fd552969ec11276adcb18930a4
+FROM python@sha256:de58dcff6a8ccd752899e667aded074ad3e8f5fd552969ec11276adcb18930a4
 
 ARG DEBIAN_FRONTEND="noninteractive"
 
 RUN apt-get update -qq && \
     apt-get install -y -qq --no-install-recommends \
-        git==2.34.1 && \
+        git && \
     rm -rf /var/lib/apt/lists/*
 
 ARG TEMPLATEFLOW_HOME="/templateflow"
