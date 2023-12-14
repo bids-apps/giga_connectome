@@ -9,6 +9,10 @@ from nilearn.image import resample_to_img
 from nibabel import Nifti1Image
 from pkg_resources import resource_filename
 
+from giga_connectome.logger import gc_logger
+
+gc_log = gc_logger()
+
 
 PRESET_ATLAS = ["DiFuMo", "MIST", "Schaefer20187Networks"]
 
@@ -42,7 +46,7 @@ def load_atlas_setting(atlas: Union[str, Path, dict]):
         Path to the atlas files.
     """
     atlas_config = _check_altas_config(atlas)
-    print(atlas_config)
+    gc_log.info(atlas_config)
 
     # load template flow
     templateflow_dir = atlas_config.get("templateflow_dir")
@@ -104,7 +108,7 @@ def resample_atlas_collection(
     List of pathlib.Path
         Paths to atlases sampled to group level grey matter mask.
     """
-    print("Resample atlas to group grey matter mask.")
+    gc_log.info("Resample atlas to group grey matter mask.")
     resampled_atlases = []
     for desc in tqdm(atlas_config["file_paths"]):
         parcellation = atlas_config["file_paths"][desc]

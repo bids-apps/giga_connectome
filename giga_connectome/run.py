@@ -104,6 +104,17 @@ def global_parser() -> argparse.ArgumentParser:
         "pipeline (option A). The default is False.",
         action="store_true",
     )
+    parser.add_argument(
+        "--verbosity",
+        help="""
+        Verbosity level.
+        """,
+        required=False,
+        choices=[0, 1, 2, 3],
+        default=2,
+        type=int,
+        nargs=1,
+    )
     return parser
 
 

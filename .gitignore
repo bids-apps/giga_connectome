@@ -1,6 +1,7 @@
 */_version.py
 */data/test_data/
 output/
+work/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

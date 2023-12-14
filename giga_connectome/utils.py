@@ -4,6 +4,10 @@ from nilearn.interfaces.bids import parse_bids_filename
 from bids.layout import Query
 from bids import BIDSLayout
 
+from giga_connectome.logger import gc_logger
+
+gc_log = gc_logger()
+
 
 def get_bids_images(
     subjects: List[str],
@@ -175,7 +179,7 @@ def get_subject_lists(
     ]
 
 
-def check_path(path: Path, verbose=True):
+def check_path(path: Path):
     """Check if given path (file or dir) already exists, and if so returns a
     new path with _<n> appended (n being the number of paths with the same name
     that exist already).
@@ -196,6 +200,7 @@ def check_path(path: Path, verbose=True):
         ]
         n = str(max(existing_numbers) + 1) if existing_numbers else "1"
         path = path_parent / f"{path.stem}_{n}{ext}"
-        if verbose:
-            print(f"Specified path already exists, using {path} instead.")
+
+        gc_log.debug(f"Specified path already exists, using {path} instead.")
+
     return path
