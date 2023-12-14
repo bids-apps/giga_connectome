@@ -4,10 +4,20 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+from nilearn import __version__ as nilearn_version
+from templateflow import __version__ as templateflow_version
+
 from giga_connectome import __version__
 
 
-def generate_method_section(output_dir: Path):
+def generate_method_section(
+    output_dir: Path,
+    atlas: str,
+    smoothing_fwhm: float,
+    strategy: str,
+    standardize: str,
+    mni_space: str,
+):
 
     env = Environment(
         loader=FileSystemLoader(Path(__file__).parent),
@@ -21,7 +31,18 @@ def generate_method_section(output_dir: Path):
     output_file = output_dir / "logs" / "CITATION.md"
     output_file.parent.mkdir(parents=True, exist_ok=True)
 
-    data = {"version": __version__}
+    data = {
+        "version": __version__,
+        "nilearn_version": nilearn_version,
+        "templateflow_version": templateflow_version,
+        "atlas": atlas,
+        "smoothing_fwhm": smoothing_fwhm,
+        "strategy": strategy,
+        "standardize": "percent signal change"
+        if standardize == "psc"
+        else standardize,
+        "mni_space": mni_space,
+    }
 
     with open(output_file, "w") as f:
         print(template.render(data=data), file=f)

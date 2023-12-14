@@ -9,7 +9,7 @@ from giga_connectome import (
 )
 
 from giga_connectome.denoise import is_ica_aroma
-from giga_connectome import utils
+from giga_connectome import utils, methods
 
 
 def workflow(args):
@@ -39,6 +39,15 @@ def workflow(args):
         "MNI152NLin6Asym" if is_ica_aroma(strategy) else "MNI152NLin2009cAsym"
     )
     print("Indexing BIDS directory")
+
+    methods.generate_method_section(
+        output_dir=output_dir,
+        atlas=args.atlas,
+        smoothing_fwhm=smoothing_fwhm,
+        standardize=args.standardize,
+        strategy=args.denoise_strategy,
+        mni_space=template,
+    )
 
     # create subject ts and connectomes
     # refactor the two cases into one

@@ -1,10 +1,13 @@
-These results were generated with giga_connectome (version {{ data.version }}, https://giga-connectome.readthedocs.io/en/latest/).
+These results were generated with
+giga_connectome (version {{ data.version }}, https://giga-connectome.readthedocs.io/en/latest/)
+using Nilearn (version {{ data.nilearn_version }}, RRID:SCR_001362)
+and TemplateFlow (version {{ data.templateflow_version }}).
 
 The following steps were followed.
 
-1. Created subject specific grey matter mask in MNI space.
+1. Created subject specific grey matter mask in MNI space ({{ data.mni_space }}).
 
-2. Sampled the atlas to the space of subject specific grey matter mask in MNI space.
+2. Sampled the {{ data.atlas }} atlas to the space of subject specific grey matter mask in MNI space.
 
 3. Calculated the conjunction of the customised grey matter mask and resampled atlas to find valid parcels.
 
@@ -13,10 +16,10 @@ The following steps were followed.
 
     - Time series extractions through label or map maskers are performed on the denoised nifti file.
     - Denoising steps were performed on the voxel level:
-        - spatial smoothing
-        - detrend, only if high pass filter was not applied through confounds
-        - Regress out confounds
-        - standardize
+        - spatial smoothing (FWHM: {{ data.smoothing_fwhm }} mm)
+        - detrending, only if high pass filter was not applied through confounds
+        - regressing out confounds (using a {{ data.strategy }} strategy)
+        - standardized (using {{ data.standardize }})
     - Extracted time series from atlas
     - Computed correlation matrix
 
