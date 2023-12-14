@@ -7,9 +7,13 @@ import numpy as np
 from nilearn.connectome import ConnectivityMeasure
 from nilearn.maskers import NiftiLabelsMasker, NiftiMapsMasker
 from bids.layout import BIDSImageFile
+
 from giga_connectome import utils
 from giga_connectome.connectome import generate_timeseries_connectomes
 from giga_connectome.denoise import denoise_nifti_voxel
+from giga_connectome.logger import gc_logger
+
+gc_log = gc_logger()
 
 
 def run_postprocessing_dataset(
@@ -97,7 +101,8 @@ def run_postprocessing_dataset(
     )
 
     # transform data
-    print("processing subjects")
+    gc_log.info("processing subjects")
+
     for img in tqdm(images):
         # process timeseries
         denoised_img = denoise_nifti_voxel(
@@ -109,7 +114,9 @@ def run_postprocessing_dataset(
             attribute_name = f"{subject}_{specifier}_atlas-{atlas}_desc-{desc}"
             if not denoised_img:
                 time_series_atlas, correlation_matrix = None, None
-                print(f"{attribute_name}: no volume after scrubbing")
+
+                gc_log.info(f"{attribute_name}: no volume after scrubbing")
+
                 continue
 
             # extract timeseries and connectomes
@@ -140,7 +147,9 @@ def run_postprocessing_dataset(
                 )
 
     if analysis_level == "group":
-        print("create group connectome")
+
+        gc_log.info("create group connectome")
+
         for desc in connectomes:
             average_connectome = np.mean(
                 np.array(connectomes[desc]), axis=0
