@@ -40,6 +40,12 @@ def workflow(args):
     )
     print("Indexing BIDS directory")
 
+    utils.create_ds_description(output_dir)
+    utils.create_sidecar(
+        output_dir
+        / f"meas-PearsonCorrelation_desc-{args.denoise_strategy}_relmat.json"
+    )
+
     # create subject ts and connectomes
     # refactor the two cases into one
 
@@ -51,11 +57,7 @@ def workflow(args):
             group_mask, resampled_atlases = generate_gm_mask_atlas(
                 working_dir, atlas, template, subj_data["mask"]
             )
-            connectome_path = output_dir / (
-                f"sub-{subject}_atlas-{atlas['name']}"
-                f"_desc-{strategy['name']}.h5"
-            )
-            connectome_path = utils.check_path(connectome_path, verbose=True)
+
             print("Generate subject level connectomes")
             run_postprocessing_dataset(
                 strategy,
@@ -64,7 +66,7 @@ def workflow(args):
                 group_mask,
                 standardize,
                 smoothing_fwhm,
-                connectome_path,
+                output_dir,
                 analysis_level,
                 calculate_average_correlation,
             )
@@ -77,11 +79,6 @@ def workflow(args):
     group_mask, resampled_atlases = generate_gm_mask_atlas(
         working_dir, atlas, template, subj_data["mask"]
     )
-    connectome_path = (
-        output_dir / f"atlas-{atlas['name']}_desc-{strategy['name']}.h5"
-    )
-    connectome_path = utils.check_path(connectome_path, verbose=True)
-    print(connectome_path)
     print("Generate subject level connectomes")
     run_postprocessing_dataset(
         strategy,
@@ -90,7 +87,7 @@ def workflow(args):
         group_mask,
         standardize,
         smoothing_fwhm,
-        connectome_path,
+        output_dir,
         analysis_level,
         calculate_average_correlation,
     )

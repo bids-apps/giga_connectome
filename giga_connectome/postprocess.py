@@ -74,8 +74,9 @@ def run_postprocessing_dataset(
         Smoothing kernel size, passed to nilearn masker.
 
     output_path:
-        Full path to output file, named in the following format:
-        output_dir / atlas-<atlas>_desc-<strategy_name>.h5
+        Full path to output directory.
+        Will be used to name the output file in the following format:
+        [sub-<sub>][_ses-<ses>_]atlas-<atlas>_desc-<strategy_name>_relmat.h5
 
     analysis_level : str
         Level of analysis, either "participant" or "group".
@@ -105,6 +106,16 @@ def run_postprocessing_dataset(
         )
         # parse file name
         subject, session, specifier = utils.parse_bids_name(img.path)
+
+        connectome_path = output_path / subject
+        if session:
+            connectome_path = connectome_path / session
+        filename = utils.output_filename(
+            Path(img.filename).stem, atlas, strategy["name"]
+        )
+        connectome_path = connectome_path / "func" / filename
+        connectome_path = utils.check_path(connectome_path, verbose=True)
+
         for desc, masker in atlas_maskers.items():
             attribute_name = f"{subject}_{specifier}_atlas-{atlas}_desc-{desc}"
             if not denoised_img:
@@ -126,8 +137,8 @@ def run_postprocessing_dataset(
             connectomes[desc].append(correlation_matrix)
 
             # dump to h5
-            flag = _set_file_flag(output_path)
-            with h5py.File(output_path, flag) as f:
+            flag = _set_file_flag(connectome_path)
+            with h5py.File(connectome_path, flag) as f:
                 group = _fetch_h5_group(f, subject, session)
                 timeseries_dset = group.create_dataset(
                     f"{attribute_name}_timeseries", data=time_series_atlas
@@ -141,11 +152,18 @@ def run_postprocessing_dataset(
 
     if analysis_level == "group":
         print("create group connectome")
+        connectome_path = (
+            output_path
+            / "group"
+            / utils.output_filename("", atlas, strategy["name"])
+        )
+        connectome_path = utils.check_path(connectome_path, verbose=True)
+        print(connectome_path)
         for desc in connectomes:
             average_connectome = np.mean(
                 np.array(connectomes[desc]), axis=0
             ).astype(np.float32)
-            with h5py.File(output_path, "a") as f:
+            with h5py.File(connectome_path, "a") as f:
                 f.create_dataset(
                     f"atlas-{atlas}_desc-{desc}_connectome",
                     data=average_connectome,

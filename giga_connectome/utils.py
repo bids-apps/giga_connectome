@@ -1,8 +1,14 @@
-from typing import List, Tuple, Union
+from __future__ import annotations
+
+from typing import List, Tuple, Union, Any
+import json
 from pathlib import Path
+
 from nilearn.interfaces.bids import parse_bids_filename
 from bids.layout import Query
 from bids import BIDSLayout
+
+from giga_connectome import __version__
 
 
 def get_bids_images(
@@ -184,6 +190,8 @@ def check_path(path: Path, verbose=True):
     ext = path.suffix
     path_parent = path.parent
 
+    path_parent.mkdir(parents=True, exist_ok=True)
+
     if path.exists():
         similar_paths = [
             str(p).replace(ext, "")
@@ -199,3 +207,60 @@ def check_path(path: Path, verbose=True):
         if verbose:
             print(f"Specified path already exists, using {path} instead.")
     return path
+
+
+def create_ds_description(output_dir: Path) -> None:
+    """Create a dataset_description.json file."""
+    ds_desc: dict[str, Any] = {
+        "BIDSVersion": "1.9.0",
+        "License": None,
+        "Name": None,
+        "ReferencesAndLinks": [],
+        "Authors": [
+            "Foo",
+            "Bar",
+        ],
+        "DatasetDOI": None,
+        "DatasetType": "derivative",
+        "GeneratedBy": [
+            {
+                "Name": "giga_connectome",
+                "Version": __version__,
+                "CodeURL": "https://github.com/SIMEXP/giga_connectome.git",
+            }
+        ],
+        "HowToAcknowledge": (
+            "Please refer to our repository: "
+            "https://github.com/SIMEXP/giga_connectome.git."
+        ),
+    }
+    with open(output_dir / "dataset_description.json", "w") as f:
+        json.dump(ds_desc, f, indent=4)
+
+
+def create_sidecar(output_path: Path) -> None:
+    """Create a JSON sidecar for the connectivity data."""
+    metadata: dict[str, Any] = {
+        "NodeFiles": "REQUIRED",
+        "Measure": "Pearson correlation",
+        "MeasureDescription": "Pearson correlation",
+        "Weighted": "REQUIRED",
+        "Directed": False,
+        "ValidDiagonal": True,
+        "StorageFormat": "Full",
+        "NonNegative": "",
+        "Code": "https://github.com/SIMEXP/giga_connectome.git",
+    }
+    with open(output_path, "w") as f:
+        json.dump(metadata, f, indent=4)
+
+
+def output_filename(source_file: str, atlas: str, strategy: str) -> str:
+    root = source_file.split("_")[:-1]
+    root = "_".join(root)
+    if len(root) > 0:
+        root += "_"
+    return (
+        f"{root}atlas-{atlas}_meas-PearsonCorrelation_desc-{strategy}"
+        "_relmat.h5"
+    )
