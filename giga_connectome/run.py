@@ -4,8 +4,7 @@ from giga_connectome.workflow import workflow
 from giga_connectome import __version__
 
 
-def main(argv=None):
-    """Entry point."""
+def global_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter,
         description=(
