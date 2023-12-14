@@ -21,12 +21,13 @@ classifiers = [
 ]
 dependencies = [
   "h5py",
-  "nilearn",
+  "nilearn >=0.10.2",
   "pybids >=0.15.0, <0.16.0",
   "templateflow < 23.0.0",
   "tqdm",
   "setuptools",
   "jinja2 >= 2.0",
+  "rich",
 ]
 dynamic = ["version"]
 
@@ -38,6 +39,7 @@ dev = [
   "black",
   "pre-commit",
   "giga_connectome[test]",
+  'tox',
 ]
 test = [
   "pytest",
@@ -46,7 +48,8 @@ test = [
 docs = [
   "sphinx",
   "sphinx_rtd_theme",
-  "myst-parser"
+  "myst-parser",
+  "sphinx-argparse"
 ]
 # Aliases
 tests = ["giga_connectome[test]"]

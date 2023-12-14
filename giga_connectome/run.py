@@ -4,8 +4,7 @@ from giga_connectome.workflow import workflow
 from giga_connectome import __version__
 
 
-def main(argv=None):
-    """Entry point."""
+def global_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter,
         description=(
@@ -105,6 +104,23 @@ def main(argv=None):
         "pipeline (option A). The default is False.",
         action="store_true",
     )
+    parser.add_argument(
+        "--verbosity",
+        help="""
+        Verbosity level.
+        """,
+        required=False,
+        choices=[0, 1, 2, 3],
+        default=2,
+        type=int,
+        nargs=1,
+    )
+    return parser
+
+
+def main(argv=None):
+    """Entry point."""
+    parser = global_parser()
 
     args = parser.parse_args(argv)
 

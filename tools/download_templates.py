@@ -4,6 +4,10 @@ Download atlases that are relevant.
 """
 from pathlib import Path
 
+from giga_connectome.logger import gc_logger
+
+gc_log = gc_logger()
+
 
 def fetch_tpl_atlas():
     """Download datasets from templateflow."""
@@ -13,7 +17,7 @@ def fetch_tpl_atlas():
     for atlas in atlases:
         tf_path = tf.get("MNI152NLin2009cAsym", atlas=atlas)
         if isinstance(tf_path, list) and len(tf_path) > 0:
-            print(f"{atlas} exists.")
+            gc_log.info(f"{atlas} exists.")
     # download MNI grey matter template
     tf.get("MNI152NLin2009cAsym", label="GM")
 
@@ -24,7 +28,7 @@ def download_mist():
 
     tf_path = templateflow.api.get("MNI152NLin2009bAsym", atlas="BASC")
     if isinstance(tf_path, list) and len(tf_path) > 0:
-        print("BASC / MIST atlas exists.")
+        gc_log.info("BASC / MIST atlas exists.")
         return
 
     # download and convert

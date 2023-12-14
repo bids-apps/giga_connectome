@@ -19,6 +19,10 @@ from scipy.ndimage import binary_closing
 
 from giga_connectome.atlas import resample_atlas_collection
 
+from giga_connectome.logger import gc_logger
+
+gc_log = gc_logger()
+
 
 def generate_gm_mask_atlas(
     working_dir: Path,
@@ -63,7 +67,6 @@ def generate_group_mask(
     template: str = "MNI152NLin2009cAsym",
     templateflow_dir: Optional[Path] = None,
     n_iter: int = 2,
-    verbose: int = 1,
 ) -> Nifti1Image:
     """
     Generate a group EPI grey matter mask, and overlaid with a MNI grey
@@ -88,9 +91,6 @@ def generate_group_mask(
         Number of repetitions of dilation and erosion steps performed in
         scipy.ndimage.binary_closing function.
 
-    verbose :
-        Level of verbosity.
-
     Keyword Arguments
     -----------------
     Used to filter the cirret
@@ -102,12 +102,10 @@ def generate_group_mask(
     nibabel.nifti1.Nifti1Image
         EPI (grey matter) mask for the current group of subjects.
     """
-    if verbose > 1:
-        print(f"Found {len(imgs)} masks")
-    if exclude := _check_mask_affine(imgs, verbose):
+    gc_log.debug(f"Found {len(imgs)} masks")
+    if exclude := _check_mask_affine(imgs):
         imgs, __annotations__ = _get_consistent_masks(imgs, exclude)
-        if verbose > 1:
-            print(f"Remaining: {len(imgs)} masks")
+        gc_log.debug(f"Remaining: {len(imgs)} masks")
 
     # templateflow environment setting to get around network issue
     if templateflow_dir and templateflow_dir.exists():
@@ -129,7 +127,7 @@ def generate_group_mask(
         memory=None,
         verbose=0,
     )
-    print(
+    gc_log.info(
         f"Group EPI mask affine:\n{group_epi_mask.affine}"
         f"\nshape: {group_epi_mask.shape}"
     )
@@ -204,7 +202,7 @@ def _get_consistent_masks(
 
 
 def _check_mask_affine(
-    mask_imgs: List[Union[Path, str, Nifti1Image]], verbose: int = 1
+    mask_imgs: List[Union[Path, str, Nifti1Image]]
 ) -> Union[list, None]:
     """Given a list of input mask images, show the most common affine matrix
     and subjects with different values.
@@ -214,9 +212,6 @@ def _check_mask_affine(
     mask_imgs : :obj:`list` of Niimg-like objects
         See :ref:`extracting_data`.
         3D or 4D EPI image with same affine.
-
-    verbose :
-        Level of verbosity.
 
     Returns
     -------
@@ -244,12 +239,11 @@ def _check_mask_affine(
     common_affine = max(
         set(header_info["affine"]), key=header_info["affine"].count
     )
-    if verbose > 0:
-        print(
-            f"We found {len(set(header_info['affine']))} unique affine "
-            f"matrices. The most common one is "
-            f"{key_to_header[common_affine]}"
-        )
+    gc_log.info(
+        f"We found {len(set(header_info['affine']))} unique affine "
+        f"matrices. The most common one is "
+        f"{key_to_header[common_affine]}"
+    )
     odd_balls = set(header_info["affine"]) - {common_affine}
     if not odd_balls:
         return None
@@ -259,18 +253,16 @@ def _check_mask_affine(
         ob_index = [
             i for i, aff in enumerate(header_info["affine"]) if aff == ob
         ]
-        if verbose > 1:
-            print(
-                "The following subjects has a different affine matrix "
-                f"({key_to_header[ob]}) comparing to the most common value: "
-                f"{mask_imgs[ob_index]}."
-            )
-        exclude += ob_index
-    if verbose > 0:
-        print(
-            f"{len(exclude)} out of {len(mask_imgs)} has "
-            "different affine matrix. Ignore when creating group mask."
+        gc_log.debug(
+            "The following subjects has a different affine matrix "
+            f"({key_to_header[ob]}) comparing to the most common value: "
+            f"{mask_imgs[ob_index]}."
         )
+        exclude += ob_index
+    gc_log.info(
+        f"{len(exclude)} out of {len(mask_imgs)} has "
+        "different affine matrix. Ignore when creating group mask."
+    )
     return sorted(exclude)
 
 
@@ -284,7 +276,9 @@ def _check_pregenerated_masks(template, working_dir, atlas):
     if not group_mask.exists():
         group_mask = None
     else:
-        print(f"Found pregenerated group level grey matter mask: {group_mask}")
+        gc_log.info(
+            f"Found pregenerated group level grey matter mask: {group_mask}"
+        )
 
     # atlas
     resampled_atlases = []
@@ -301,8 +295,8 @@ def _check_pregenerated_masks(template, working_dir, atlas):
     if not all(all_exist):
         resampled_atlases = None
     else:
-        print(
-            f"Found resampled atlases: {resampled_atlases}. Skipping group "
-            "level mask generation step."
+        gc_log.info(
+            f"Found resampled atlases:\n{[str(x) for x in resampled_atlases]}."
+            "\nSkipping group level mask generation step."
         )
     return group_mask, resampled_atlases
