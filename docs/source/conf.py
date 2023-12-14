@@ -25,6 +25,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
+    "sphinxarg.ext",
 ]
 
 templates_path = ["_templates"]
@@ -35,7 +36,6 @@ exclude_patterns = []
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "sphinx_rtd_theme"
-html_static_path = ["_static"]
 
 # -- Options for myst_parser -------------------------------------------------
 myst_enable_extensions = ["colon_fence"]
