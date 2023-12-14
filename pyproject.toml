@@ -74,6 +74,12 @@ exclude = "giga_connectome/_version.py"
 line_length = 79
 
 [tool.pytest.ini_options]
+minversion = "7"
+testpaths = ["giga_connectome/tests"]
+log_cli_level = "INFO"
+xfail_strict = true
+addopts = ["-ra", "--strict-config", "--strict-markers"]
 markers = [
     "smoke: smoke tests that will run on a downsampled real dataset (deselect with '-m \"not smoke\"')",
 ]
+filterwarnings = ["error"]
