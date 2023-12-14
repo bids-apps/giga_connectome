@@ -239,7 +239,7 @@ def _check_mask_affine(
     common_affine = max(
         set(header_info["affine"]), key=header_info["affine"].count
     )
-    gc_log.debug(
+    gc_log.info(
         f"We found {len(set(header_info['affine']))} unique affine "
         f"matrices. The most common one is "
         f"{key_to_header[common_affine]}"
