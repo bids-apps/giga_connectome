@@ -28,6 +28,7 @@ Released August 2023
 
 ### Changes
 
+- [EHN] If an output file already exists, it will be overwritten and warning is logged. (@Remi-Gau)
 - [EHN] Default atlas is now MIST. (@htwangtw)
 - [EHN] When using the `participant` analysis level, the output is one file per subject, rather than one file per scan. (@htwangtw)
 
