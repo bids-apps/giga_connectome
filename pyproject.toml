@@ -26,6 +26,7 @@ dependencies = [
   "templateflow < 23.0.0",
   "tqdm",
   "setuptools",
+  "rich",
 ]
 dynamic = ["version"]
 

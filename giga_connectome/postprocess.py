@@ -101,9 +101,13 @@ def run_postprocessing_dataset(
     )
 
     # transform data
-    gc_log.info("processing subjects")
+    gc_log.info("Processing subject")
 
     for img in tqdm(images):
+
+        print()
+        gc_log.info(f"Processing image:\n{img.filename}")
+
         # process timeseries
         denoised_img = denoise_nifti_voxel(
             strategy, group_mask, standardize, smoothing_fwhm, img.path
@@ -146,9 +150,11 @@ def run_postprocessing_dataset(
                     f"{attribute_name}_connectome", data=correlation_matrix
                 )
 
+        gc_log.info(f"Saved to:\n{output_path}")
+
     if analysis_level == "group":
 
-        gc_log.info("create group connectome")
+        gc_log.info("Create group connectome")
 
         for desc in connectomes:
             average_connectome = np.mean(

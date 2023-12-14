@@ -296,7 +296,7 @@ def _check_pregenerated_masks(template, working_dir, atlas):
         resampled_atlases = None
     else:
         gc_log.info(
-            f"Found resampled atlases: {resampled_atlases}. Skipping group "
-            "level mask generation step."
+            f"Found resampled atlases:\n{[str(x) for x in resampled_atlases]}."
+            "\nSkipping group level mask generation step."
         )
     return group_mask, resampled_atlases

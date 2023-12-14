@@ -62,7 +62,7 @@ def workflow(args):
         "MNI152NLin6Asym" if is_ica_aroma(strategy) else "MNI152NLin2009cAsym"
     )
 
-    gc_log.info("Indexing BIDS directory")
+    gc_log.info(f"Indexing BIDS directory:\n\t{bids_dir}")
 
     # create subject ts and connectomes
     # refactor the two cases into one
@@ -81,7 +81,7 @@ def workflow(args):
             )
             connectome_path = utils.check_path(connectome_path)
 
-            gc_log.info("Generate subject level connectomes")
+            gc_log.info(f"Generate subject level connectomes: sub-{subject}")
 
             run_postprocessing_dataset(
                 strategy,
