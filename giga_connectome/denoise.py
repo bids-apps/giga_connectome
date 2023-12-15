@@ -22,7 +22,7 @@ PRESET_STRATEGIES = [
     "icaaroma",
 ]
 
-# More refined type not possible with python <= 3.9
+# More refined type not possible with python <= 3.9 ?
 # STRATEGY_TYPE = TypedDict(
 #     "STRATEGY_TYPE",
 #     {
