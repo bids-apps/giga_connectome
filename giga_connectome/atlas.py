@@ -155,7 +155,7 @@ def _check_altas_config(atlas: str | Path | dict[str, Any]) -> dict[str, Any]:
         if atlas in PRESET_ATLAS:
             config_path = Path(
                 resource_filename(
-                    "giga_connectom)e", f"data/atlas/{atlas}.json"
+                    "giga_connectome", f"data/atlas/{atlas}.json"
                 )
             )
         elif Path(atlas).exists():
