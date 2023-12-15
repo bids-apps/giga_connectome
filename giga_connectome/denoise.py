@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Callable, List, TypedDict, Union
+from typing import Any, Callable, Dict, List, TypedDict, Union
 
 import numpy as np
 import pandas as pd
@@ -38,7 +38,7 @@ STRATEGY_TYPE = TypedDict(
     {
         "name": str,
         "function": Callable[..., Any],
-        "parameters": dict[str, Union[str, List[str]]],
+        "parameters": Dict[str, Union[str, List[str]]],
     },
 )
 
