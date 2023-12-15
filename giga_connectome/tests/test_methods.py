@@ -9,4 +9,6 @@ def test_generate_method_section(tmp_path):
         standardize="psc",
         strategy="simple",
         mni_space="MNI152NLin6Asym",
+        average_correlation=True,
+        analysis_level=True,
     )
