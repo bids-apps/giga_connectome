@@ -7,10 +7,15 @@ Released MONTH YEAR
 ### New
 
 - [DOCS] Improved documentation. (@htwangtw)
+- [ENH] use logger instead of print statements. (@Remi-Gau)
 
 ### Fixes
 
+- [FIX] Bump nilearn version to 0.10.2 to fix issues [#26](https://github.com/SIMEXP/giga_connectome/issues/26) and [#27](https://github.com/SIMEXP/giga_connectome/issues/27). (@Remi-Gau)
+
 ### Changes
+
+- [MAINT] Pin dependencies for docker build for better reproducibility. (@Remi-Gau)
 
 ## 0.4.0
 
@@ -23,17 +28,13 @@ Released August 2023
 - [EHN] Calculate average intranetwork correlation (NIAK feature). (@htwangtw)
 - [EHN] Add TR as an attribute to time series data. (@htwangtw)
 - [MAINT] Fully functional CI and documentations. (@htwangtw)
-- [ENH] use logger instead of print statements. (@Remi-Gau)
 
 ### Fixes
-
-- [FIX] Bump nilearn version to 0.10.2 to fix issues [#26](https://github.com/SIMEXP/giga_connectome/issues/26) and [#27](https://github.com/SIMEXP/giga_connectome/issues/27). (@Remi-Gau)
 
 ### Changes
 
 - [EHN] Default atlas is now MIST. (@htwangtw)
 - [EHN] When using the `participant` analysis level, the output is one file per subject, rather than one file per scan. (@htwangtw)
-- [MAINT] Pin dependencies for docker build for better reproducibility. (@Remi-Gau)
 
 ## 0.3.0
 
