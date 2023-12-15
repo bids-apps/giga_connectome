@@ -109,7 +109,6 @@ module = [
     "nilearn.masking.*",
     "nilearn.image.*",
     "nilearn.interfaces.*",
-    "pytest",
     "rich.*",
     "scipy.ndimage.*",
     "templateflow.*",

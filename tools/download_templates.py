@@ -33,8 +33,8 @@ def download_mist() -> None:
 
     # download and convert
     import importlib.util
-    import sys
     import shutil
+    import sys
 
     if spec := importlib.util.spec_from_file_location(
         "mist2templateflow",
