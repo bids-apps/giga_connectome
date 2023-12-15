@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Callable, TypedDict, Union
+from typing import Any, Callable, TypedDict
 
 import numpy as np
 import pandas as pd
@@ -22,14 +22,22 @@ PRESET_STRATEGIES = [
     "icaaroma",
 ]
 
-
+# More refined type not possible with python <= 3.9
+# STRATEGY_TYPE = TypedDict(
+#     "STRATEGY_TYPE",
+#     {
+#         "name": str,
+#         "function": Callable[
+#             ..., tuple[pd.DataFrame, Union[np.ndarray[Any, Any], None]]
+#         ],
+#         "parameters": dict[str, str | list[str]],
+#     },
+# )
 STRATEGY_TYPE = TypedDict(
     "STRATEGY_TYPE",
     {
         "name": str,
-        "function": Callable[
-            ..., tuple[pd.DataFrame, Union[np.ndarray[Any, Any], None]]
-        ],
+        "function": Callable[..., Any],
         "parameters": dict[str, str | list[str]],
     },
 )
