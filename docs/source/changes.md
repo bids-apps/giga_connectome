@@ -12,6 +12,8 @@ Released MONTH YEAR
 
 ### Changes
 
+- [ENH] Make output more BIDS compliant. (@Remi-Gau)
+
 ## 0.4.0
 
 Released August 2023

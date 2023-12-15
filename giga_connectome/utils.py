@@ -187,14 +187,17 @@ def get_subject_lists(
 def check_path(path: Path):
     """Check if given path (file or dir) already exists.
 
-    If so, a warning is logged.
+    If so, a warning is logged and the previous file is deleted.
+    If the parent path does not exist, it is created.
     """
     path = path.absolute()
+    path.parent.mkdir(parents=True, exist_ok=True)
     if path.exists():
         gc_log.warning(
             f"Specified path already exists:\n\t{path}\n"
-            "Old file will be overwritten"
+            "Old file will be overwritten."
         )
+        path.unlink()
 
 
 def create_ds_description(output_dir: Path) -> None:
@@ -204,10 +207,6 @@ def create_ds_description(output_dir: Path) -> None:
         "License": None,
         "Name": None,
         "ReferencesAndLinks": [],
-        "Authors": [
-            "Foo",
-            "Bar",
-        ],
         "DatasetDOI": None,
         "DatasetType": "derivative",
         "GeneratedBy": [
@@ -229,7 +228,6 @@ def create_ds_description(output_dir: Path) -> None:
 def create_sidecar(output_path: Path) -> None:
     """Create a JSON sidecar for the connectivity data."""
     metadata: dict[str, Any] = {
-        "NodeFiles": "REQUIRED",
         "Measure": "Pearson correlation",
         "MeasureDescription": "Pearson correlation",
         "Weighted": "REQUIRED",

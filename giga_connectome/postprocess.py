@@ -116,7 +116,7 @@ def run_postprocessing_dataset(
             output_to_bids,
         )
         connectome_path = output_path / subject / "func" / filename
-        connectome_path = utils.check_path(connectome_path)
+        utils.check_path(connectome_path)
 
     for img in tqdm(images):
         print()
@@ -141,7 +141,7 @@ def run_postprocessing_dataset(
                 output_to_bids,
             )
             connectome_path = connectome_path / "func" / filename
-            connectome_path = utils.check_path(connectome_path)
+            utils.check_path(connectome_path)
 
         for desc, masker in atlas_maskers.items():
             attribute_name = (
@@ -194,7 +194,7 @@ def run_postprocessing_dataset(
                 output_to_bids,
             )
         )
-        connectome_path = utils.check_path(connectome_path)
+        utils.check_path(connectome_path)
 
         gc_log.info("Create group connectome")
         gc_log.info(connectome_path)
