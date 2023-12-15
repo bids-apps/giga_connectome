@@ -36,9 +36,14 @@ giga_connectome = "giga_connectome.run:main"
 [project.optional-dependencies]
 dev = [
   "black",
+  "flaek8",
   "pre-commit",
   "giga_connectome[test]",
   'tox',
+  'mypy',
+  'types-all',
+  'pandas-stubs',
+  'types-tqdm'
 ]
 test = [
   "pytest",
@@ -77,6 +82,45 @@ exclude = [
 target-version = ['py38']
 exclude = "giga_connectome/_version.py"
 line_length = 79
+
+
+[tool.mypy]
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_incomplete_defs = true
+disallow_untyped_defs = true
+enable_error_code = ["ignore-without-code", "redundant-expr"]  # "truthy-bool"
+no_implicit_optional = true
+show_error_codes = true
+# strict = true
+warn_redundant_casts = true
+warn_unreachable = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+ignore_missing_imports = true
+module = [
+    "bids.*",
+    "giga_connectome._version",
+    "h5py.*",
+    "nibabel.*",
+    "nilearn.connectome.*",
+    "nilearn.maskers.*",
+    "nilearn.masking.*",
+    "nilearn.image.*",
+    "nilearn.interfaces.*",
+    "pytest",
+    "rich.*",
+    "scipy.ndimage.*",
+    "templateflow.*",
+]
+
+[[tool.mypy.overrides]]
+ignore_errors = true
+module = [
+    'giga_connectome.tests.*',
+    'conf',
+]
 
 [tool.pytest.ini_options]
 markers = [

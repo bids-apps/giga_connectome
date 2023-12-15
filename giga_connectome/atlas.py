@@ -1,13 +1,15 @@
-import os
-import json
-from typing import Union, List
+from __future__ import annotations
 
+import json
+import os
 from pathlib import Path
-from tqdm import tqdm
+from typing import Any
+
 import nibabel as nib
-from nilearn.image import resample_to_img
 from nibabel import Nifti1Image
+from nilearn.image import resample_to_img
 from pkg_resources import resource_filename
+from tqdm import tqdm
 
 from giga_connectome.logger import gc_logger
 
@@ -17,7 +19,9 @@ gc_log = gc_logger()
 PRESET_ATLAS = ["DiFuMo", "MIST", "Schaefer20187Networks"]
 
 
-def load_atlas_setting(atlas: Union[str, Path, dict]):
+def load_atlas_setting(
+    atlas: str | Path | dict[str, str | Path | dict[str, str]],
+) -> dict[str, Any]:
     """Load atlas details for templateflow api to fetch.
     The setting file can be configured for atlases not included in the
     templateflow collections, but user has to organise their files to
@@ -82,10 +86,10 @@ def load_atlas_setting(atlas: Union[str, Path, dict]):
 
 def resample_atlas_collection(
     template: str,
-    atlas_config: dict,
+    atlas_config: dict[str, Any],
     group_mask_dir: Path,
     group_mask: Nifti1Image,
-) -> List[Path]:
+) -> list[Path]:
     """Resample a atlas collection to group grey matter mask.
 
     Parameters
@@ -105,7 +109,7 @@ def resample_atlas_collection(
 
     Returns
     -------
-    List of pathlib.Path
+    list of pathlib.Path
         Paths to atlases sampled to group level grey matter mask.
     """
     gc_log.info("Resample atlas to group grey matter mask.")
@@ -128,12 +132,12 @@ def resample_atlas_collection(
     return resampled_atlases
 
 
-def _check_altas_config(atlas: Union[str, Path, dict]) -> dict:
+def _check_altas_config(atlas: str | Path | dict[str, Any]) -> dict[str, Any]:
     """Load the configuration file.
 
     Parameters
     ----------
-    atlas : Union[str, Path, dict]
+    atlas : str | Path | dict
         Atlas name or configuration file path.
 
     Returns
@@ -149,8 +153,10 @@ def _check_altas_config(atlas: Union[str, Path, dict]) -> dict:
     # load the file first if the input is not already a dictionary
     if isinstance(atlas, (str, Path)):
         if atlas in PRESET_ATLAS:
-            config_path = resource_filename(
-                "giga_connectome", f"data/atlas/{atlas}.json"
+            config_path = Path(
+                resource_filename(
+                    "giga_connectom)e", f"data/atlas/{atlas}.json"
+                )
             )
         elif Path(atlas).exists():
             config_path = Path(atlas)
@@ -158,14 +164,15 @@ def _check_altas_config(atlas: Union[str, Path, dict]) -> dict:
         with open(config_path, "r") as file:
             atlas = json.load(file)
 
-    keys = list(atlas.keys())
     minimal_keys = ["name", "parameters", "desc", "templateflow_dir"]
-    common_keys = set(minimal_keys).intersection(set(keys))
-    if isinstance(atlas, dict) and common_keys != set(minimal_keys):
-        raise KeyError(
-            "Invalid dictionary input. Input should"
-            " contain minimally the following keys: 'name', "
-            "'parameters', 'desc', 'templateflow_dir'. Found "
-            f"{keys}"
-        )
+    if isinstance(atlas, dict):
+        keys = list(atlas.keys())
+        common_keys = set(minimal_keys).intersection(set(keys))
+        if common_keys != set(minimal_keys):
+            raise KeyError(
+                "Invalid dictionary input. Input should"
+                " contain minimally the following keys: 'name', "
+                "'parameters', 'desc', 'templateflow_dir'. Found "
+                f"{keys}"
+            )
     return atlas

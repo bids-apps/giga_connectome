@@ -9,7 +9,7 @@ from giga_connectome.logger import gc_logger
 gc_log = gc_logger()
 
 
-def fetch_tpl_atlas():
+def fetch_tpl_atlas() -> None:
     """Download datasets from templateflow."""
     import templateflow.api as tf
 
@@ -22,7 +22,7 @@ def fetch_tpl_atlas():
     tf.get("MNI152NLin2009cAsym", label="GM")
 
 
-def download_mist():
+def download_mist() -> None:
     """Download mist atlas and convert to templateflow format."""
     import templateflow
 
@@ -49,7 +49,7 @@ def download_mist():
     shutil.rmtree(Path(__file__).parent / "tmp")
 
 
-def main():
+def main() -> None:
     fetch_tpl_atlas()
     download_mist()
 

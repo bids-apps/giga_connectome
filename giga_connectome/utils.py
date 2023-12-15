@@ -1,8 +1,10 @@
-from typing import List, Tuple, Union
+from __future__ import annotations
+
 from pathlib import Path
-from nilearn.interfaces.bids import parse_bids_filename
-from bids.layout import Query
+
 from bids import BIDSLayout
+from bids.layout import BIDSFile, Query
+from nilearn.interfaces.bids import parse_bids_filename
 
 from giga_connectome.logger import gc_logger
 
@@ -10,12 +12,12 @@ gc_log = gc_logger()
 
 
 def get_bids_images(
-    subjects: List[str],
+    subjects: list[str],
     template: str,
     bids_dir: Path,
     reindex_bids: bool,
-    bids_filters: dict,
-) -> Tuple[dict, BIDSLayout]:
+    bids_filters: None | dict[str, dict[str, str]],
+) -> tuple[dict[str, list[BIDSFile]], BIDSLayout]:
     """
     Apply BIDS filter to the base filter we are using.
     Modified from fmripprep
@@ -70,7 +72,9 @@ def get_bids_images(
     return subj_data, layout
 
 
-def check_filter(bids_filters: dict) -> dict:
+def check_filter(
+    bids_filters: None | dict[str, dict[str, str]]
+) -> dict[str, dict[str, str]]:
     """Should only have bold and mask."""
     if not bids_filters:
         return {}
@@ -86,34 +90,34 @@ def check_filter(bids_filters: dict) -> dict:
     return bids_filters
 
 
-def _filter_pybids_none_any(dct: dict) -> dict:
-    import bids
-
+def _filter_pybids_none_any(
+    dct: dict[str, None | str]
+) -> dict[str, Query.NONE | Query.ANY]:
     return {
-        k: bids.layout.Query.NONE
-        if v is None
-        else (bids.layout.Query.ANY if v == "*" else v)
+        k: Query.NONE if v is None else (Query.ANY if v == "*" else v)
         for k, v in dct.items()
     }
 
 
-def parse_bids_filter(value: Path) -> dict:
+def parse_bids_filter(value: Path) -> None | dict[str, dict[str, str]]:
     from json import JSONDecodeError, loads
 
-    if value:
-        if value.exists():
-            try:
-                return loads(
-                    value.read_text(),
-                    object_hook=_filter_pybids_none_any,
-                )
-            except JSONDecodeError:
-                raise JSONDecodeError(f"JSON syntax error in: <{value}>.")
-        else:
-            raise FileNotFoundError(f"Path does not exist: <{value}>.")
+    if not value:
+        return None
+
+    if not value.exists():
+        raise FileNotFoundError(f"Path does not exist: <{value}>.")
+    try:
+        tmp = loads(
+            value.read_text(),
+            object_hook=_filter_pybids_none_any,
+        )
+    except JSONDecodeError:
+        raise JSONDecodeError(f"JSON syntax error in: <{value}>.")
+    return tmp
 
 
-def parse_standardize_options(standardize: str) -> Union[str, bool]:
+def parse_standardize_options(standardize: str) -> str | bool:
     if standardize not in ["zscore", "psc"]:
         raise ValueError(f"{standardize} is not a valid standardize strategy.")
     if standardize == "psc":
@@ -122,7 +126,7 @@ def parse_standardize_options(standardize: str) -> Union[str, bool]:
         return True
 
 
-def parse_bids_name(img: str) -> List[str]:
+def parse_bids_name(img: str) -> tuple[str, str | None, str]:
     """Get subject, session, and specifier for a fMRIPrep output."""
     reference = parse_bids_filename(img)
     subject = f"sub-{reference['sub']}"
@@ -139,8 +143,8 @@ def parse_bids_name(img: str) -> List[str]:
 
 
 def get_subject_lists(
-    participant_label: List[str] = None, bids_dir: Path = None
-) -> List[str]:
+    participant_label: None | list[str] = None, bids_dir: None | Path = None
+) -> list[str]:
     """
     Parse subject list from user options.
 
@@ -159,7 +163,7 @@ def get_subject_lists(
     Return
     ------
 
-    List
+    list
         BIDS subject identifier without `sub-` prefix.
     """
     if participant_label:
@@ -171,15 +175,17 @@ def get_subject_lists(
             checked_labels.append(sub_id)
         return checked_labels
     # get all subjects, this is quicker than bids...
-    subject_dirs = bids_dir.glob("sub-*/")
-    return [
-        subject_dir.name.split("-")[-1]
-        for subject_dir in subject_dirs
-        if subject_dir.is_dir()
-    ]
+    if bids_dir:
+        subject_dirs = bids_dir.glob("sub-*/")
+        return [
+            subject_dir.name.split("-")[-1]
+            for subject_dir in subject_dirs
+            if subject_dir.is_dir()
+        ]
+    return []
 
 
-def check_path(path: Path):
+def check_path(path: Path) -> Path:
     """Check if given path (file or dir) already exists, and if so returns a
     new path with _<n> appended (n being the number of paths with the same name
     that exist already).

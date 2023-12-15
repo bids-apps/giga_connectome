@@ -1,8 +1,9 @@
-import pytest
 import numpy as np
-from giga_connectome import mask
-from nilearn import datasets
+import pytest
 from nibabel import Nifti1Image
+from nilearn import datasets
+
+from giga_connectome import mask
 
 
 def test_generate_group_mask():

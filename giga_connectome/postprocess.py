@@ -1,12 +1,14 @@
-from typing import Union, List
+from __future__ import annotations
+
 from pathlib import Path
+from typing import Sequence, Any
 
 import h5py
-from tqdm import tqdm
 import numpy as np
+from bids.layout import BIDSImageFile
 from nilearn.connectome import ConnectivityMeasure
 from nilearn.maskers import NiftiLabelsMasker, NiftiMapsMasker
-from bids.layout import BIDSImageFile
+from tqdm import tqdm
 
 from giga_connectome import utils
 from giga_connectome.connectome import generate_timeseries_connectomes
@@ -17,11 +19,11 @@ gc_log = gc_logger()
 
 
 def run_postprocessing_dataset(
-    strategy: dict,
-    resampled_atlases: List[Union[str, Path]],
-    images: List[BIDSImageFile],
-    group_mask: Union[str, Path],
-    standardize: Union[str, bool],
+    strategy: dict[str, str | dict[str, str]],
+    resampled_atlases: Sequence[str | Path],
+    images: Sequence[BIDSImageFile],
+    group_mask: str | Path,
+    standardize: str | bool,
     smoothing_fwhm: float,
     output_path: Path,
     analysis_level: str,
@@ -88,7 +90,8 @@ def run_postprocessing_dataset(
         Whether to calculate average correlation within each parcel.
     """
     atlas = output_path.name.split("atlas-")[-1].split("_")[0]
-    atlas_maskers, connectomes = {}, {}
+    atlas_maskers: dict[str, (NiftiLabelsMasker | NiftiMapsMasker)] = {}
+    connectomes: dict[str, list[np.ndarray[Any, Any]]] = {}
     for atlas_path in resampled_atlases:
         if isinstance(atlas_path, str):
             atlas_path = Path(atlas_path)
@@ -177,7 +180,7 @@ def _set_file_flag(output_path: Path) -> str:
 
 def _fetch_h5_group(
     f: h5py.File, subject: str, session: str
-) -> Union[h5py.File, h5py.Group]:
+) -> h5py.File | h5py.Group:
     """Determine the level of grouping based on BIDS standard."""
     if subject not in f:
         return (
@@ -195,7 +198,7 @@ def _fetch_h5_group(
         return f[f"{subject}"]
 
 
-def _get_masker(atlas_path: Path) -> Union[NiftiLabelsMasker, NiftiMapsMasker]:
+def _get_masker(atlas_path: Path) -> NiftiLabelsMasker | NiftiMapsMasker:
     """Get the masker object based on the templateflow file name suffix."""
     atlas_type = atlas_path.name.split("_")[-1].split(".nii")[0]
     if atlas_type == "dseg":
