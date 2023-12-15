@@ -118,6 +118,7 @@ module = [
 ignore_errors = true
 module = [
     'giga_connectome.tests.*',
+    'download_templates',
     'conf',
 ]
 

@@ -2,7 +2,12 @@
 Set up templateflow with customised altases.
 Download atlases that are relevant.
 """
+import importlib.util
+import shutil
+import sys
 from pathlib import Path
+
+import templateflow as tf
 
 from giga_connectome.logger import gc_logger
 
@@ -11,43 +16,34 @@ gc_log = gc_logger()
 
 def fetch_tpl_atlas() -> None:
     """Download datasets from templateflow."""
-    import templateflow.api as tf
-
     atlases = ["Schaefer2018", "DiFuMo"]
     for atlas in atlases:
-        tf_path = tf.get("MNI152NLin2009cAsym", atlas=atlas)
+        tf_path = tf.api.get("MNI152NLin2009cAsym", atlas=atlas)
         if isinstance(tf_path, list) and len(tf_path) > 0:
             gc_log.info(f"{atlas} exists.")
     # download MNI grey matter template
-    tf.get("MNI152NLin2009cAsym", label="GM")
+    tf.api.get("MNI152NLin2009cAsym", label="GM")
 
 
 def download_mist() -> None:
     """Download mist atlas and convert to templateflow format."""
-    import templateflow
-
-    tf_path = templateflow.api.get("MNI152NLin2009bAsym", atlas="BASC")
+    tf_path = tf.api.get("MNI152NLin2009bAsym", atlas="BASC")
     if isinstance(tf_path, list) and len(tf_path) > 0:
         gc_log.info("BASC / MIST atlas exists.")
         return
 
     # download and convert
-    import importlib.util
-    import shutil
-    import sys
-
-    if spec := importlib.util.spec_from_file_location(
+    spec = importlib.util.spec_from_file_location(
         "mist2templateflow",
         Path(__file__).parent / "mist2templateflow/mist2templateflow.py",
-    ):
-        mist2templateflow = importlib.util.module_from_spec(spec)
-        sys.modules["module.name"] = mist2templateflow
-        if loader := spec.loader:
-            loader.exec_module(mist2templateflow)
-            mist2templateflow.convert_basc(
-                templateflow.conf.TF_HOME, Path(__file__).parent / "tmp"
-            )
-            shutil.rmtree(Path(__file__).parent / "tmp")
+    )
+    mist2templateflow = importlib.util.module_from_spec(spec)
+    sys.modules["module.name"] = mist2templateflow
+    spec.loader.exec_module(mist2templateflow)
+    mist2templateflow.convert_basc(
+        tf.conf.TF_HOME, Path(__file__).parent / "tmp"
+    )
+    shutil.rmtree(Path(__file__).parent / "tmp")
 
 
 def main() -> None:
