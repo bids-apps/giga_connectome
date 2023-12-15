@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, TypedDict
 
 import nibabel as nib
 from nibabel import Nifti1Image
@@ -18,10 +18,25 @@ gc_log = gc_logger()
 
 PRESET_ATLAS = ["DiFuMo", "MIST", "Schaefer20187Networks"]
 
+ATLAS_CONFIG_TYPE = TypedDict(
+    "ATLAS_CONFIG_TYPE",
+    {
+        "name": str,
+        "parameters": Dict[str, str],
+        "desc": List[str],
+        "templateflow_dir": Any,
+    },
+)
+
+ATLAS_SETTING_TYPE = TypedDict(
+    "ATLAS_SETTING_TYPE",
+    {"name": str, "file_paths": Dict[str, List[Path]], "type": str},
+)
+
 
 def load_atlas_setting(
-    atlas: str | Path | dict[str, str | Path | dict[str, str]],
-) -> dict[str, Any]:
+    atlas: str | Path | dict[str, Any],
+) -> ATLAS_SETTING_TYPE:
     """Load atlas details for templateflow api to fetch.
     The setting file can be configured for atlases not included in the
     templateflow collections, but user has to organise their files to
@@ -63,19 +78,16 @@ def load_atlas_setting(
 
     import templateflow
 
-    if isinstance(atlas_config["desc"], str):
-        desc = [atlas_config["desc"]]
-    else:
-        desc = atlas_config["desc"]
-
     parcellation = {}
-    for d in desc:
+    for d in atlas_config["desc"]:
         p = templateflow.api.get(
             **atlas_config["parameters"],
             raise_empty=True,
             desc=d,
             extension="nii.gz",
         )
+        if isinstance(p, Path):
+            p = [p]
         parcellation[d] = p
     return {
         "name": atlas_config["name"],
@@ -86,7 +98,7 @@ def load_atlas_setting(
 
 def resample_atlas_collection(
     template: str,
-    atlas_config: dict[str, Any],
+    atlas_config: ATLAS_SETTING_TYPE,
     group_mask_dir: Path,
     group_mask: Nifti1Image,
 ) -> list[Path]:
@@ -132,7 +144,9 @@ def resample_atlas_collection(
     return resampled_atlases
 
 
-def _check_altas_config(atlas: str | Path | dict[str, Any]) -> dict[str, Any]:
+def _check_altas_config(
+    atlas: str | Path | dict[str, Any]
+) -> ATLAS_CONFIG_TYPE:
     """Load the configuration file.
 
     Parameters
@@ -162,12 +176,12 @@ def _check_altas_config(atlas: str | Path | dict[str, Any]) -> dict[str, Any]:
             config_path = Path(atlas)
 
         with open(config_path, "r") as file:
-            atlas_dct = json.load(file)
+            atlas_config = json.load(file)
     else:
-        atlas_dct = atlas
+        atlas_config = atlas
 
     minimal_keys = ["name", "parameters", "desc", "templateflow_dir"]
-    keys = list(atlas_dct.keys())
+    keys = list(atlas_config.keys())
     common_keys = set(minimal_keys).intersection(set(keys))
     if common_keys != set(minimal_keys):
         raise KeyError(
@@ -176,4 +190,12 @@ def _check_altas_config(atlas: str | Path | dict[str, Any]) -> dict[str, Any]:
             "'parameters', 'desc', 'templateflow_dir'. Found "
             f"{keys}"
         )
-    return atlas_dct
+
+    # cast to list of string
+    if isinstance(atlas_config["desc"], (str, int)):
+        desc = [atlas_config["desc"]]
+    else:
+        desc = atlas_config["desc"]
+    atlas_config["desc"] = [str(x) for x in desc]
+
+    return atlas_config

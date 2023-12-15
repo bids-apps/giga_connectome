@@ -22,12 +22,14 @@ from scipy.ndimage import binary_closing
 from giga_connectome.atlas import resample_atlas_collection
 from giga_connectome.logger import gc_logger
 
+from giga_connectome.atlas import ATLAS_SETTING_TYPE
+
 gc_log = gc_logger()
 
 
 def generate_gm_mask_atlas(
     working_dir: Path,
-    atlas: dict[str, Any],
+    atlas: ATLAS_SETTING_TYPE,
     template: str,
     masks: list[BIDSImageFile],
 ) -> tuple[Path, list[Path]]:
@@ -267,7 +269,7 @@ def _check_mask_affine(
 
 
 def _check_pregenerated_masks(
-    template: str, working_dir: Path, atlas: dict[str, Any]
+    template: str, working_dir: Path, atlas: ATLAS_SETTING_TYPE
 ) -> tuple[Path | None, list[Path] | None]:
     """Check if the working directory is populated with needed files."""
     output_dir = working_dir / "groupmasks" / f"tpl-{template}"
