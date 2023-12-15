@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+
+title: "giga_connectome"
+
+version: 0.4.1dev
+
+abstract:
+  "generate connectome from fMRIPrep outputs."
+
+message: "If you use this software, please cite it as below."
+
+repository-code: "https://github.com/SIMEXP/giga_connectome"
+
+contact:
+  - email: htwangtw@gmail.com
+    family-names: Wang
+    given-names: Hao-Ting
+
+authors:
+  - family-names: Wang
+    given-names: Hao-Ting
+    email: htwangtw@gmail.com
+  - family-names: Dessain
+    given-names: Quentin
+  - family-names: Natasha
+    given-names: Clarke
+
+
+license: MIT
