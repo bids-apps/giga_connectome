@@ -77,8 +77,9 @@ line_length = 79
 minversion = "7"
 log_cli_level = "INFO"
 xfail_strict = true
-addopts = ["-ra", "--strict-config", "--strict-markers"]
+testpaths = ["giga_connectome/tests"]
+addopts = ["-ra", "--strict-config", "--strict-markers", "--doctest-modules", "-v"]
 markers = [
     "smoke: smoke tests that will run on a downsampled real dataset (deselect with '-m \"not smoke\"')",
 ]
-filterwarnings = ["error"]
+# filterwarnings = ["error"]

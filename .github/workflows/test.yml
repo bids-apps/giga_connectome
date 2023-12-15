@@ -158,11 +158,11 @@ jobs:
     - name: Test with pytest - ignore smoke test.
       if: ${{ !contains(needs.check_skip_flags.outputs.head-commit-message, 'full_test') }}
       run: |
-        pytest -m "not smoke" --cov=giga_connectome --cov-report=xml --doctest-modules -v --pyargs giga_connectome
+        pytest -m "not smoke" --cov=giga_connectome --cov-report=xml --pyargs giga_connectome
 
     - name: Full test - run all the test to generate accurate coverage report.
       if: ${{ contains(needs.check_skip_flags.outputs.head-commit-message, 'full_test') }} || ${{ github.event.pull_request.merged }}
-      run: pytest --cov=giga_connectome --cov-report=xml --doctest-modules -v --pyargs giga_connectome
+      run: pytest --cov=giga_connectome --cov-report=xml --pyargs giga_connectome
 
     - uses: codecov/codecov-action@v3
       if: ${{ always() }}
