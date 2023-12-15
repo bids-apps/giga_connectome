@@ -185,32 +185,16 @@ def get_subject_lists(
 
 
 def check_path(path: Path):
-    """Check if given path (file or dir) already exists, and if so returns a
-    new path with _<n> appended (n being the number of paths with the same name
-    that exist already).
+    """Check if given path (file or dir) already exists.
+
+    If so, a warning is logged.
     """
-    path = path.resolve()
-    ext = path.suffix
-    path_parent = path.parent
-
-    path_parent.mkdir(parents=True, exist_ok=True)
-
+    path = path.absolute()
     if path.exists():
-        similar_paths = [
-            str(p).replace(ext, "")
-            for p in path_parent.glob(f"{path.stem}_*{ext}")
-        ]
-        existing_numbers = [
-            int(p.split("_")[-1])
-            for p in similar_paths
-            if p.split("_")[-1].isdigit()
-        ]
-        n = str(max(existing_numbers) + 1) if existing_numbers else "1"
-        path = path_parent / f"{path.stem}_{n}{ext}"
-
-        gc_log.debug(f"Specified path already exists, using {path} instead.")
-
-    return path
+        gc_log.warning(
+            f"Specified path already exists:\n\t{path}\n"
+            "Old file will be overwritten"
+        )
 
 
 def create_ds_description(output_dir: Path) -> None:
@@ -273,7 +257,7 @@ def output_filename(
         root = [x for x in root if "sub" in x]
 
     root = "_".join(root)
-    if len(root) > 0:
+    if root != "":
         root += "_"
 
     return (
