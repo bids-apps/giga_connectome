@@ -66,11 +66,13 @@ def workflow(args):
 
     methods.generate_method_section(
         output_dir=output_dir,
-        atlas=args.atlas,
+        atlas=atlas["name"],
         smoothing_fwhm=smoothing_fwhm,
         standardize=args.standardize,
         strategy=args.denoise_strategy,
         mni_space=template,
+        average_correlation=calculate_average_correlation,
+        analysis_level=analysis_level == "group",
     )
 
     # create subject ts and connectomes
