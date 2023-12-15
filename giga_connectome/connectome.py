@@ -8,11 +8,10 @@ from nibabel import Nifti1Image
 from nilearn.connectome import ConnectivityMeasure
 from nilearn.image import load_img
 from nilearn.maskers import NiftiMasker
-from numpy._typing import NDArray
 
 
 def build_size_roi(
-    mask: NDArray[Any], labels_roi: NDArray[Any]
+    mask: np.ndarray[Any, Any], labels_roi: np.ndarray[Any, Any]
 ) -> np.ndarray[Any, np.dtype[Any]]:
     """Extract labels and sizes of ROIs given an atlas.
     The atlas parcels must be discrete segmentations.
@@ -47,12 +46,12 @@ def build_size_roi(
 
 
 def calculate_intranetwork_correlation(
-    correlation_matrix: NDArray[Any],
-    masker_labels: NDArray[Any],
-    time_series_atlas: NDArray[Any],
+    correlation_matrix: np.ndarray[Any, Any],
+    masker_labels: np.ndarray[Any, Any],
+    time_series_atlas: np.ndarray[Any, Any],
     group_mask: str | Path | Nifti1Image,
     atlas_image: str | Path | Nifti1Image,
-) -> tuple[NDArray[Any], NDArray[Any]]:
+) -> tuple[np.ndarray[Any, Any], np.ndarray[Any, Any]]:
     """Calculate the average functional correlation within each parcel.
     Currently we only support discrete segmentations.
 
@@ -115,7 +114,7 @@ def generate_timeseries_connectomes(
     group_mask: str | Path,
     correlation_measure: ConnectivityMeasure,
     calculate_average_correlation: bool,
-) -> tuple[NDArray[Any], NDArray[Any]]:
+) -> tuple[np.ndarray[Any, Any], np.ndarray[Any, Any]]:
     """Generate timeseries-based connectomes from functional data.
 
     Parameters

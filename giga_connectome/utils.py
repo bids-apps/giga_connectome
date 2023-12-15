@@ -112,33 +112,33 @@ def parse_bids_filter(value: Path) -> None | dict[str, dict[str, str]]:
             value.read_text(),
             object_hook=_filter_pybids_none_any,
         )
-    except JSONDecodeError:
-        raise JSONDecodeError(f"JSON syntax error in: <{value}>.")
+    except JSONDecodeError as e:
+        raise ValueError(f"JSON syntax error in: <{value}>.") from e
     return tmp
 
 
 def parse_standardize_options(standardize: str) -> str | bool:
     if standardize not in ["zscore", "psc"]:
         raise ValueError(f"{standardize} is not a valid standardize strategy.")
-    if standardize == "psc":
-        return standardize
-    else:
-        return True
+    return standardize if standardize == "psc" else True
 
 
 def parse_bids_name(img: str) -> tuple[str, str | None, str]:
     """Get subject, session, and specifier for a fMRIPrep output."""
     reference = parse_bids_filename(img)
+
     subject = f"sub-{reference['sub']}"
-    session = reference.get("ses", None)
-    run = reference.get("run", None)
+
     specifier = f"task-{reference['task']}"
+    run = reference.get("run", None)
+    if isinstance(run, str):
+        specifier = f"{specifier}_run-{run}"
+
+    session = reference.get("ses", None)
     if isinstance(session, str):
         session = f"ses-{session}"
         specifier = f"{session}_{specifier}"
 
-    if isinstance(run, str):
-        specifier = f"{specifier}_run-{run}"
     return subject, session, specifier
 
 
@@ -185,7 +185,7 @@ def get_subject_lists(
     return []
 
 
-def check_path(path: Path):
+def check_path(path: Path) -> None:
     """Check if given path (file or dir) already exists.
 
     If so, a warning is logged.

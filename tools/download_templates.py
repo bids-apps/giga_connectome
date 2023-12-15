@@ -36,17 +36,18 @@ def download_mist() -> None:
     import sys
     import shutil
 
-    spec = importlib.util.spec_from_file_location(
+    if spec := importlib.util.spec_from_file_location(
         "mist2templateflow",
         Path(__file__).parent / "mist2templateflow/mist2templateflow.py",
-    )
-    mist2templateflow = importlib.util.module_from_spec(spec)
-    sys.modules["module.name"] = mist2templateflow
-    spec.loader.exec_module(mist2templateflow)
-    mist2templateflow.convert_basc(
-        templateflow.conf.TF_HOME, Path(__file__).parent / "tmp"
-    )
-    shutil.rmtree(Path(__file__).parent / "tmp")
+    ):
+        mist2templateflow = importlib.util.module_from_spec(spec)
+        sys.modules["module.name"] = mist2templateflow
+        if loader := spec.loader:
+            loader.exec_module(mist2templateflow)
+            mist2templateflow.convert_basc(
+                templateflow.conf.TF_HOME, Path(__file__).parent / "tmp"
+            )
+            shutil.rmtree(Path(__file__).parent / "tmp")
 
 
 def main() -> None:

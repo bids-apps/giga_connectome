@@ -162,17 +162,18 @@ def _check_altas_config(atlas: str | Path | dict[str, Any]) -> dict[str, Any]:
             config_path = Path(atlas)
 
         with open(config_path, "r") as file:
-            atlas = json.load(file)
+            atlas_dct = json.load(file)
+    else:
+        atlas_dct = atlas
 
     minimal_keys = ["name", "parameters", "desc", "templateflow_dir"]
-    if isinstance(atlas, dict):
-        keys = list(atlas.keys())
-        common_keys = set(minimal_keys).intersection(set(keys))
-        if common_keys != set(minimal_keys):
-            raise KeyError(
-                "Invalid dictionary input. Input should"
-                " contain minimally the following keys: 'name', "
-                "'parameters', 'desc', 'templateflow_dir'. Found "
-                f"{keys}"
-            )
-    return atlas
+    keys = list(atlas_dct.keys())
+    common_keys = set(minimal_keys).intersection(set(keys))
+    if common_keys != set(minimal_keys):
+        raise KeyError(
+            "Invalid dictionary input. Input should"
+            " contain minimally the following keys: 'name', "
+            "'parameters', 'desc', 'templateflow_dir'. Found "
+            f"{keys}"
+        )
+    return atlas_dct

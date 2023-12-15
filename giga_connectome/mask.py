@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import re
 from pathlib import Path
-from typing import Optional, Any, Sequence
+from typing import Any, Sequence
 
 import nibabel as nib
 import numpy as np
@@ -66,7 +66,7 @@ def generate_gm_mask_atlas(
 def generate_group_mask(
     imgs: Sequence[Path | str | Nifti1Image],
     template: str = "MNI152NLin2009cAsym",
-    templateflow_dir: Optional[Path] = None,
+    templateflow_dir: Path | None = None,
     n_iter: int = 2,
 ) -> Nifti1Image:
     """
@@ -221,7 +221,7 @@ def _check_mask_affine(
         the same affine matrix.
     """
     # save all header and affine info in hashable type...
-    header_info = {"affine": []}
+    header_info: dict[str, list[str]] = {"affine": []}
     key_to_header = {}
     for this_mask in mask_imgs:
         img = load_img(this_mask)
@@ -232,9 +232,9 @@ def _check_mask_affine(
             key_to_header[affine_hashable] = affine
 
     if isinstance(mask_imgs[0], Nifti1Image):
-        mask_imgs = np.arange(len(mask_imgs))
+        mask_arrays = np.arange(len(mask_imgs))
     else:
-        mask_imgs = np.array(mask_imgs)
+        mask_arrays = np.array(mask_imgs)
     # get most common values
     common_affine = max(
         set(header_info["affine"]), key=header_info["affine"].count
@@ -256,11 +256,11 @@ def _check_mask_affine(
         gc_log.debug(
             "The following subjects has a different affine matrix "
             f"({key_to_header[ob]}) comparing to the most common value: "
-            f"{mask_imgs[ob_index]}."
+            f"{mask_arrays[ob_index]}."
         )
         exclude += ob_index
     gc_log.info(
-        f"{len(exclude)} out of {len(mask_imgs)} has "
+        f"{len(exclude)} out of {len(mask_arrays)} has "
         "different affine matrix. Ignore when creating group mask."
     )
     return sorted(exclude)

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Sequence, Any
+from typing import Any, Sequence
 
 import h5py
 import numpy as np
@@ -12,14 +12,14 @@ from tqdm import tqdm
 
 from giga_connectome import utils
 from giga_connectome.connectome import generate_timeseries_connectomes
-from giga_connectome.denoise import denoise_nifti_voxel
+from giga_connectome.denoise import STRATEGY_TYPE, denoise_nifti_voxel
 from giga_connectome.logger import gc_logger
 
 gc_log = gc_logger()
 
 
 def run_postprocessing_dataset(
-    strategy: dict[str, str | dict[str, str]],
+    strategy: STRATEGY_TYPE,
     resampled_atlases: Sequence[str | Path],
     images: Sequence[BIDSImageFile],
     group_mask: str | Path,
@@ -172,30 +172,28 @@ def run_postprocessing_dataset(
 
 def _set_file_flag(output_path: Path) -> str:
     """Find out if new file needs to be created."""
-    flag = "w"
-    if output_path.exists():
-        flag = "a"
+    flag = "a" if output_path.exists() else "w"
     return flag
 
 
 def _fetch_h5_group(
-    f: h5py.File, subject: str, session: str
+    file: h5py.File, subject: str, session: str | None
 ) -> h5py.File | h5py.Group:
     """Determine the level of grouping based on BIDS standard."""
-    if subject not in f:
+    if subject not in file:
         return (
-            f.create_group(f"{subject}/{session}")
+            file.create_group(f"{subject}/{session}")
             if session
-            else f.create_group(f"{subject}")
+            else file.create_group(subject)
         )
     elif session:
         return (
-            f[f"{subject}"].create_group(f"{session}")
-            if session not in f[f"{subject}"]
-            else f[f"{subject}/{session}"]
+            file[subject].create_group(session)
+            if session not in file[subject]
+            else file[f"{subject}/{session}"]
         )
     else:
-        return f[f"{subject}"]
+        return file[subject]
 
 
 def _get_masker(atlas_path: Path) -> NiftiLabelsMasker | NiftiMapsMasker:

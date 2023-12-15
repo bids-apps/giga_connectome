@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Optional, Any
+from typing import Any, Callable, TypedDict
 
 import numpy as np
 import pandas as pd
@@ -23,9 +23,21 @@ PRESET_STRATEGIES = [
 ]
 
 
+STRATEGY_TYPE = TypedDict(
+    "STRATEGY_TYPE",
+    {
+        "name": str,
+        "function": Callable[
+            ..., tuple[pd.DataFrame, np.ndarray[Any, Any] | None]
+        ],
+        "parameters": dict[str, str | list[str]],
+    },
+)
+
+
 def get_denoise_strategy(
     strategy: str,
-) -> dict[str, str | dict[str, str]]:
+) -> STRATEGY_TYPE:
     """
     Select denoise strategies and associated parameters.
     The strategy parameters are designed to pass to load_confounds_strategy.
@@ -62,7 +74,7 @@ def get_denoise_strategy(
     return benchmark_strategy
 
 
-def is_ica_aroma(strategy: dict[str, dict[str, str]]) -> bool:
+def is_ica_aroma(strategy: STRATEGY_TYPE) -> bool:
     """Check if the current strategy is ICA AROMA.
 
     Parameters
@@ -78,17 +90,15 @@ def is_ica_aroma(strategy: dict[str, dict[str, str]]) -> bool:
     strategy_preset = strategy["parameters"].get("denoise_strategy", False)
     strategy_user_define = strategy["parameters"].get("strategy", False)
     if strategy_preset or strategy_user_define:
-        return (
-            strategy_preset == "ica_aroma"
-            if strategy_preset
-            else "ica_aroma" in strategy_user_define
-        )
+        return strategy_preset == "ica_aroma"
+    elif isinstance(strategy_user_define, list):
+        return "ica_aroma" in strategy_user_define
     else:
         raise ValueError(f"Invalid input dictionary. {strategy['parameters']}")
 
 
 def denoise_nifti_voxel(
-    strategy: dict[str, dict[str, str]],
+    strategy: STRATEGY_TYPE,
     group_mask: str | Path,
     standardize: str | bool,
     smoothing_fwhm: float,
@@ -138,7 +148,7 @@ def denoise_nifti_voxel(
 
 def _check_exclusion(
     reduced_confounds: pd.DataFrame,
-    sample_mask: Optional[np.ndarray[Any, Any]],
+    sample_mask: np.ndarray[Any, Any] | None,
 ) -> bool:
     """For scrubbing based strategy, check if regression can be performed."""
     if sample_mask is not None:
