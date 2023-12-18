@@ -32,7 +32,6 @@ def set_verbosity(verbosity: int | list[int]) -> None:
 
 
 def workflow(args):
-
     gc_log.info(vars(args))
 
     # set file paths
