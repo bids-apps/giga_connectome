@@ -31,7 +31,6 @@ def test_help(capsys):
 
 @pytest.mark.smoke
 def test_smoke(tmp_path, capsys):
-
     bids_dir = resource_filename(
         "giga_connectome",
         "data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface",
