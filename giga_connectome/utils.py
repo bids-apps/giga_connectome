@@ -230,7 +230,7 @@ def create_sidecar(output_path: Path) -> None:
     metadata: dict[str, Any] = {
         "Measure": "Pearson correlation",
         "MeasureDescription": "Pearson correlation",
-        "Weighted": "REQUIRED",
+        "Weighted": False,
         "Directed": False,
         "ValidDiagonal": True,
         "StorageFormat": "Full",
