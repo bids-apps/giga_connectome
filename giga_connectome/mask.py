@@ -191,7 +191,7 @@ def _get_consistent_masks(
         Functional masks with the same affine.
 
     list of str
-        Identidiers of scans with a different affine.
+        Identifiers of scans with a different affine.
     """
     weird_mask_identifiers = []
     odd_masks = np.array(mask_imgs)[np.array(exclude)]
