@@ -9,6 +9,7 @@ from giga_connectome import (
     generate_gm_mask_atlas,
     get_denoise_strategy,
     load_atlas_setting,
+    methods,
     run_postprocessing_dataset,
     utils,
 )
@@ -63,6 +64,17 @@ def workflow(args: argparse.Namespace) -> None:
     )
 
     gc_log.info(f"Indexing BIDS directory:\n\t{bids_dir}")
+
+    methods.generate_method_section(
+        output_dir=output_dir,
+        atlas=atlas["name"],
+        smoothing_fwhm=smoothing_fwhm,
+        standardize=args.standardize,
+        strategy=args.denoise_strategy,
+        mni_space=template,
+        average_correlation=calculate_average_correlation,
+        analysis_level=analysis_level == "group",
+    )
 
     # create subject ts and connectomes
     # refactor the two cases into one
