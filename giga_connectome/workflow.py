@@ -11,7 +11,7 @@ from giga_connectome import (
 )
 
 from giga_connectome.denoise import is_ica_aroma
-from giga_connectome import utils
+from giga_connectome import utils, methods
 from giga_connectome.logger import gc_logger
 
 
@@ -62,6 +62,17 @@ def workflow(args):
     )
 
     gc_log.info(f"Indexing BIDS directory:\n\t{bids_dir}")
+
+    methods.generate_method_section(
+        output_dir=output_dir,
+        atlas=atlas["name"],
+        smoothing_fwhm=smoothing_fwhm,
+        standardize=args.standardize,
+        strategy=args.denoise_strategy,
+        mni_space=template,
+        average_correlation=calculate_average_correlation,
+        analysis_level=analysis_level == "group",
+    )
 
     # create subject ts and connectomes
     # refactor the two cases into one
