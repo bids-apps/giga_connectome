@@ -7,10 +7,15 @@ Released MONTH YEAR
 ### New
 
 - [DOCS] Improved documentation. (@htwangtw)
+- [ENH] use logger instead of print statements. (@Remi-Gau)
 
 ### Fixes
 
+- [FIX] Bump nilearn version to 0.10.2 to fix issues [#26](https://github.com/SIMEXP/giga_connectome/issues/26) and [#27](https://github.com/SIMEXP/giga_connectome/issues/27). (@Remi-Gau)
+
 ### Changes
+
+- [MAINT] Pin dependencies for docker build for better reproducibility. (@Remi-Gau)
 
 ## 0.4.0
 
@@ -39,7 +44,7 @@ Released June 2023
 ### New
 
 - [EHN] expose some preprocessing options: standardization and smoothing. (@htwangtw)
-- [EHN]`--version` flag. (@htwangtw)
+- [EHN] `--version` flag. (@htwangtw)
 
 ### Fixes
 
