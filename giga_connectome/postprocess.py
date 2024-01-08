@@ -104,7 +104,6 @@ def run_postprocessing_dataset(
     gc_log.info("Processing subject")
 
     for img in tqdm(images):
-
         print()
         gc_log.info(f"Processing image:\n{img.filename}")
 
@@ -153,7 +152,6 @@ def run_postprocessing_dataset(
         gc_log.info(f"Saved to:\n{output_path}")
 
     if analysis_level == "group":
-
         gc_log.info("Create group connectome")
 
         for desc in connectomes:
