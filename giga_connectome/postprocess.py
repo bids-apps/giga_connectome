@@ -2,7 +2,6 @@ from typing import Union, List
 from pathlib import Path
 
 import h5py
-from tqdm import tqdm
 import numpy as np
 from nilearn.connectome import ConnectivityMeasure
 from nilearn.maskers import NiftiLabelsMasker, NiftiMapsMasker
@@ -12,6 +11,7 @@ from giga_connectome import utils
 from giga_connectome.connectome import generate_timeseries_connectomes
 from giga_connectome.denoise import denoise_nifti_voxel
 from giga_connectome.logger import gc_logger
+from giga_connectome.utils import progress_bar
 
 gc_log = gc_logger()
 
@@ -101,53 +101,61 @@ def run_postprocessing_dataset(
     )
 
     # transform data
-    gc_log.info("Processing subject")
-
-    for img in tqdm(images):
-        print()
-        gc_log.info(f"Processing image:\n{img.filename}")
-
-        # process timeseries
-        denoised_img = denoise_nifti_voxel(
-            strategy, group_mask, standardize, smoothing_fwhm, img.path
+    with progress_bar(text="Processing subject") as progress:
+        task = progress.add_task(
+            description="processing subject", total=len(images)
         )
-        # parse file name
-        subject, session, specifier = utils.parse_bids_name(img.path)
-        for desc, masker in atlas_maskers.items():
-            attribute_name = f"{subject}_{specifier}_atlas-{atlas}_desc-{desc}"
-            if not denoised_img:
-                time_series_atlas, correlation_matrix = None, None
 
-                gc_log.info(f"{attribute_name}: no volume after scrubbing")
+        for img in images:
+            print()
+            gc_log.info(f"Processing image:\n{img.filename}")
 
-                continue
-
-            # extract timeseries and connectomes
-            (
-                correlation_matrix,
-                time_series_atlas,
-            ) = generate_timeseries_connectomes(
-                masker,
-                denoised_img,
-                group_mask,
-                correlation_measure,
-                calculate_average_correlation,
+            # process timeseries
+            denoised_img = denoise_nifti_voxel(
+                strategy, group_mask, standardize, smoothing_fwhm, img.path
             )
-            connectomes[desc].append(correlation_matrix)
+            # parse file name
+            subject, session, specifier = utils.parse_bids_name(img.path)
+            for desc, masker in atlas_maskers.items():
+                attribute_name = (
+                    f"{subject}_{specifier}_atlas-{atlas}_desc-{desc}"
+                )
+                if not denoised_img:
+                    time_series_atlas, correlation_matrix = None, None
 
-            # dump to h5
-            flag = _set_file_flag(output_path)
-            with h5py.File(output_path, flag) as f:
-                group = _fetch_h5_group(f, subject, session)
-                timeseries_dset = group.create_dataset(
-                    f"{attribute_name}_timeseries", data=time_series_atlas
+                    gc_log.info(f"{attribute_name}: no volume after scrubbing")
+
+                    progress.update(task, advance=1)
+                    continue
+
+                # extract timeseries and connectomes
+                (
+                    correlation_matrix,
+                    time_series_atlas,
+                ) = generate_timeseries_connectomes(
+                    masker,
+                    denoised_img,
+                    group_mask,
+                    correlation_measure,
+                    calculate_average_correlation,
                 )
-                timeseries_dset.attrs["RepetitionTime"] = img.entities[
-                    "RepetitionTime"
-                ]
-                group.create_dataset(
-                    f"{attribute_name}_connectome", data=correlation_matrix
-                )
+                connectomes[desc].append(correlation_matrix)
+
+                # dump to h5
+                flag = _set_file_flag(output_path)
+                with h5py.File(output_path, flag) as f:
+                    group = _fetch_h5_group(f, subject, session)
+                    timeseries_dset = group.create_dataset(
+                        f"{attribute_name}_timeseries", data=time_series_atlas
+                    )
+                    timeseries_dset.attrs["RepetitionTime"] = img.entities[
+                        "RepetitionTime"
+                    ]
+                    group.create_dataset(
+                        f"{attribute_name}_connectome", data=correlation_matrix
+                    )
+
+                progress.update(task, advance=1)
 
         gc_log.info(f"Saved to:\n{output_path}")
 

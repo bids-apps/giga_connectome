@@ -3,13 +3,13 @@ import json
 from typing import Union, List
 
 from pathlib import Path
-from tqdm import tqdm
 import nibabel as nib
 from nilearn.image import resample_to_img
 from nibabel import Nifti1Image
 from pkg_resources import resource_filename
 
 from giga_connectome.logger import gc_logger
+from giga_connectome.utils import progress_bar
 
 gc_log = gc_logger()
 
@@ -110,21 +110,30 @@ def resample_atlas_collection(
     """
     gc_log.info("Resample atlas to group grey matter mask.")
     resampled_atlases = []
-    for desc in tqdm(atlas_config["file_paths"]):
-        parcellation = atlas_config["file_paths"][desc]
-        parcellation_resampled = resample_to_img(
-            parcellation, group_mask, interpolation="nearest"
+
+    with progress_bar(text="Resampling atlases") as progress:
+        task = progress.add_task(
+            description="resampling", total=len(atlas_config["file_paths"])
         )
-        filename = (
-            f"tpl-{template}_"
-            f"atlas-{atlas_config['name']}_"
-            "res-dataset_"
-            f"desc-{desc}_"
-            f"{atlas_config['type']}.nii.gz"
-        )
-        save_path = group_mask_dir / filename
-        nib.save(parcellation_resampled, save_path)
-        resampled_atlases.append(save_path)
+
+        for desc in atlas_config["file_paths"]:
+            parcellation = atlas_config["file_paths"][desc]
+            parcellation_resampled = resample_to_img(
+                parcellation, group_mask, interpolation="nearest"
+            )
+            filename = (
+                f"tpl-{template}_"
+                f"atlas-{atlas_config['name']}_"
+                "res-dataset_"
+                f"desc-{desc}_"
+                f"{atlas_config['type']}.nii.gz"
+            )
+            save_path = group_mask_dir / filename
+            nib.save(parcellation_resampled, save_path)
+            resampled_atlases.append(save_path)
+
+        progress.update(task, advance=1)
+
     return resampled_atlases
 
 

@@ -4,6 +4,17 @@ from nilearn.interfaces.bids import parse_bids_filename
 from bids.layout import Query
 from bids import BIDSLayout
 
+from rich.progress import (
+    BarColumn,
+    MofNCompleteColumn,
+    Progress,
+    SpinnerColumn,
+    TaskProgressColumn,
+    TextColumn,
+    TimeElapsedColumn,
+    TimeRemainingColumn,
+)
+
 from giga_connectome.logger import gc_logger
 
 gc_log = gc_logger()
@@ -190,3 +201,15 @@ def check_path(path: Path):
             f"Specified path already exists:\n\t{path}\n"
             "Old file will be overwritten"
         )
+
+
+def progress_bar(text: str, color: str = "green") -> Progress:
+    return Progress(
+        TextColumn(f"[{color}]{text}"),
+        SpinnerColumn("dots"),
+        TimeElapsedColumn(),
+        BarColumn(),
+        MofNCompleteColumn(),
+        TaskProgressColumn(),
+        TimeRemainingColumn(),
+    )
