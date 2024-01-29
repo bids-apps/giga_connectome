@@ -1,6 +1,7 @@
 """
 Simple code to smoke test the functionality.
 """
+
 from pathlib import Path
 from pkg_resources import resource_filename
 from giga_connectome.run import main
