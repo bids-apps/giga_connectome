@@ -91,7 +91,7 @@ def run_postprocessing_dataset(
         Full path to output directory.
 
     analysis_level : str
-        Level of analysis, either "participant" or "group".
+        Level of analysis, only "participant" is available.
 
     calculate_average_correlation : bool
         Whether to calculate average correlation within each parcel.

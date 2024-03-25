@@ -31,9 +31,9 @@ def global_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "analysis_level",
-        help="Level of the analysis that will be performed. Only group level "
-        "is allowed as we need to generate a dataset inclusive brain mask.",
-        choices=["participant", "group"],
+        help="Level of the analysis that will be performed. Only participant"
+        "level is available.",
+        choices=["participant"],
     )
     parser.add_argument(
         "-v", "--version", action="version", version=__version__
