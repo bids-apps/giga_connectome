@@ -56,6 +56,9 @@ git checkout -b your_branch
 
 4. Commit your changes on this branch.
 
+If you want to make sure all the tests will be run by github continuous integration,
+make sure that your commit message contains `full_test`.
+
 5. Run the tests locally; you can run spectfic tests to speed up the process:
 
 ```bash
