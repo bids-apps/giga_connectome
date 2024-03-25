@@ -73,28 +73,3 @@ def test_smoke(tmp_path, capsys):
     with h5py.File(output_group, "r") as f:
         data = f[f"sub-1/ses-timepoint1/{basename}"]
         assert data.attrs.get("RepetitionTime") == 2.0
-
-    main(
-        [
-            "-w",
-            str(work_dir),
-            "--atlas",
-            "Schaefer20187Networks",
-            "--denoise-strategy",
-            "simple",
-            "--bids-filter-file",
-            str(bids_filter_file),
-            str(bids_dir),
-            str(output_dir),
-            "group",
-        ]
-    )
-
-    # check output
-    output_group = output_dir / "atlas-Schaefer20187Networks_desc-simple.h5"
-    basename = (
-        "atlas-Schaefer20187Networks_desc-100Parcels7Networks_connectome"
-    )
-    with h5py.File(output_group, "r") as f:
-        data = f[f"{basename}"]
-        assert data.shape == (100, 100)

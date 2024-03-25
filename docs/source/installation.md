@@ -1,13 +1,13 @@
 # Installation
 
-## Quick start (Docker)
+## Quick start (container)
 
 Pull the latest image from docker hub, available for version > `0.4.0`(Recommended)
 
-Singularity:
+Apptainer (formerly known as Singularity; recommended):
 
 ```bash
-singularity build giga_connectome.simg docker://haotingwang/giga_connectome:latest
+apptainer build giga_connectome.simg docker://haotingwang/giga_connectome:latest
 ```
 
 Docker:
