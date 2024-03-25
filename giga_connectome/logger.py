@@ -1,4 +1,5 @@
 """General logger for the cohort_creator package."""
+
 from __future__ import annotations
 
 import logging

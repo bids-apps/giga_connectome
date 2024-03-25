@@ -90,9 +90,11 @@ def _filter_pybids_none_any(dct: dict) -> dict:
     import bids
 
     return {
-        k: bids.layout.Query.NONE
-        if v is None
-        else (bids.layout.Query.ANY if v == "*" else v)
+        k: (
+            bids.layout.Query.NONE
+            if v is None
+            else (bids.layout.Query.ANY if v == "*" else v)
+        )
         for k, v in dct.items()
     }
 
