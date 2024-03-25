@@ -40,7 +40,6 @@ def workflow(args: argparse.Namespace) -> None:
     bids_dir = args.bids_dir
     output_dir = args.output_dir
     working_dir = args.work_dir
-    analysis_level = args.analysis_level
     standardize = True  # always standardising the time series
     smoothing_fwhm = args.smoothing_fwhm
     calculate_average_correlation = (
