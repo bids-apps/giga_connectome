@@ -114,7 +114,7 @@ def generate_timeseries_connectomes(
     group_mask: str | Path,
     correlation_measure: ConnectivityMeasure,
     calculate_average_correlation: bool,
-) -> tuple[np.ndarray[Any, Any], np.ndarray[Any, Any]]:
+) -> tuple[np.ndarray[Any, Any], np.ndarray[Any, Any], NiftiMasker]:
     """Generate timeseries-based connectomes from functional data.
 
     Parameters
@@ -159,4 +159,4 @@ def generate_timeseries_connectomes(
     # convert to float 32 instead of 64
     time_series_atlas = time_series_atlas.astype(np.float32)
     correlation_matrix = correlation_matrix.astype(np.float32)
-    return correlation_matrix, time_series_atlas
+    return correlation_matrix, time_series_atlas, masker

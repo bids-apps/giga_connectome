@@ -21,7 +21,7 @@ classifiers = [
 ]
 dependencies = [
   "h5py",
-  "nilearn >=0.10.2",
+  "nilearn[plotting] >=0.10.2",
   "pybids >=0.15.0, <0.16.0",
   "templateflow < 23.0.0",
   "setuptools",

@@ -54,7 +54,7 @@ def test_calculate_intranetwork_correlation():
     correlation_measure = ConnectivityMeasure(
         kind="correlation", vectorize=False, discard_diagonal=False
     )
-    conn, tseries = generate_timeseries_connectomes(
+    conn, _, _ = generate_timeseries_connectomes(
         masker=NiftiLabelsMasker(labels_img=atlas),
         denoised_img=denoised_img,
         group_mask=mask,
