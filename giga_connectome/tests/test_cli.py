@@ -54,8 +54,6 @@ def test_smoke(tmp_path, capsys):
             "Schaefer20187Networks",
             "--denoise-strategy",
             "simple",
-            "--standardize",
-            "zscore",
             "--reindex-bids",
             "--calculate-intranetwork-average-correlation",
             str(bids_dir),

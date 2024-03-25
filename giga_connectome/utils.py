@@ -130,12 +130,6 @@ def parse_bids_filter(value: Path) -> None | dict[str, dict[str, str]]:
     return tmp
 
 
-def parse_standardize_options(standardize: str) -> str | bool:
-    if standardize not in ["zscore", "psc"]:
-        raise ValueError(f"{standardize} is not a valid standardize strategy.")
-    return standardize if standardize == "psc" else True
-
-
 def parse_bids_name(img: str) -> tuple[str, str | None, str]:
     """Get subject, session, and specifier for a fMRIPrep output."""
     reference = parse_bids_filename(img)
