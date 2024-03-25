@@ -141,10 +141,7 @@ def generate_timeseries_connectomes(
     masker_labels = masker.labels_
     # average correlation within each parcel
     if calculate_average_correlation:
-        (
-            correlation_matrix,
-            avg_intranetwork_correlation,
-        ) = calculate_intranetwork_correlation(
+        (correlation_matrix, _,) = calculate_intranetwork_correlation(
             correlation_matrix,
             masker_labels,
             time_series_atlas,

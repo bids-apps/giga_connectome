@@ -169,27 +169,18 @@ def run_postprocessing_dataset(
         gc_log.info(f"Saved to:\n{connectome_path}")
 
     if analysis_level == "group":
-        connectome_path = (
-            output_path
-            / "group"
-            / utils.output_filename("", atlas["name"], strategy["name"])
-        )
-        utils.check_path(connectome_path)
 
         gc_log.info("Create group connectome")
-        gc_log.info(connectome_path)
 
         for desc in connectomes:
             average_connectome = np.mean(
                 np.array(connectomes[desc]), axis=0
             ).astype(np.float32)
-            with h5py.File(connectome_path, "a") as f:
+            with h5py.File(output_path, "a") as f:
                 f.create_dataset(
-                    f"atlas-{atlas['name']}_desc-{desc}_connectome",
+                    f"atlas-{atlas}_desc-{desc}_connectome",
                     data=average_connectome,
                 )
-
-        gc_log.info(f"Saved to:\n{connectome_path}")
 
 
 def _set_file_flag(output_path: Path) -> str:
