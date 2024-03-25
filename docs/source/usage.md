@@ -67,7 +67,7 @@ apptainer run \
 
 ### Atlas
 
-1. Organised the atlas according to the [TemplateFlow](https://www.templateflow.org/python-client/0.7.1/naming.html) convention.
+1. Organise the atlas according to the [TemplateFlow](https://www.templateflow.org/python-client/0.7.1/naming.html) convention.
 
 A minimal set up should look like this:
 
@@ -81,7 +81,7 @@ A minimal set up should look like this:
 
 2. Update your TemplateFlow directory with network connection.
 
-This is an extremely important in order to run the BIDS-app correctly without network connection.
+This is an extremely important step in order to run the BIDS-app correctly without network connection.
 
 ```bash
 python3 -c "import os; from templateflow.api import get; os.environ['TEMPLATEFLOW_HOME'] = '/path/to/my_atlas'; get(['MNI152NLin2009cAsym', 'MNI152NLin6Asym'])"
