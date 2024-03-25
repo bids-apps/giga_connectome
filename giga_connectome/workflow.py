@@ -65,10 +65,7 @@ def workflow(args):
     gc_log.info(f"Indexing BIDS directory:\n\t{bids_dir}")
 
     utils.create_ds_description(output_dir)
-    utils.create_sidecar(
-        output_dir
-        / f"meas-PearsonCorrelation_desc-{args.denoise_strategy}_relmat.json"
-    )
+    utils.create_sidecar(output_dir / "meas-PearsonCorrelation_relmat.json")
 
     # create subject ts and connectomes
     # refactor the two cases into one
@@ -81,12 +78,6 @@ def workflow(args):
             group_mask, resampled_atlases = generate_gm_mask_atlas(
                 working_dir, atlas, template, subj_data["mask"]
             )
-
-            connectome_path = output_dir / (
-                f"sub-{subject}_atlas-{atlas['name']}"
-                f"_desc-{strategy['name']}.h5"
-            )
-            utils.check_path(connectome_path)
 
             gc_log.info(f"Generate subject level connectomes: sub-{subject}")
 

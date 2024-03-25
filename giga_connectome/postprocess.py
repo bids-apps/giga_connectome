@@ -1,6 +1,8 @@
 from typing import Union, List
 from pathlib import Path
 
+import json
+
 import h5py
 from tqdm import tqdm
 import numpy as np
@@ -117,15 +119,26 @@ def run_postprocessing_dataset(
         # parse file name
         subject, session, specifier = utils.parse_bids_name(img.path)
 
-        # one output file per input file
+        # folder for this subject output
         connectome_path = output_path / subject
         if session:
             connectome_path = connectome_path / session
-        filename = utils.output_filename(
-            Path(img.filename).stem, atlas["name"], strategy["name"]
+        connectome_path = connectome_path / "func"
+
+        # All timeseries derivatives have the same metadata
+        # so one json file for them all.
+        json_filename = connectome_path / utils.output_filename(
+            source_file=Path(img.filename).stem,
+            atlas=atlas["name"],
+            extension="json",
         )
-        connectome_path = connectome_path / "func" / filename
-        utils.check_path(connectome_path)
+        utils.check_path(json_filename)
+        with open(json_filename, "w") as f:
+            json.dump(
+                {"RepetitionTime": img.entities["RepetitionTime"]},
+                f,
+                indent=4,
+            )
 
         for desc, masker in atlas_maskers.items():
             attribute_name = (
@@ -151,20 +164,35 @@ def run_postprocessing_dataset(
             )
             connectomes[desc].append(correlation_matrix)
 
-            with connectome_path.with_suffix(".tsv") as f:
-                df = pd.DataFrame(correlation_matrix)
-                df.to_csv(f, sep="\t", index=False)
+            # one output file per input file per atlas
 
-            # dump to h5
-            flag = _set_file_flag(connectome_path)
-            with h5py.File(connectome_path, flag) as f:
+            # dump correlation_matrix to tsv
+            tsv_filename = connectome_path / utils.output_filename(
+                source_file=Path(img.filename).stem,
+                atlas=atlas["name"],
+                extension="tsv",
+                strategy=strategy["name"],
+                desc=desc,
+            )
+            utils.check_path(tsv_filename)
+            df = pd.DataFrame(correlation_matrix)
+            df.to_csv(tsv_filename, sep="\t", index=False)
+
+            # dump timeseries to h5
+            h5_filename = connectome_path / utils.output_filename(
+                source_file=Path(img.filename).stem,
+                atlas=atlas["name"],
+                extension="h5",
+                strategy=strategy["name"],
+                desc=desc,
+            )
+            utils.check_path(h5_filename)
+            flag = _set_file_flag(h5_filename)
+            with h5py.File(h5_filename, flag) as f:
                 group = _fetch_h5_group(f, subject, session)
-                timeseries_dset = group.create_dataset(
+                group.create_dataset(
                     f"{attribute_name}_timeseries", data=time_series_atlas
                 )
-                timeseries_dset.attrs["RepetitionTime"] = img.entities[
-                    "RepetitionTime"
-                ]
 
         gc_log.info(f"Saved to:\n{connectome_path}")
 
