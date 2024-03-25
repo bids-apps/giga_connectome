@@ -1,17 +1,15 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any, Sequence
 
-import json
-
 import h5py
 import numpy as np
+import pandas as pd
 from bids.layout import BIDSImageFile
 from nilearn.connectome import ConnectivityMeasure
 from nilearn.maskers import NiftiLabelsMasker, NiftiMapsMasker
-import pandas as pd
-
 
 from giga_connectome import utils
 from giga_connectome.atlas import ATLAS_SETTING_TYPE

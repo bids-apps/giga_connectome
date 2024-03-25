@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-from typing import Any
 import json
 from pathlib import Path
-
-from nilearn.interfaces.bids import parse_bids_filename
+from typing import Any
 
 from bids import BIDSLayout
 from bids.layout import BIDSFile, Query
-
+from nilearn.interfaces.bids import parse_bids_filename
 from rich.progress import (
     BarColumn,
     MofNCompleteColumn,
