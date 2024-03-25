@@ -1,6 +1,7 @@
 """
 Simple code to smoke test the functionality.
 """
+
 from pathlib import Path
 
 import h5py

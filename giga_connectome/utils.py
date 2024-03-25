@@ -6,6 +6,17 @@ from bids import BIDSLayout
 from bids.layout import BIDSFile, Query
 from nilearn.interfaces.bids import parse_bids_filename
 
+from rich.progress import (
+    BarColumn,
+    MofNCompleteColumn,
+    Progress,
+    SpinnerColumn,
+    TaskProgressColumn,
+    TextColumn,
+    TimeElapsedColumn,
+    TimeRemainingColumn,
+)
+
 from giga_connectome.logger import gc_logger
 
 gc_log = gc_logger()
@@ -28,7 +39,7 @@ def get_bids_images(
         root=bids_dir,
         database_path=bids_dir,
         validate=False,
-        derivatives=True,
+        derivatives=False,
         reset_database=reindex_bids,
     )
 
@@ -196,3 +207,15 @@ def check_path(path: Path) -> None:
             f"Specified path already exists:\n\t{path}\n"
             "Old file will be overwritten"
         )
+
+
+def progress_bar(text: str, color: str = "green") -> Progress:
+    return Progress(
+        TextColumn(f"[{color}]{text}"),
+        SpinnerColumn("dots"),
+        TimeElapsedColumn(),
+        BarColumn(),
+        MofNCompleteColumn(),
+        TaskProgressColumn(),
+        TimeRemainingColumn(),
+    )

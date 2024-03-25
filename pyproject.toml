@@ -24,7 +24,6 @@ dependencies = [
   "nilearn >=0.10.2",
   "pybids >=0.15.0, <0.16.0",
   "templateflow < 23.0.0",
-  "tqdm",
   "setuptools",
   "jinja2 >= 2.0",
   "rich",
@@ -125,6 +124,12 @@ module = [
 ]
 
 [tool.pytest.ini_options]
+minversion = "7"
+log_cli_level = "INFO"
+xfail_strict = true
+testpaths = ["giga_connectome/tests"]
+addopts = ["-ra", "--strict-config", "--strict-markers", "--doctest-modules", "-v"]
 markers = [
     "smoke: smoke tests that will run on a downsampled real dataset (deselect with '-m \"not smoke\"')",
 ]
+# filterwarnings = ["error"]

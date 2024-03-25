@@ -46,7 +46,7 @@ jobs:
     - uses: actions/setup-python@v5
     - name: install tox
       run: pip install tox
-    - uses: actions/cache@v3
+    - uses: actions/cache@v4
       id: cache
       env:
         cache-name: ds000017
@@ -137,7 +137,7 @@ jobs:
 
     - name: Restore cached data ds000017
       id: cache
-      uses: actions/cache/restore@v3
+      uses: actions/cache/restore@v4
       with:
         path: /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data
         key: ds000017
@@ -150,13 +150,13 @@ jobs:
     - name: Test with pytest - ignore smoke test.
       if: ${{ !contains(needs.check_skip_flags.outputs.head-commit-message, 'full_test') }}
       run: |
-        pytest -m "not smoke" --cov=giga_connectome --cov-report=xml --doctest-modules -v --pyargs giga_connectome
+        pytest -m "not smoke" --cov=giga_connectome --cov-report=xml --pyargs giga_connectome
 
     - name: Full test - run all the test to generate accurate coverage report.
       if: ${{ contains(needs.check_skip_flags.outputs.head-commit-message, 'full_test') }} || ${{ github.event.pull_request.merged }}
-      run: pytest --cov=giga_connectome --cov-report=xml --doctest-modules -v --pyargs giga_connectome
+      run: pytest --cov=giga_connectome --cov-report=xml --pyargs giga_connectome
 
-    - uses: codecov/codecov-action@v3
+    - uses: codecov/codecov-action@v4
       if: ${{ always() }}
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
@@ -177,7 +177,7 @@ jobs:
 
       - name: Restore cached data ds000017
         id: cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data
           key: ds000017
