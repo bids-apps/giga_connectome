@@ -51,7 +51,7 @@ def workflow(args):
 
     atlas = load_atlas_setting(args.atlas)
 
-    output_to_bids = args.output_to_bids
+    output_to_bids = True
 
     set_verbosity(args.verbosity)
 

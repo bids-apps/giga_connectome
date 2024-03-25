@@ -87,7 +87,6 @@ giga_connectome \
     --standardize zscore \
     --bids-filter giga_connectome/data/test_data/bids_filter.json  \
     --reindex-bids \
-    --output-to-bids \
     --calculate-intranetwork-average-correlation \
     giga_connectome/data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface \
     giga_connectome/data/test_data/output \

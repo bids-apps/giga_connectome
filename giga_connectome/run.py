@@ -105,14 +105,6 @@ def global_parser() -> argparse.ArgumentParser:
         action="store_true",
     )
     parser.add_argument(
-        "--output-to-bids",
-        help="If requested the output will be more BIDS compliant. "
-        "This means that there will be one output file, for each input file."
-        "Otherwise all subject output will be saved into a single file."
-        "The default is False.",
-        action="store_true",
-    )
-    parser.add_argument(
         "--verbosity",
         help="""
         Verbosity level.
