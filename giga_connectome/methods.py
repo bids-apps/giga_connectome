@@ -39,9 +39,9 @@ def generate_method_section(
         "atlas": atlas,
         "smoothing_fwhm": smoothing_fwhm,
         "strategy": strategy,
-        "standardize": "percent signal change"
-        if standardize == "psc"
-        else standardize,
+        "standardize": (
+            "percent signal change" if standardize == "psc" else standardize
+        ),
         "mni_space": mni_space,
         "average_correlation": average_correlation,
         "analysis_level": analysis_level,
