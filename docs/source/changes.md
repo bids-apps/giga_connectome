@@ -6,7 +6,7 @@ Released MONTH YEAR
 
 ### New
 
-- [DOCS] Improved documentation. (@htwangtw)
+- [DOCS] Improved documentation on using customised configuration files. (@htwangtw)
 - [ENH] use logger instead of print statements. (@Remi-Gau)
 
 ### Fixes
