@@ -148,7 +148,7 @@ def generate_timeseries_connectomes(
     if calculate_average_correlation:
         (
             correlation_matrix,
-            avg_intranetwork_correlation,
+            _,
         ) = calculate_intranetwork_correlation(
             correlation_matrix,
             masker_labels,

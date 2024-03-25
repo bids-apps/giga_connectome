@@ -17,7 +17,6 @@ from giga_connectome import (
 from giga_connectome.denoise import is_ica_aroma
 from giga_connectome.logger import gc_logger
 
-
 gc_log = gc_logger()
 
 
@@ -41,7 +40,6 @@ def workflow(args: argparse.Namespace) -> None:
     bids_dir = args.bids_dir
     output_dir = args.output_dir
     working_dir = args.work_dir
-    analysis_level = args.analysis_level  # participant level only
     standardize = utils.parse_standardize_options(args.standardize)
     smoothing_fwhm = args.smoothing_fwhm
     calculate_average_correlation = (
@@ -51,6 +49,7 @@ def workflow(args: argparse.Namespace) -> None:
 
     subjects = utils.get_subject_lists(args.participant_label, bids_dir)
     strategy = get_denoise_strategy(args.denoise_strategy)
+
     atlas = load_atlas_setting(args.atlas)
 
     set_verbosity(args.verbosity)
@@ -66,6 +65,8 @@ def workflow(args: argparse.Namespace) -> None:
 
     gc_log.info(f"Indexing BIDS directory:\n\t{bids_dir}")
 
+    utils.create_ds_description(output_dir)
+    utils.create_sidecar(output_dir / "meas-PearsonCorrelation_relmat.json")
     methods.generate_method_section(
         output_dir=output_dir,
         atlas=atlas["name"],
@@ -75,30 +76,26 @@ def workflow(args: argparse.Namespace) -> None:
         mni_space=template,
         average_correlation=calculate_average_correlation,
     )
+
     for subject in subjects:
-        subj_data, fmriprep_bids_layout = utils.get_bids_images(
+        subj_data, _ = utils.get_bids_images(
             [subject], template, bids_dir, args.reindex_bids, bids_filters
         )
         group_mask, resampled_atlases = generate_gm_mask_atlas(
             working_dir, atlas, template, subj_data["mask"]
         )
-        connectome_path = output_dir / (
-            f"sub-{subject}_atlas-{atlas['name']}"
-            f"_desc-{strategy['name']}.h5"
-        )
-        utils.check_path(connectome_path)
 
         gc_log.info(f"Generate subject level connectomes: sub-{subject}")
 
         run_postprocessing_dataset(
             strategy,
+            atlas,
             resampled_atlases,
             subj_data["bold"],
             group_mask,
             standardize,
             smoothing_fwhm,
-            connectome_path,
-            analysis_level,
+            output_dir,
             calculate_average_correlation,
         )
     return

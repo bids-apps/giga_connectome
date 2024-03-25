@@ -19,10 +19,8 @@ from nilearn.image import (
 from nilearn.masking import compute_multi_epi_mask
 from scipy.ndimage import binary_closing
 
-from giga_connectome.atlas import resample_atlas_collection
+from giga_connectome.atlas import ATLAS_SETTING_TYPE, resample_atlas_collection
 from giga_connectome.logger import gc_logger
-
-from giga_connectome.atlas import ATLAS_SETTING_TYPE
 
 gc_log = gc_logger()
 
