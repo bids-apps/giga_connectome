@@ -26,7 +26,7 @@ def run_postprocessing_dataset(
     standardize: str | bool,
     smoothing_fwhm: float,
     output_path: Path,
-    analysis_level: str,
+    analysis_level: str = "participant",
     calculate_average_correlation: bool = False,
 ) -> None:
     """
@@ -84,11 +84,16 @@ def run_postprocessing_dataset(
         output_dir / atlas-<atlas>_desc-<strategy_name>.h5
 
     analysis_level : str
-        Level of analysis, either "participant" or "group".
+        Level of analysis, only "participant" is available.
 
     calculate_average_correlation : bool
         Whether to calculate average correlation within each parcel.
     """
+    if analysis_level != "participant":
+        raise Warning(
+            "Only participant level analysis is supported. Other levels "
+            "would be ignored, and will run the participant level."
+        )
     atlas = output_path.name.split("atlas-")[-1].split("_")[0]
     atlas_maskers: dict[str, (NiftiLabelsMasker | NiftiMapsMasker)] = {}
     connectomes: dict[str, list[np.ndarray[Any, Any]]] = {}
@@ -161,19 +166,6 @@ def run_postprocessing_dataset(
                 progress.update(task, advance=1)
 
         gc_log.info(f"Saved to:\n{output_path}")
-
-    if analysis_level == "group":
-        gc_log.info("Create group connectome")
-
-        for desc in connectomes:
-            average_connectome = np.mean(
-                np.array(connectomes[desc]), axis=0
-            ).astype(np.float32)
-            with h5py.File(output_path, "a") as f:
-                f.create_dataset(
-                    f"atlas-{atlas}_desc-{desc}_connectome",
-                    data=average_connectome,
-                )
 
 
 def _set_file_flag(output_path: Path) -> str:
