@@ -18,7 +18,6 @@ def generate_method_section(
     standardize: str,
     mni_space: str,
     average_correlation: bool,
-    analysis_level: bool,
 ) -> None:
     env = Environment(
         loader=FileSystemLoader(Path(__file__).parent),
@@ -44,7 +43,6 @@ def generate_method_section(
         ),
         "mni_space": mni_space,
         "average_correlation": average_correlation,
-        "analysis_level": analysis_level,
     }
 
     with open(output_file, "w") as f:
