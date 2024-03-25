@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 from typing import Any, Sequence
 
-import h5py
 import numpy as np
 import pandas as pd
 from bids.layout import BIDSImageFile
@@ -134,15 +133,17 @@ def run_postprocessing_dataset(
 
             # All timeseries derivatives have the same metadata
             # so one json file for them all.
+            # see https://bids.neuroimaging.io/bep012
             json_filename = connectome_path / utils.output_filename(
                 source_file=Path(img.filename).stem,
                 atlas=atlas["name"],
+                suffix="timeseries",
                 extension="json",
             )
             utils.check_path(json_filename)
             with open(json_filename, "w") as f:
                 json.dump(
-                    {"RepetitionTime": img.entities["RepetitionTime"]},
+                    {"SamplingFrequency": 1 / img.entities["RepetitionTime"]},
                     f,
                     indent=4,
                 )
@@ -174,62 +175,34 @@ def run_postprocessing_dataset(
                 # one output file per input file per atlas
 
                 # dump correlation_matrix to tsv
-                tsv_filename = connectome_path / utils.output_filename(
+                relmat_filename = connectome_path / utils.output_filename(
                     source_file=Path(img.filename).stem,
                     atlas=atlas["name"],
+                    suffix="relmat",
                     extension="tsv",
                     strategy=strategy["name"],
                     desc=desc,
                 )
-                utils.check_path(tsv_filename)
+                utils.check_path(relmat_filename)
                 df = pd.DataFrame(correlation_matrix)
-                df.to_csv(tsv_filename, sep="\t", index=False)
+                df.to_csv(relmat_filename, sep="\t", index=False)
 
                 # dump timeseries to h5
-                h5_filename = connectome_path / utils.output_filename(
+                timeseries_filename = connectome_path / utils.output_filename(
                     source_file=Path(img.filename).stem,
                     atlas=atlas["name"],
-                    extension="h5",
+                    suffix="timeseries",
+                    extension="tsv",
                     strategy=strategy["name"],
                     desc=desc,
                 )
-                utils.check_path(h5_filename)
-                flag = _set_file_flag(h5_filename)
-                with h5py.File(h5_filename, flag) as f:
-                    group = _fetch_h5_group(f, subject, session)
-                    group.create_dataset(
-                        f"{attribute_name}_timeseries", data=time_series_atlas
-                    )
+                utils.check_path(timeseries_filename)
+                df = pd.DataFrame(time_series_atlas)
+                df.to_csv(timeseries_filename, sep="\t", index=False)
 
             progress.update(task, advance=1)
 
     gc_log.info(f"Saved to:\n{connectome_path}")
-
-
-def _set_file_flag(output_path: Path) -> str:
-    """Find out if new file needs to be created."""
-    flag = "a" if output_path.exists() else "w"
-    return flag
-
-
-def _fetch_h5_group(
-    file: h5py.File, subject: str, session: str | None
-) -> h5py.File | h5py.Group:
-    """Determine the level of grouping based on BIDS standard."""
-    if subject not in file:
-        return (
-            file.create_group(f"{subject}/{session}")
-            if session
-            else file.create_group(subject)
-        )
-    elif session:
-        return (
-            file[subject].create_group(session)
-            if session not in file[subject]
-            else file[f"{subject}/{session}"]
-        )
-    else:
-        return file[subject]
 
 
 def _get_masker(atlas_path: Path) -> NiftiLabelsMasker | NiftiMapsMasker:

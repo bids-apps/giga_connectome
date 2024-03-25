@@ -258,6 +258,7 @@ def create_sidecar(output_path: Path) -> None:
 def output_filename(
     source_file: str,
     atlas: str,
+    suffix: str,
     extension: str,
     strategy: str | None = None,
     desc: str | None = None,
@@ -274,23 +275,16 @@ def output_filename(
     if root != "":
         root += "_"
 
-    if extension == "json":
+    if suffix == "timeseries" and extension == "json":
         return f"{root}atlas-{atlas}_meas-PearsonCorrelation_timeseries.json"
 
     if strategy is None:
         strategy = ""
 
-    if extension == "h5":
-        return (
-            f"{root}atlas-{atlas}_meas-PearsonCorrelation"
-            f"_desc-{desc}{strategy.capitalize()}"
-            "_timeseries.h5"
-        )
-
     return (
         f"{root}atlas-{atlas}_meas-PearsonCorrelation"
         f"_desc-{desc}{strategy.capitalize()}"
-        "_relmat.tsv"
+        f"_{suffix}.{extension}"
     )
 
 
