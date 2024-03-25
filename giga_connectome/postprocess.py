@@ -149,14 +149,14 @@ def run_postprocessing_dataset(
                 )
 
             for desc, masker in atlas_maskers.items():
-                attribute_name = (
-                    f"{subject}_{specifier}_atlas-{atlas['name']}_desc-{desc}"
-                )
+
                 if not denoised_img:
                     time_series_atlas, correlation_matrix = None, None
-
+                    attribute_name = (
+                        f"{subject}_{specifier}"
+                        f"_atlas-{atlas['name']}_desc-{desc}"
+                    )
                     gc_log.info(f"{attribute_name}: no volume after scrubbing")
-
                     progress.update(task, advance=1)
                     continue
 
@@ -172,8 +172,6 @@ def run_postprocessing_dataset(
                     calculate_average_correlation,
                 )
 
-                # one output file per input file per atlas
-
                 # dump correlation_matrix to tsv
                 relmat_filename = connectome_path / utils.output_filename(
                     source_file=Path(img.filename).stem,
@@ -187,7 +185,7 @@ def run_postprocessing_dataset(
                 df = pd.DataFrame(correlation_matrix)
                 df.to_csv(relmat_filename, sep="\t", index=False)
 
-                # dump timeseries to h5
+                # dump timeseries to tsv file
                 timeseries_filename = connectome_path / utils.output_filename(
                     source_file=Path(img.filename).stem,
                     atlas=atlas["name"],

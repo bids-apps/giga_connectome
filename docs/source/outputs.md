@@ -16,14 +16,14 @@ the output will be save in `sub-<participant_id>/[ses-<ses_id>]/func`.
 For each input image (that is, preprocessed BOLD time series)
 and each atlas the following data files will be generated
 
-- a `[matches]_atlas-{atlas}_meas-PearsonCorrelation_desc-{atlas description}{strategy}_relmat.tsv`
+- a `[matches]_atlas-{atlas}_meas-PearsonCorrelation_desc-{atlas_description}{denoise_strategy}_relmat.tsv`
   file that contains the correlation matrix between all the regions of the atlas
-- a `[matches]_atlas-{atlas}_meas-PearsonCorrelation_desc-{atlas description}{strategy}_timeseries.tsv`
+- a `[matches]_atlas-{atlas}_meas-PearsonCorrelation_desc-{atlas description}{denoise_strategy}_timeseries.tsv`
   file that contains the extracted timeseries for each region of the atlas
 
 - `{atlas}` refers to the name of the atlas used (for example, `Schaefer20187Networks`)
-- `{atlas description}` refers to the sub type of atlas used (for example, `100Parcels7Networks`)
-- `{strategy}` refers to strategy passed to the command line
+- `{atlas_description}` refers to the sub type of atlas used (for example, `100Parcels7Networks`)
+- `{denoise_strategy}` refers to the denoise strategy passed to the command line
 
 ### Metadata
 
