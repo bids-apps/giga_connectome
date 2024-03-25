@@ -60,8 +60,8 @@ def global_parser() -> argparse.ArgumentParser:
         help="The choice of atlas for time series extraction. Default atlas "
         "choices are: 'Schaefer20187Networks, 'MIST', 'DiFuMo'. User can pass "
         "a path to a json file containing configuration for their own choice "
-        "of atlas. The default is 'MIST'.",
-        default="MIST",
+        "of atlas. The default is 'Schaefer20187Networks'.",
+        default="Schaefer20187Networks",
     )
     parser.add_argument(
         "--denoise-strategy",
