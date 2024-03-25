@@ -74,13 +74,6 @@ def global_parser() -> argparse.ArgumentParser:
         default="simple",
     )
     parser.add_argument(
-        "--standardize",
-        help="The choice of signal standardization. The choices are z score "
-        "or percent signal change (psc). The default is 'zscore'.",
-        choices=["zscore", "None"],
-        default="zscore",
-    )
-    parser.add_argument(
         "--smoothing_fwhm",
         help="Size of the full-width at half maximum in millimeters of "
         "the spatial smoothing to apply to the signal. The default is 5.0.",
