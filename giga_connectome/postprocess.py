@@ -220,12 +220,12 @@ def _get_masker(atlas_path: Path) -> NiftiLabelsMasker | NiftiMapsMasker:
         atlas_masker = NiftiLabelsMasker(
             labels_img=atlas_path,
             standardize=False,
-            cmap="grey",
+            cmap="gray",
         )
     elif atlas_type == "probseg":
         atlas_masker = NiftiMapsMasker(
             maps_img=atlas_path,
             standardize=False,
-            cmap="grey",
+            cmap="gray",
         )
     return atlas_masker
