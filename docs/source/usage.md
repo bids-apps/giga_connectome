@@ -101,7 +101,7 @@ It's very important to specify `templateflow_dir` otherwise the BIDS-app will se
 `templateflow_dir` should be the target you will be mounting to the BIDS-app container, rather than the location on your disc.
 
 Example:
-```json
+```
 {
     "name": "<name_of_atlas>",  # for simplicity, one can use the 'atlas' field of the file name
     "parameters": {  # the fields in this section should all be present and consistent with your atlas, except 'desc'
