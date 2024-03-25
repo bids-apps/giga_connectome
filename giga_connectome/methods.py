@@ -20,7 +20,6 @@ def generate_method_section(
     average_correlation: bool,
     analysis_level: bool,
 ) -> None:
-
     env = Environment(
         loader=FileSystemLoader(Path(__file__).parent),
         autoescape=select_autoescape(),

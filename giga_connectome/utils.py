@@ -26,7 +26,7 @@ def get_bids_images(
         root=bids_dir,
         database_path=bids_dir,
         validate=False,
-        derivatives=True,
+        derivatives=False,
         reset_database=reindex_bids,
     )
 
