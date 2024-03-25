@@ -3,7 +3,6 @@
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-
 from nilearn import __version__ as nilearn_version
 from templateflow import __version__ as templateflow_version
 

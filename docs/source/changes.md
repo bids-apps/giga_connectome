@@ -15,6 +15,7 @@ Released MONTH YEAR
 
 ### Changes
 
+- [ENH] Make output more BIDS compliant. (@Remi-Gau)
 - [MAINT] Pin dependencies for docker build for better reproducibility. (@Remi-Gau)
 
 ## 0.4.0

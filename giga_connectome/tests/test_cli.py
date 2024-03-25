@@ -4,9 +4,11 @@ Simple code to smoke test the functionality.
 
 from pathlib import Path
 
-import h5py
+import json
 import pytest
 from pkg_resources import resource_filename
+
+import pandas as pd
 
 from giga_connectome import __version__
 from giga_connectome.run import main
@@ -36,9 +38,6 @@ def test_smoke(tmp_path, capsys):
         "giga_connectome",
         "data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface",
     )
-    bids_filter_file = resource_filename(
-        "giga_connectome", "data/test_data/bids_filter.json"
-    )
     output_dir = tmp_path / "output"
     work_dir = tmp_path / "output/work"
 
@@ -62,14 +61,33 @@ def test_smoke(tmp_path, capsys):
             "participant",
         ]
     )
-    # check output
-    output_group = (
-        output_dir / "sub-1_atlas-Schaefer20187Networks_desc-simple.h5"
+
+    output_folder = output_dir / "sub-1" / "ses-timepoint1" / "func"
+
+    base = (
+        "sub-1_ses-timepoint1_task-probabilisticclassification"
+        "_run-01_space-MNI152NLin2009cAsym_res-2"
+        "_atlas-Schaefer20187Networks"
     )
-    basename = (
-        "sub-1_ses-timepoint1_task-probabilisticclassification_run-01_"
-        "atlas-Schaefer20187Networks_desc-100Parcels7Networks_timeseries"
+
+    relmat_file = output_folder / (
+        base
+        + "_meas-PearsonCorrelation"
+        + "_desc-100Parcels7NetworksSimple_relmat.tsv"
     )
-    with h5py.File(output_group, "r") as f:
-        data = f[f"sub-1/ses-timepoint1/{basename}"]
-        assert data.attrs.get("RepetitionTime") == 2.0
+    assert relmat_file.exists()
+    relmat = pd.read_csv(relmat_file, sep="\t")
+    assert len(relmat) == 100
+
+    json_file = relmat_file = output_folder / (base + "_timeseries.json")
+    assert json_file.exists()
+    with open(json_file, "r") as f:
+        content = json.load(f)
+        assert content.get("SamplingFrequency") == 0.5
+
+    timeseries_file = relmat_file = output_folder / (
+        base + "_desc-100Parcels7NetworksSimple_timeseries.tsv"
+    )
+    assert timeseries_file.exists()
+    timeseries = pd.read_csv(timeseries_file, sep="\t")
+    assert len(timeseries.columns) == 100
