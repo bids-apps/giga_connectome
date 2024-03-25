@@ -1,14 +1,15 @@
 """
 Simple code to smoke test the functionality.
 """
-from pathlib import Path
-from pkg_resources import resource_filename
-from giga_connectome.run import main
-from giga_connectome import __version__
 
-import pytest
+from pathlib import Path
 
 import h5py
+import pytest
+from pkg_resources import resource_filename
+
+from giga_connectome import __version__
+from giga_connectome.run import main
 
 
 def test_version(capsys):

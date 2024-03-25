@@ -1,23 +1,42 @@
-import os
-import json
-from typing import Union, List
+from __future__ import annotations
 
+import json
+import os
 from pathlib import Path
-from tqdm import tqdm
+from typing import Any, Dict, List, TypedDict
+
 import nibabel as nib
-from nilearn.image import resample_to_img
 from nibabel import Nifti1Image
+from nilearn.image import resample_to_img
 from pkg_resources import resource_filename
 
 from giga_connectome.logger import gc_logger
+from giga_connectome.utils import progress_bar
 
 gc_log = gc_logger()
 
 
 PRESET_ATLAS = ["DiFuMo", "MIST", "Schaefer20187Networks"]
 
+ATLAS_CONFIG_TYPE = TypedDict(
+    "ATLAS_CONFIG_TYPE",
+    {
+        "name": str,
+        "parameters": Dict[str, str],
+        "desc": List[str],
+        "templateflow_dir": Any,
+    },
+)
 
-def load_atlas_setting(atlas: Union[str, Path, dict]) -> dict:
+ATLAS_SETTING_TYPE = TypedDict(
+    "ATLAS_SETTING_TYPE",
+    {"name": str, "file_paths": Dict[str, List[Path]], "type": str},
+)
+
+
+def load_atlas_setting(
+    atlas: str | Path | dict[str, Any],
+) -> ATLAS_SETTING_TYPE:
     """Load atlas details for templateflow api to fetch.
     The setting file can be configured for atlases not included in the
     templateflow collections, but user has to organise their files to
@@ -59,19 +78,16 @@ def load_atlas_setting(atlas: Union[str, Path, dict]) -> dict:
 
     import templateflow
 
-    if isinstance(atlas_config["desc"], str):
-        desc = [atlas_config["desc"]]
-    else:
-        desc = atlas_config["desc"]
-
     parcellation = {}
-    for d in desc:
+    for d in atlas_config["desc"]:
         p = templateflow.api.get(
             **atlas_config["parameters"],
             raise_empty=True,
             desc=d,
             extension="nii.gz",
         )
+        if isinstance(p, Path):
+            p = [p]
         parcellation[d] = p
     return {
         "name": atlas_config["name"],
@@ -82,10 +98,10 @@ def load_atlas_setting(atlas: Union[str, Path, dict]) -> dict:
 
 def resample_atlas_collection(
     template: str,
-    atlas_config: dict,
+    atlas_config: ATLAS_SETTING_TYPE,
     group_mask_dir: Path,
     group_mask: Nifti1Image,
-) -> List[Path]:
+) -> list[Path]:
     """Resample a atlas collection to group grey matter mask.
 
     Parameters
@@ -105,35 +121,46 @@ def resample_atlas_collection(
 
     Returns
     -------
-    List of pathlib.Path
+    list of pathlib.Path
         Paths to atlases sampled to group level grey matter mask.
     """
     gc_log.info("Resample atlas to group grey matter mask.")
     resampled_atlases = []
-    for desc in tqdm(atlas_config["file_paths"]):
-        parcellation = atlas_config["file_paths"][desc]
-        parcellation_resampled = resample_to_img(
-            parcellation, group_mask, interpolation="nearest"
+
+    with progress_bar(text="Resampling atlases") as progress:
+        task = progress.add_task(
+            description="resampling", total=len(atlas_config["file_paths"])
         )
-        filename = (
-            f"tpl-{template}_"
-            f"atlas-{atlas_config['name']}_"
-            "res-dataset_"
-            f"desc-{desc}_"
-            f"{atlas_config['type']}.nii.gz"
-        )
-        save_path = group_mask_dir / filename
-        nib.save(parcellation_resampled, save_path)
-        resampled_atlases.append(save_path)
+
+        for desc in atlas_config["file_paths"]:
+            parcellation = atlas_config["file_paths"][desc]
+            parcellation_resampled = resample_to_img(
+                parcellation, group_mask, interpolation="nearest"
+            )
+            filename = (
+                f"tpl-{template}_"
+                f"atlas-{atlas_config['name']}_"
+                "res-dataset_"
+                f"desc-{desc}_"
+                f"{atlas_config['type']}.nii.gz"
+            )
+            save_path = group_mask_dir / filename
+            nib.save(parcellation_resampled, save_path)
+            resampled_atlases.append(save_path)
+
+        progress.update(task, advance=1)
+
     return resampled_atlases
 
 
-def _check_altas_config(atlas: Union[str, Path, dict]) -> dict:
+def _check_altas_config(
+    atlas: str | Path | dict[str, Any]
+) -> ATLAS_CONFIG_TYPE:
     """Load the configuration file.
 
     Parameters
     ----------
-    atlas : Union[str, Path, dict]
+    atlas : str | Path | dict
         Atlas name or configuration file path.
 
     Returns
@@ -149,23 +176,35 @@ def _check_altas_config(atlas: Union[str, Path, dict]) -> dict:
     # load the file first if the input is not already a dictionary
     if isinstance(atlas, (str, Path)):
         if atlas in PRESET_ATLAS:
-            config_path = resource_filename(
-                "giga_connectome", f"data/atlas/{atlas}.json"
+            config_path = Path(
+                resource_filename(
+                    "giga_connectome", f"data/atlas/{atlas}.json"
+                )
             )
         elif Path(atlas).exists():
             config_path = Path(atlas)
 
         with open(config_path, "r") as file:
-            atlas = json.load(file)
+            atlas_config = json.load(file)
+    else:
+        atlas_config = atlas
 
-    keys = list(atlas.keys())
     minimal_keys = ["name", "parameters", "desc", "templateflow_dir"]
+    keys = list(atlas_config.keys())
     common_keys = set(minimal_keys).intersection(set(keys))
-    if isinstance(atlas, dict) and common_keys != set(minimal_keys):
+    if common_keys != set(minimal_keys):
         raise KeyError(
             "Invalid dictionary input. Input should"
             " contain minimally the following keys: 'name', "
             "'parameters', 'desc', 'templateflow_dir'. Found "
             f"{keys}"
         )
-    return atlas
+
+    # cast to list of string
+    if isinstance(atlas_config["desc"], (str, int)):
+        desc = [atlas_config["desc"]]
+    else:
+        desc = atlas_config["desc"]
+    atlas_config["desc"] = [str(x) for x in desc]
+
+    return atlas_config

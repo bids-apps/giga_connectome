@@ -5,7 +5,7 @@
 import os
 import sys
 
-from giga_connectome import __version__, __packagename__, __copyright__
+from giga_connectome import __copyright__, __packagename__, __version__
 
 sys.path.insert(0, os.path.abspath(".."))
 # -- Project information -----------------------------------------------------

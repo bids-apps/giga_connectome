@@ -24,8 +24,8 @@ dependencies = [
   "nilearn >=0.10.2",
   "pybids >=0.15.0, <0.16.0",
   "templateflow < 23.0.0",
-  "tqdm",
   "setuptools",
+  "jinja2 >= 2.0",
   "rich",
 ]
 dynamic = ["version"]
@@ -36,9 +36,14 @@ giga_connectome = "giga_connectome.run:main"
 [project.optional-dependencies]
 dev = [
   "black",
+  "flaek8",
   "pre-commit",
   "giga_connectome[test]",
   'tox',
+  'mypy',
+  'types-all',
+  'pandas-stubs',
+  'types-tqdm'
 ]
 test = [
   "pytest",
@@ -78,7 +83,53 @@ target-version = ['py38']
 exclude = "giga_connectome/_version.py"
 line_length = 79
 
+
+[tool.mypy]
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_incomplete_defs = true
+disallow_untyped_defs = true
+enable_error_code = ["ignore-without-code", "redundant-expr"]  # "truthy-bool"
+no_implicit_optional = true
+show_error_codes = true
+# strict = true
+warn_redundant_casts = true
+warn_unreachable = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+ignore_missing_imports = true
+module = [
+    "bids.*",
+    "giga_connectome._version",
+    "h5py.*",
+    "nibabel.*",
+    "nilearn.*",
+    "nilearn.connectome.*",
+    "nilearn.image.*",
+    "nilearn.interfaces.*",
+    "nilearn.maskers.*",
+    "nilearn.masking.*",
+    "rich.*",
+    "scipy.ndimage.*",
+    "templateflow.*",
+]
+
+[[tool.mypy.overrides]]
+ignore_errors = true
+module = [
+    'giga_connectome.tests.*',
+    'download_templates',
+    'conf',
+]
+
 [tool.pytest.ini_options]
+minversion = "7"
+log_cli_level = "INFO"
+xfail_strict = true
+testpaths = ["giga_connectome/tests"]
+addopts = ["-ra", "--strict-config", "--strict-markers", "--doctest-modules", "-v"]
 markers = [
     "smoke: smoke tests that will run on a downsampled real dataset (deselect with '-m \"not smoke\"')",
 ]
+# filterwarnings = ["error"]

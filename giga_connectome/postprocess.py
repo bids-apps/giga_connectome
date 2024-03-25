@@ -1,34 +1,37 @@
-from typing import Union, List
+from __future__ import annotations
+
 from pathlib import Path
+from typing import Any, Sequence
 
 import json
 
 import h5py
-from tqdm import tqdm
 import numpy as np
+from bids.layout import BIDSImageFile
 from nilearn.connectome import ConnectivityMeasure
 from nilearn.maskers import NiftiLabelsMasker, NiftiMapsMasker
-from bids.layout import BIDSImageFile
 import pandas as pd
 
+
 from giga_connectome import utils
+from giga_connectome.atlas import ATLAS_SETTING_TYPE
 from giga_connectome.connectome import generate_timeseries_connectomes
-from giga_connectome.denoise import denoise_nifti_voxel
+from giga_connectome.denoise import STRATEGY_TYPE, denoise_nifti_voxel
 from giga_connectome.logger import gc_logger
+from giga_connectome.utils import progress_bar
 
 gc_log = gc_logger()
 
 
 def run_postprocessing_dataset(
-    strategy: dict,
-    atlas: str,
-    resampled_atlases: List[Union[str, Path]],
-    images: List[BIDSImageFile],
-    group_mask: Union[str, Path],
-    standardize: Union[str, bool],
+    strategy: STRATEGY_TYPE,
+    atlas: ATLAS_SETTING_TYPE,
+    resampled_atlases: Sequence[str | Path],
+    images: Sequence[BIDSImageFile],
+    group_mask: str | Path,
+    standardize: str | bool,
     smoothing_fwhm: float,
     output_path: Path,
-    analysis_level: str,
     calculate_average_correlation: bool = False,
 ) -> None:
     """
@@ -93,7 +96,8 @@ def run_postprocessing_dataset(
     calculate_average_correlation : bool
         Whether to calculate average correlation within each parcel.
     """
-    atlas_maskers, connectomes = {}, {}
+    atlas_maskers: dict[str, (NiftiLabelsMasker | NiftiMapsMasker)] = {}
+    connectomes: dict[str, list[np.ndarray[Any, Any]]] = {}
     for atlas_path in resampled_atlases:
         if isinstance(atlas_path, str):
             atlas_path = Path(atlas_path)
@@ -108,138 +112,129 @@ def run_postprocessing_dataset(
     # transform data
     gc_log.info("Processing subject")
 
-    for img in tqdm(images):
-        print()
-        gc_log.info(f"Processing image:\n{img.filename}")
-
-        # process timeseries
-        denoised_img = denoise_nifti_voxel(
-            strategy, group_mask, standardize, smoothing_fwhm, img.path
+    with progress_bar(text="Processing subject") as progress:
+        task = progress.add_task(
+            description="processing subject", total=len(images)
         )
-        # parse file name
-        subject, session, specifier = utils.parse_bids_name(img.path)
 
-        # folder for this subject output
-        connectome_path = output_path / subject
-        if session:
-            connectome_path = connectome_path / session
-        connectome_path = connectome_path / "func"
+        for img in images:
+            print()
+            gc_log.info(f"Processing image:\n{img.filename}")
 
-        # All timeseries derivatives have the same metadata
-        # so one json file for them all.
-        json_filename = connectome_path / utils.output_filename(
-            source_file=Path(img.filename).stem,
-            atlas=atlas["name"],
-            extension="json",
-        )
-        utils.check_path(json_filename)
-        with open(json_filename, "w") as f:
-            json.dump(
-                {"RepetitionTime": img.entities["RepetitionTime"]},
-                f,
-                indent=4,
+            # process timeseries
+            denoised_img = denoise_nifti_voxel(
+                strategy, group_mask, standardize, smoothing_fwhm, img.path
             )
+            # parse file name
+            subject, session, specifier = utils.parse_bids_name(img.path)
 
-        for desc, masker in atlas_maskers.items():
-            attribute_name = (
-                f"{subject}_{specifier}_atlas-{atlas['name']}_desc-{desc}"
-            )
-            if not denoised_img:
-                time_series_atlas, correlation_matrix = None, None
+            # folder for this subject output
+            connectome_path = output_path / subject
+            if session:
+                connectome_path = connectome_path / session
+            connectome_path = connectome_path / "func"
 
-                gc_log.info(f"{attribute_name}: no volume after scrubbing")
-
-                continue
-
-            # extract timeseries and connectomes
-            (
-                correlation_matrix,
-                time_series_atlas,
-            ) = generate_timeseries_connectomes(
-                masker,
-                denoised_img,
-                group_mask,
-                correlation_measure,
-                calculate_average_correlation,
-            )
-            connectomes[desc].append(correlation_matrix)
-
-            # one output file per input file per atlas
-
-            # dump correlation_matrix to tsv
-            tsv_filename = connectome_path / utils.output_filename(
+            # All timeseries derivatives have the same metadata
+            # so one json file for them all.
+            json_filename = connectome_path / utils.output_filename(
                 source_file=Path(img.filename).stem,
                 atlas=atlas["name"],
-                extension="tsv",
-                strategy=strategy["name"],
-                desc=desc,
+                extension="json",
             )
-            utils.check_path(tsv_filename)
-            df = pd.DataFrame(correlation_matrix)
-            df.to_csv(tsv_filename, sep="\t", index=False)
-
-            # dump timeseries to h5
-            h5_filename = connectome_path / utils.output_filename(
-                source_file=Path(img.filename).stem,
-                atlas=atlas["name"],
-                extension="h5",
-                strategy=strategy["name"],
-                desc=desc,
-            )
-            utils.check_path(h5_filename)
-            flag = _set_file_flag(h5_filename)
-            with h5py.File(h5_filename, flag) as f:
-                group = _fetch_h5_group(f, subject, session)
-                group.create_dataset(
-                    f"{attribute_name}_timeseries", data=time_series_atlas
+            utils.check_path(json_filename)
+            with open(json_filename, "w") as f:
+                json.dump(
+                    {"RepetitionTime": img.entities["RepetitionTime"]},
+                    f,
+                    indent=4,
                 )
 
-        gc_log.info(f"Saved to:\n{connectome_path}")
-
-    if analysis_level == "group":
-
-        gc_log.info("Create group connectome")
-
-        for desc in connectomes:
-            average_connectome = np.mean(
-                np.array(connectomes[desc]), axis=0
-            ).astype(np.float32)
-            with h5py.File(output_path, "a") as f:
-                f.create_dataset(
-                    f"atlas-{atlas}_desc-{desc}_connectome",
-                    data=average_connectome,
+            for desc, masker in atlas_maskers.items():
+                attribute_name = (
+                    f"{subject}_{specifier}_atlas-{atlas['name']}_desc-{desc}"
                 )
+                if not denoised_img:
+                    time_series_atlas, correlation_matrix = None, None
+
+                    gc_log.info(f"{attribute_name}: no volume after scrubbing")
+
+                    progress.update(task, advance=1)
+                    continue
+
+                # extract timeseries and connectomes
+                (
+                    correlation_matrix,
+                    time_series_atlas,
+                ) = generate_timeseries_connectomes(
+                    masker,
+                    denoised_img,
+                    group_mask,
+                    correlation_measure,
+                    calculate_average_correlation,
+                )
+
+                # one output file per input file per atlas
+
+                # dump correlation_matrix to tsv
+                tsv_filename = connectome_path / utils.output_filename(
+                    source_file=Path(img.filename).stem,
+                    atlas=atlas["name"],
+                    extension="tsv",
+                    strategy=strategy["name"],
+                    desc=desc,
+                )
+                utils.check_path(tsv_filename)
+                df = pd.DataFrame(correlation_matrix)
+                df.to_csv(tsv_filename, sep="\t", index=False)
+
+                # dump timeseries to h5
+                h5_filename = connectome_path / utils.output_filename(
+                    source_file=Path(img.filename).stem,
+                    atlas=atlas["name"],
+                    extension="h5",
+                    strategy=strategy["name"],
+                    desc=desc,
+                )
+                utils.check_path(h5_filename)
+                flag = _set_file_flag(h5_filename)
+                with h5py.File(h5_filename, flag) as f:
+                    group = _fetch_h5_group(f, subject, session)
+                    group.create_dataset(
+                        f"{attribute_name}_timeseries", data=time_series_atlas
+                    )
+
+            progress.update(task, advance=1)
+
+    gc_log.info(f"Saved to:\n{connectome_path}")
 
 
 def _set_file_flag(output_path: Path) -> str:
     """Find out if new file needs to be created."""
-    flag = "w"
-    if output_path.exists():
-        flag = "a"
+    flag = "a" if output_path.exists() else "w"
     return flag
 
 
 def _fetch_h5_group(
-    f: h5py.File, subject: str, session: str
-) -> Union[h5py.File, h5py.Group]:
+    file: h5py.File, subject: str, session: str | None
+) -> h5py.File | h5py.Group:
     """Determine the level of grouping based on BIDS standard."""
-    if subject not in f:
+    if subject not in file:
         return (
-            f.create_group(f"{subject}/{session}")
+            file.create_group(f"{subject}/{session}")
             if session
-            else f.create_group(f"{subject}")
+            else file.create_group(subject)
         )
     elif session:
         return (
-            f[f"{subject}"].create_group(f"{session}")
-            if session not in f[f"{subject}"]
-            else f[f"{subject}/{session}"]
+            file[subject].create_group(session)
+            if session not in file[subject]
+            else file[f"{subject}/{session}"]
         )
     else:
-        return f[f"{subject}"]
+        return file[subject]
 
 
-def _get_masker(atlas_path: Path) -> Union[NiftiLabelsMasker, NiftiMapsMasker]:
+def _get_masker(atlas_path: Path) -> NiftiLabelsMasker | NiftiMapsMasker:
     """Get the masker object based on the templateflow file name suffix."""
     atlas_type = atlas_path.name.split("_")[-1].split(".nii")[0]
     if atlas_type == "dseg":

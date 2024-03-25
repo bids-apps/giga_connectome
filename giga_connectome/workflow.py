@@ -1,17 +1,20 @@
 """
 Process fMRIPrep outputs to timeseries based on denoising strategy.
 """
+
 from __future__ import annotations
+
+import argparse
 
 from giga_connectome import (
     generate_gm_mask_atlas,
-    load_atlas_setting,
-    run_postprocessing_dataset,
     get_denoise_strategy,
+    load_atlas_setting,
+    methods,
+    run_postprocessing_dataset,
+    utils,
 )
-
 from giga_connectome.denoise import is_ica_aroma
-from giga_connectome import utils
 from giga_connectome.logger import gc_logger
 
 
@@ -31,7 +34,7 @@ def set_verbosity(verbosity: int | list[int]) -> None:
         gc_log.setLevel("DEBUG")
 
 
-def workflow(args):
+def workflow(args: argparse.Namespace) -> None:
     gc_log.info(vars(args))
 
     # set file paths
@@ -66,6 +69,16 @@ def workflow(args):
 
     utils.create_ds_description(output_dir)
     utils.create_sidecar(output_dir / "meas-PearsonCorrelation_relmat.json")
+    methods.generate_method_section(
+        output_dir=output_dir,
+        atlas=atlas["name"],
+        smoothing_fwhm=smoothing_fwhm,
+        standardize=args.standardize,
+        strategy=args.denoise_strategy,
+        mni_space=template,
+        average_correlation=calculate_average_correlation,
+        analysis_level=analysis_level == "group",
+    )
 
     # create subject ts and connectomes
     # refactor the two cases into one
@@ -90,7 +103,6 @@ def workflow(args):
                 standardize,
                 smoothing_fwhm,
                 output_dir,
-                analysis_level,
                 calculate_average_correlation,
             )
         return
@@ -119,6 +131,5 @@ def workflow(args):
         standardize,
         smoothing_fwhm,
         output_dir,
-        analysis_level,
         calculate_average_correlation,
     )
