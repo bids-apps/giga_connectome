@@ -241,9 +241,7 @@ def create_sidecar(output_path: Path) -> None:
         json.dump(metadata, f, indent=4)
 
 
-def output_filename(
-    source_file: str, atlas: str, strategy: str, output_to_bids: bool
-) -> str:
+def output_filename(source_file: str, atlas: str, strategy: str) -> str:
     """Generate output filneme."""
     root = source_file.split("_")[:-1]
 
@@ -251,8 +249,6 @@ def output_filename(
     # that are redundant or
     # to make sure we get a single file across
     root = [x for x in root if "desc" not in x]
-    if not output_to_bids:
-        root = [x for x in root if "sub" in x]
 
     root = "_".join(root)
     if root != "":

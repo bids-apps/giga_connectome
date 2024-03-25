@@ -51,8 +51,6 @@ def workflow(args):
 
     atlas = load_atlas_setting(args.atlas)
 
-    output_to_bids = True
-
     set_verbosity(args.verbosity)
 
     # check output path
@@ -77,7 +75,7 @@ def workflow(args):
 
     if analysis_level == "participant":
         for subject in subjects:
-            subj_data, fmriprep_bids_layout = utils.get_bids_images(
+            subj_data, _ = utils.get_bids_images(
                 [subject], template, bids_dir, args.reindex_bids, bids_filters
             )
             group_mask, resampled_atlases = generate_gm_mask_atlas(
@@ -103,12 +101,11 @@ def workflow(args):
                 output_dir,
                 analysis_level,
                 calculate_average_correlation,
-                output_to_bids,
             )
         return
 
     # group level
-    subj_data, fmriprep_bids_layout = utils.get_bids_images(
+    subj_data, _ = utils.get_bids_images(
         subjects, template, bids_dir, args.reindex_bids, bids_filters
     )
     group_mask, resampled_atlases = generate_gm_mask_atlas(
@@ -133,5 +130,4 @@ def workflow(args):
         output_dir,
         analysis_level,
         calculate_average_correlation,
-        output_to_bids,
     )
