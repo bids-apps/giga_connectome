@@ -1,9 +1,10 @@
 from pathlib import Path
-from bids.tests import get_test_data_path
-from giga_connectome import utils
-from pkg_resources import resource_filename
 
 import pytest
+from bids.tests import get_test_data_path
+from pkg_resources import resource_filename
+
+from giga_connectome import utils
 
 
 def test_get_bids_images():

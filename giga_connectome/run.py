@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 import argparse
 from pathlib import Path
-from giga_connectome.workflow import workflow
+from typing import Sequence
+
 from giga_connectome import __version__
+from giga_connectome.workflow import workflow
 
 
 def global_parser() -> argparse.ArgumentParser:
@@ -118,7 +122,7 @@ def global_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv=None):
+def main(argv: None | Sequence[str] = None) -> None:
     """Entry point."""
     parser = global_parser()
 

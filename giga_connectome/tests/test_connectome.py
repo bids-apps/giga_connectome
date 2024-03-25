@@ -1,8 +1,9 @@
 import numpy as np
-from giga_connectome.connectome import generate_timeseries_connectomes
 from nibabel import Nifti1Image
-from nilearn.maskers import NiftiMasker, NiftiLabelsMasker
 from nilearn.connectome import ConnectivityMeasure
+from nilearn.maskers import NiftiLabelsMasker, NiftiMasker
+
+from giga_connectome.connectome import generate_timeseries_connectomes
 
 
 def _extract_time_series_voxel(img, mask, confounds=None, smoothing_fwhm=None):

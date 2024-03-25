@@ -1,16 +1,15 @@
-from typing import Union, Optional
+from __future__ import annotations
 
 import json
 from pathlib import Path
-import pandas as pd
-import numpy as np
-from nibabel import Nifti1Image
+from typing import Any, Callable, Dict, List, TypedDict, Union
 
+import numpy as np
+import pandas as pd
+from nibabel import Nifti1Image
 from nilearn.interfaces import fmriprep
 from nilearn.maskers import NiftiMasker
-
 from pkg_resources import resource_filename
-
 
 PRESET_STRATEGIES = [
     "simple",
@@ -23,10 +22,30 @@ PRESET_STRATEGIES = [
     "icaaroma",
 ]
 
+# More refined type not possible with python <= 3.9?
+# STRATEGY_TYPE = TypedDict(
+#     "STRATEGY_TYPE",
+#     {
+#         "name": str,
+#         "function": Callable[
+#             ..., tuple[pd.DataFrame, Union[np.ndarray[Any, Any], None]]
+#         ],
+#         "parameters": dict[str, str | list[str]],
+#     },
+# )
+STRATEGY_TYPE = TypedDict(
+    "STRATEGY_TYPE",
+    {
+        "name": str,
+        "function": Callable[..., Any],
+        "parameters": Dict[str, Union[str, List[str]]],
+    },
+)
+
 
 def get_denoise_strategy(
     strategy: str,
-) -> dict:
+) -> STRATEGY_TYPE:
     """
     Select denoise strategies and associated parameters.
     The strategy parameters are designed to pass to load_confounds_strategy.
@@ -47,7 +66,7 @@ def get_denoise_strategy(
         Denosing strategy parameter to pass to load_confounds_strategy.
     """
     if strategy in PRESET_STRATEGIES:
-        config_path = resource_filename(
+        config_path: str | Path = resource_filename(
             "giga_connectome", f"data/denoise_strategy/{strategy}.json"
         )
     elif Path(strategy).exists():
@@ -63,7 +82,7 @@ def get_denoise_strategy(
     return benchmark_strategy
 
 
-def is_ica_aroma(strategy: str) -> bool:
+def is_ica_aroma(strategy: STRATEGY_TYPE) -> bool:
     """Check if the current strategy is ICA AROMA.
 
     Parameters
@@ -79,19 +98,17 @@ def is_ica_aroma(strategy: str) -> bool:
     strategy_preset = strategy["parameters"].get("denoise_strategy", False)
     strategy_user_define = strategy["parameters"].get("strategy", False)
     if strategy_preset or strategy_user_define:
-        return (
-            strategy_preset == "ica_aroma"
-            if strategy_preset
-            else "ica_aroma" in strategy_user_define
-        )
+        return strategy_preset == "ica_aroma"
+    elif isinstance(strategy_user_define, list):
+        return "ica_aroma" in strategy_user_define
     else:
         raise ValueError(f"Invalid input dictionary. {strategy['parameters']}")
 
 
 def denoise_nifti_voxel(
-    strategy: dict,
-    group_mask: Union[str, Path],
-    standardize: Union[str, bool],
+    strategy: STRATEGY_TYPE,
+    group_mask: str | Path,
+    standardize: str | bool,
     smoothing_fwhm: float,
     img: str,
 ) -> Nifti1Image:
@@ -101,9 +118,9 @@ def denoise_nifti_voxel(
     ----------
     strategy : dict
         Denoising strategy parameter to pass to load_confounds_strategy.
-    group_mask : Union[str, Path]
+    group_mask : str | Path
         Path to the group mask.
-    standardize : Union[str, bool]
+    standardize : str | bool
         Standardize the data. If 'zscore', zscore the data. If 'psc', convert
         the data to percent signal change. If False, do not standardize.
     smoothing_fwhm : float
@@ -138,7 +155,8 @@ def denoise_nifti_voxel(
 
 
 def _check_exclusion(
-    reduced_confounds: pd.DataFrame, sample_mask: Optional[np.ndarray]
+    reduced_confounds: pd.DataFrame,
+    sample_mask: np.ndarray[Any, Any] | None,
 ) -> bool:
     """For scrubbing based strategy, check if regression can be performed."""
     if sample_mask is not None:

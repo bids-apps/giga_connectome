@@ -1,35 +1,38 @@
+from __future__ import annotations
+
 import os
 import re
-from typing import Optional, Union, List, Tuple
-from bids.layout import BIDSImageFile
-
 from pathlib import Path
+from typing import Any, Sequence
+
 import nibabel as nib
-from nilearn.masking import compute_multi_epi_mask
-from nilearn.image import (
-    resample_to_img,
-    new_img_like,
-    get_data,
-    math_img,
-    load_img,
-)
-from nibabel import Nifti1Image
 import numpy as np
+from bids.layout import BIDSImageFile
+from nibabel import Nifti1Image
+from nilearn.image import (
+    get_data,
+    load_img,
+    math_img,
+    new_img_like,
+    resample_to_img,
+)
+from nilearn.masking import compute_multi_epi_mask
 from scipy.ndimage import binary_closing
 
 from giga_connectome.atlas import resample_atlas_collection
-
 from giga_connectome.logger import gc_logger
+
+from giga_connectome.atlas import ATLAS_SETTING_TYPE
 
 gc_log = gc_logger()
 
 
 def generate_gm_mask_atlas(
     working_dir: Path,
-    atlas: dict,
+    atlas: ATLAS_SETTING_TYPE,
     template: str,
-    masks: List[BIDSImageFile],
-) -> Tuple[Path, List[Path]]:
+    masks: list[BIDSImageFile],
+) -> tuple[Path, list[Path]]:
     """ """
     # check masks; isolate this part and make sure to make it a validate
     # templateflow template with a config file
@@ -63,9 +66,9 @@ def generate_gm_mask_atlas(
 
 
 def generate_group_mask(
-    imgs: list,
+    imgs: Sequence[Path | str | Nifti1Image],
     template: str = "MNI152NLin2009cAsym",
-    templateflow_dir: Optional[Path] = None,
+    templateflow_dir: Path | None = None,
     n_iter: int = 2,
 ) -> Nifti1Image:
     """
@@ -76,8 +79,8 @@ def generate_group_mask(
 
     Parameters
     ----------
-    imgs : list of string
-        List of EPI masks or preprocessed BOLD data.
+    imgs : list of Path or str or Nifti1Image
+        list of EPI masks or preprocessed BOLD data.
 
     template : str, Default = MNI152NLin2009cAsym
         Template name from TemplateFlow to retrieve the grey matter template.
@@ -169,8 +172,8 @@ def generate_group_mask(
 
 
 def _get_consistent_masks(
-    mask_imgs: List[Union[Path, str, Nifti1Image]], exclude: List[int]
-) -> Tuple[List[int], List[str]]:
+    mask_imgs: Sequence[Path | str | Nifti1Image], exclude: list[int]
+) -> tuple[list[Path | str | Any], list[str]]:
     """Create a list of masks that has the same affine.
 
     Parameters
@@ -180,14 +183,14 @@ def _get_consistent_masks(
         The original list of functional masks
 
     exclude :
-        List of index to exclude.
+        list of index to exclude.
 
     Returns
     -------
-    List of str
+    list of str
         Functional masks with the same affine.
 
-    List of str
+    list of str
         Identifiers of scans with a different affine.
     """
     weird_mask_identifiers = []
@@ -196,14 +199,13 @@ def _get_consistent_masks(
     for odd_file in odd_masks:
         identifier = Path(odd_file).name.split("_space")[0]
         weird_mask_identifiers.append(identifier)
-    cleaned_func_masks = set(mask_imgs) - set(odd_masks)
-    cleaned_func_masks = list(cleaned_func_masks)
+    cleaned_func_masks = list(set(mask_imgs) - set(odd_masks))
     return cleaned_func_masks, weird_mask_identifiers
 
 
 def _check_mask_affine(
-    mask_imgs: List[Union[Path, str, Nifti1Image]]
-) -> Union[list, None]:
+    mask_imgs: Sequence[Path | str | Nifti1Image],
+) -> list[int] | None:
     """Given a list of input mask images, show the most common affine matrix
     and subjects with different values.
 
@@ -216,12 +218,12 @@ def _check_mask_affine(
     Returns
     -------
 
-    List or None
+    list or None
         Index of masks with odd affine matrix. Return None when all masks have
         the same affine matrix.
     """
     # save all header and affine info in hashable type...
-    header_info = {"affine": []}
+    header_info: dict[str, list[str]] = {"affine": []}
     key_to_header = {}
     for this_mask in mask_imgs:
         img = load_img(this_mask)
@@ -232,9 +234,9 @@ def _check_mask_affine(
             key_to_header[affine_hashable] = affine
 
     if isinstance(mask_imgs[0], Nifti1Image):
-        mask_imgs = np.arange(len(mask_imgs))
+        mask_arrays = np.arange(len(mask_imgs))
     else:
-        mask_imgs = np.array(mask_imgs)
+        mask_arrays = np.array(mask_imgs)
     # get most common values
     common_affine = max(
         set(header_info["affine"]), key=header_info["affine"].count
@@ -256,24 +258,26 @@ def _check_mask_affine(
         gc_log.debug(
             "The following subjects has a different affine matrix "
             f"({key_to_header[ob]}) comparing to the most common value: "
-            f"{mask_imgs[ob_index]}."
+            f"{mask_arrays[ob_index]}."
         )
         exclude += ob_index
     gc_log.info(
-        f"{len(exclude)} out of {len(mask_imgs)} has "
+        f"{len(exclude)} out of {len(mask_arrays)} has "
         "different affine matrix. Ignore when creating group mask."
     )
     return sorted(exclude)
 
 
-def _check_pregenerated_masks(template, working_dir, atlas):
+def _check_pregenerated_masks(
+    template: str, working_dir: Path, atlas: ATLAS_SETTING_TYPE
+) -> tuple[Path | None, list[Path] | None]:
     """Check if the working directory is populated with needed files."""
     output_dir = working_dir / "groupmasks" / f"tpl-{template}"
-    group_mask = (
+    group_mask: Path | None = (
         output_dir
         / f"tpl-{template}_res-dataset_label-GM_desc-group_mask.nii.gz"
     )
-    if not group_mask.exists():
+    if group_mask and not group_mask.exists():
         group_mask = None
     else:
         gc_log.info(
@@ -281,7 +285,7 @@ def _check_pregenerated_masks(template, working_dir, atlas):
         )
 
     # atlas
-    resampled_atlases = []
+    resampled_atlases: list[Path] = []
     for desc in atlas["file_paths"]:
         filename = (
             f"tpl-{template}_"
@@ -293,7 +297,7 @@ def _check_pregenerated_masks(template, working_dir, atlas):
         resampled_atlases.append(output_dir / filename)
     all_exist = [file_path.exists() for file_path in resampled_atlases]
     if not all(all_exist):
-        resampled_atlases = None
+        return group_mask, None
     else:
         gc_log.info(
             f"Found resampled atlases:\n{[str(x) for x in resampled_atlases]}."

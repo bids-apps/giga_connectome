@@ -1,15 +1,17 @@
-from typing import Union, List
+from __future__ import annotations
+
 from pathlib import Path
+from typing import Any, Sequence
 
 import h5py
 import numpy as np
+from bids.layout import BIDSImageFile
 from nilearn.connectome import ConnectivityMeasure
 from nilearn.maskers import NiftiLabelsMasker, NiftiMapsMasker
-from bids.layout import BIDSImageFile
 
 from giga_connectome import utils
 from giga_connectome.connectome import generate_timeseries_connectomes
-from giga_connectome.denoise import denoise_nifti_voxel
+from giga_connectome.denoise import STRATEGY_TYPE, denoise_nifti_voxel
 from giga_connectome.logger import gc_logger
 from giga_connectome.utils import progress_bar
 
@@ -17,11 +19,11 @@ gc_log = gc_logger()
 
 
 def run_postprocessing_dataset(
-    strategy: dict,
-    resampled_atlases: List[Union[str, Path]],
-    images: List[BIDSImageFile],
-    group_mask: Union[str, Path],
-    standardize: Union[str, bool],
+    strategy: STRATEGY_TYPE,
+    resampled_atlases: Sequence[str | Path],
+    images: Sequence[BIDSImageFile],
+    group_mask: str | Path,
+    standardize: str | bool,
     smoothing_fwhm: float,
     output_path: Path,
     analysis_level: str,
@@ -88,7 +90,8 @@ def run_postprocessing_dataset(
         Whether to calculate average correlation within each parcel.
     """
     atlas = output_path.name.split("atlas-")[-1].split("_")[0]
-    atlas_maskers, connectomes = {}, {}
+    atlas_maskers: dict[str, (NiftiLabelsMasker | NiftiMapsMasker)] = {}
+    connectomes: dict[str, list[np.ndarray[Any, Any]]] = {}
     for atlas_path in resampled_atlases:
         if isinstance(atlas_path, str):
             atlas_path = Path(atlas_path)
@@ -175,33 +178,31 @@ def run_postprocessing_dataset(
 
 def _set_file_flag(output_path: Path) -> str:
     """Find out if new file needs to be created."""
-    flag = "w"
-    if output_path.exists():
-        flag = "a"
+    flag = "a" if output_path.exists() else "w"
     return flag
 
 
 def _fetch_h5_group(
-    f: h5py.File, subject: str, session: str
-) -> Union[h5py.File, h5py.Group]:
+    file: h5py.File, subject: str, session: str | None
+) -> h5py.File | h5py.Group:
     """Determine the level of grouping based on BIDS standard."""
-    if subject not in f:
+    if subject not in file:
         return (
-            f.create_group(f"{subject}/{session}")
+            file.create_group(f"{subject}/{session}")
             if session
-            else f.create_group(f"{subject}")
+            else file.create_group(subject)
         )
     elif session:
         return (
-            f[f"{subject}"].create_group(f"{session}")
-            if session not in f[f"{subject}"]
-            else f[f"{subject}/{session}"]
+            file[subject].create_group(session)
+            if session not in file[subject]
+            else file[f"{subject}/{session}"]
         )
     else:
-        return f[f"{subject}"]
+        return file[subject]
 
 
-def _get_masker(atlas_path: Path) -> Union[NiftiLabelsMasker, NiftiMapsMasker]:
+def _get_masker(atlas_path: Path) -> NiftiLabelsMasker | NiftiMapsMasker:
     """Get the masker object based on the templateflow file name suffix."""
     atlas_type = atlas_path.name.split("_")[-1].split(".nii")[0]
     if atlas_type == "dseg":

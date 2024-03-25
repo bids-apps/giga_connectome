@@ -6,10 +6,10 @@ try:
 except ImportError:
     pass
 
-from .mask import generate_gm_mask_atlas
 from .atlas import load_atlas_setting
-from .postprocess import run_postprocessing_dataset
 from .denoise import get_denoise_strategy
+from .mask import generate_gm_mask_atlas
+from .postprocess import run_postprocessing_dataset
 
 __all__ = [
     "__copyright__",

@@ -4,15 +4,17 @@ Process fMRIPrep outputs to timeseries based on denoising strategy.
 
 from __future__ import annotations
 
+import argparse
+
 from giga_connectome import (
     generate_gm_mask_atlas,
-    load_atlas_setting,
-    run_postprocessing_dataset,
     get_denoise_strategy,
+    load_atlas_setting,
+    methods,
+    run_postprocessing_dataset,
+    utils,
 )
-
 from giga_connectome.denoise import is_ica_aroma
-from giga_connectome import utils, methods
 from giga_connectome.logger import gc_logger
 
 
@@ -32,7 +34,7 @@ def set_verbosity(verbosity: int | list[int]) -> None:
         gc_log.setLevel("DEBUG")
 
 
-def workflow(args):
+def workflow(args: argparse.Namespace) -> None:
     gc_log.info(vars(args))
 
     # set file paths

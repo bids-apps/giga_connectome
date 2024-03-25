@@ -1,13 +1,18 @@
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Union, Tuple
+from typing import Any
+
 import numpy as np
-from nilearn.maskers import NiftiMasker
-from nilearn.image import load_img
 from nibabel import Nifti1Image
 from nilearn.connectome import ConnectivityMeasure
+from nilearn.image import load_img
+from nilearn.maskers import NiftiMasker
 
 
-def build_size_roi(mask: np.ndarray, labels_roi: np.ndarray) -> np.ndarray:
+def build_size_roi(
+    mask: np.ndarray[Any, Any], labels_roi: np.ndarray[Any, Any]
+) -> np.ndarray[Any, np.dtype[Any]]:
     """Extract labels and sizes of ROIs given an atlas.
     The atlas parcels must be discrete segmentations.
 
@@ -41,12 +46,12 @@ def build_size_roi(mask: np.ndarray, labels_roi: np.ndarray) -> np.ndarray:
 
 
 def calculate_intranetwork_correlation(
-    correlation_matrix: np.array,
-    masker_labels: np.array,
-    time_series_atlas: np.array,
-    group_mask: Union[str, Path, Nifti1Image],
-    atlas_image: Union[str, Path, Nifti1Image],
-) -> Tuple[np.ndarray, np.ndarray]:
+    correlation_matrix: np.ndarray[Any, Any],
+    masker_labels: np.ndarray[Any, Any],
+    time_series_atlas: np.ndarray[Any, Any],
+    group_mask: str | Path | Nifti1Image,
+    atlas_image: str | Path | Nifti1Image,
+) -> tuple[np.ndarray[Any, Any], np.ndarray[Any, Any]]:
     """Calculate the average functional correlation within each parcel.
     Currently we only support discrete segmentations.
 
@@ -61,15 +66,15 @@ def calculate_intranetwork_correlation(
     time_series_atlas : np.array
         Time series extracted from each parcel.
 
-    group_mask : Union[str, Path, Nifti1Image]
+    group_mask : str | Path | Nifti1Image
         The group grey matter mask.
 
-    atlas_image : Union[str, Path, Nifti1Image]
+    atlas_image : str | Path | Nifti1Image
         3D atlas image.
 
     Returns
     -------
-    Tuple[np.ndarray, np.ndarray]
+    tuple[np.ndarray, np.ndarray]
         A tuple containing the modified Pearson's correlation matrix with
         the diagonal replaced by the average correlation within each parcel,
         and an array of the computed average intranetwork correlations for
@@ -106,10 +111,10 @@ def calculate_intranetwork_correlation(
 def generate_timeseries_connectomes(
     masker: NiftiMasker,
     denoised_img: Nifti1Image,
-    group_mask: Union[str, Path],
+    group_mask: str | Path,
     correlation_measure: ConnectivityMeasure,
     calculate_average_correlation: bool,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray[Any, Any], np.ndarray[Any, Any]]:
     """Generate timeseries-based connectomes from functional data.
 
     Parameters
@@ -120,7 +125,7 @@ def generate_timeseries_connectomes(
     denoised_img : Nifti1Image
         Denoised functional image.
 
-    group_mask : Union[str, Path]
+    group_mask : str | Path
         Path to the group grey matter mask.
 
     correlation_measure : ConnectivityMeasure
@@ -131,7 +136,7 @@ def generate_timeseries_connectomes(
 
     Returns
     -------
-    Tuple[np.ndarray, np.ndarray]
+    tuple[np.ndarray, np.ndarray]
         A tuple containing the correlation matrix and time series atlas.
     """
     time_series_atlas = masker.fit_transform(denoised_img)
