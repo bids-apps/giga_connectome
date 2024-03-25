@@ -275,17 +275,18 @@ def output_filename(
     if root != "":
         root += "_"
 
+    root += f"atlas-{atlas}"
+
+    if suffix == "relmat":
+        root += "_meas-PearsonCorrelation"
+
     if suffix == "timeseries" and extension == "json":
-        return f"{root}atlas-{atlas}_meas-PearsonCorrelation_timeseries.json"
+        return f"{root}_timeseries.json"
 
     if strategy is None:
         strategy = ""
 
-    return (
-        f"{root}atlas-{atlas}_meas-PearsonCorrelation"
-        f"_desc-{desc}{strategy.capitalize()}"
-        f"_{suffix}.{extension}"
-    )
+    return f"{root}_desc-{desc}{strategy.capitalize()}_{suffix}.{extension}"
 
 
 def progress_bar(text: str, color: str = "green") -> Progress:

@@ -5,48 +5,89 @@ of the [BIDS extension proposal 17 - Generic BIDS connectivity data schema](http
 
 Metadata files content is described in this BIDS extension proposal.
 
-## participant level
+## Participant level
 
-When performing `participant` level analysis, the output is a HDF5 file per participant that was passed to `--participant_label` or all subjects under `bids_dir`.
+For each participant that was passed to `--participant_label`
+(or all participants under `bids_dir` if no `--participant_label` is passed),
+the output will be save in `sub-<participant_id>/[ses-<ses_id>]/func`.
 
-The output file name is:
+### Data files
 
-```
-sub-<participant_id>/[ses-<ses_id>]/func/<source_filename>_atlas-<atlas_name>_meas-PearsonCorrelation_desc-<denoising_strategy>_relmat.h5
-```
+For each input image (that is, preprocessed BOLD time series)
+and each atlas the following data files will be generated
 
-## group level
+- a `[matches]_atlas-{atlas}_meas-PearsonCorrelation_desc-{atlas description}{strategy}_relmat.tsv`
+  file that contains the correlation matrix between all the regions of the atlas
+- a `[matches]_atlas-{atlas}_meas-PearsonCorrelation_desc-{atlas description}{strategy}_timeseries.tsv`
+  file that contains the extracted timeseries for each region of the atlas
 
-When performing `group` level analysis,
-the file will contain time series and connectomes of each subject,
-as well as group average connectomes.
+- `{atlas}` refers to the name of the atlas used (for example, `Schaefer20187Networks`)
+- `{atlas description}` refers to the sub type of atlas used (for example, `100Parcels7Networks`)
+- `{strategy}` refers to strategy passed to the command line
 
-The output is a HDF5 file per participant that was passed to `--participant_label` or all subjects under `bids_dir`.
+### Metadata
+
+A JSON file is generated in the root of the output dataset (`meas-PearsonCorrelation_relmat.json`)
+that contains metadata applicable to all `relmat.tsv` files.
+
+For each input image (that is, preprocessed BOLD time series)
+a `[matches]_atlas-{atlas}_timeseries.json`
 
 ### Example
 
 ```
-giga_connectome/data/test_data/output
 ├── dataset_description.json
-├── meas-PearsonCorrelation_desc-simple_relmat.json
-├── group
-│   └── atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-simple_relmat.h5
+├── logs
+│   └── CITATION.md
+├── meas-PearsonCorrelation_relmat.json
 ├── sub-1
 │   ├── ses-timepoint1
 │   │   └── func
-│   │       ├── sub-1_ses-timepoint1_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-simple_relmat.h5
-│   │       └── sub-1_ses-timepoint1_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-simple_relmat.h5
+│   │       ├── sub-1_ses-timepoint1_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_desc-100Parcels7NetworksSimple_timeseries.tsv
+│   │       ├── sub-1_ses-timepoint1_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_desc-200Parcels7NetworksSimple_timeseries.tsv
+│   │       ├── sub-1_ses-timepoint1_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-100Parcels7NetworksSimple_relmat.tsv
+│   │       ├── sub-1_ses-timepoint1_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-200Parcels7NetworksSimple_relmat.tsv
+│   │       ├── sub-1_ses-timepoint1_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_timeseries.json
+│   │       ├── sub-1_ses-timepoint1_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_desc-100Parcels7NetworksSimple_timeseries.tsv
+│   │       ├── sub-1_ses-timepoint1_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_desc-200Parcels7NetworksSimple_timeseries.tsv
+│   │       ├── sub-1_ses-timepoint1_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-100Parcels7NetworksSimple_relmat.tsv
+│   │       ├── sub-1_ses-timepoint1_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-200Parcels7NetworksSimple_relmat.tsv
+│   │       └── sub-1_ses-timepoint1_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_timeseries.json
 │   └── ses-timepoint2
 │       └── func
-│           ├── sub-1_ses-timepoint2_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-simple_relmat.h5
-│           └── sub-1_ses-timepoint2_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-simple_relmat.h5
+│           ├── sub-1_ses-timepoint2_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_desc-100Parcels7NetworksSimple_timeseries.tsv
+│           ├── sub-1_ses-timepoint2_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_desc-200Parcels7NetworksSimple_timeseries.tsv
+│           ├── sub-1_ses-timepoint2_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-100Parcels7NetworksSimple_relmat.tsv
+│           ├── sub-1_ses-timepoint2_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-200Parcels7NetworksSimple_relmat.tsv
+│           ├── sub-1_ses-timepoint2_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_timeseries.json
+│           ├── sub-1_ses-timepoint2_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_desc-100Parcels7NetworksSimple_timeseries.tsv
+│           ├── sub-1_ses-timepoint2_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_desc-200Parcels7NetworksSimple_timeseries.tsv
+│           ├── sub-1_ses-timepoint2_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-100Parcels7NetworksSimple_relmat.tsv
+│           ├── sub-1_ses-timepoint2_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-200Parcels7NetworksSimple_relmat.tsv
+│           └── sub-1_ses-timepoint2_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_timeseries.json
 └── sub-2
     ├── ses-timepoint1
     │   └── func
-    │       ├── sub-2_ses-timepoint1_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-simple_relmat.h5
-    │       └── sub-2_ses-timepoint1_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-simple_relmat.h5
+    │       ├── sub-2_ses-timepoint1_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_desc-100Parcels7NetworksSimple_timeseries.tsv
+    │       ├── sub-2_ses-timepoint1_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_desc-200Parcels7NetworksSimple_timeseries.tsv
+    │       ├── sub-2_ses-timepoint1_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-100Parcels7NetworksSimple_relmat.tsv
+    │       ├── sub-2_ses-timepoint1_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-200Parcels7NetworksSimple_relmat.tsv
+    │       ├── sub-2_ses-timepoint1_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_timeseries.json
+    │       ├── sub-2_ses-timepoint1_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_desc-100Parcels7NetworksSimple_timeseries.tsv
+    │       ├── sub-2_ses-timepoint1_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_desc-200Parcels7NetworksSimple_timeseries.tsv
+    │       ├── sub-2_ses-timepoint1_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-100Parcels7NetworksSimple_relmat.tsv
+    │       ├── sub-2_ses-timepoint1_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-200Parcels7NetworksSimple_relmat.tsv
+    │       └── sub-2_ses-timepoint1_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_timeseries.json
     └── ses-timepoint2
         └── func
-            ├── sub-2_ses-timepoint2_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-simple_relmat.h5
-            └── sub-2_ses-timepoint2_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-simple_relmat.h5
+            ├── sub-2_ses-timepoint2_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_desc-100Parcels7NetworksSimple_timeseries.tsv
+            ├── sub-2_ses-timepoint2_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_desc-200Parcels7NetworksSimple_timeseries.tsv
+            ├── sub-2_ses-timepoint2_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-100Parcels7NetworksSimple_relmat.tsv
+            ├── sub-2_ses-timepoint2_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-200Parcels7NetworksSimple_relmat.tsv
+            ├── sub-2_ses-timepoint2_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_timeseries.json
+            ├── sub-2_ses-timepoint2_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_desc-100Parcels7NetworksSimple_timeseries.tsv
+            ├── sub-2_ses-timepoint2_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_desc-200Parcels7NetworksSimple_timeseries.tsv
+            ├── sub-2_ses-timepoint2_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-100Parcels7NetworksSimple_relmat.tsv
+            ├── sub-2_ses-timepoint2_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_meas-PearsonCorrelation_desc-200Parcels7NetworksSimple_relmat.tsv
+            └── sub-2_ses-timepoint2_task-probabilisticclassification_run-02_space-MNI152NLin2009cAsym_res-2_atlas-Schaefer20187Networks_timeseries.json
 ```
