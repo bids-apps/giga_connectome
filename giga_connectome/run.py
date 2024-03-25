@@ -77,7 +77,7 @@ def global_parser() -> argparse.ArgumentParser:
         "--standardize",
         help="The choice of signal standardization. The choices are z score "
         "or percent signal change (psc). The default is 'zscore'.",
-        choices=["zscore", "psc"],
+        choices=["zscore", "None"],
         default="zscore",
     )
     parser.add_argument(

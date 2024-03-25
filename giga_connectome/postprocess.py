@@ -23,7 +23,7 @@ def run_postprocessing_dataset(
     resampled_atlases: Sequence[str | Path],
     images: Sequence[BIDSImageFile],
     group_mask: str | Path,
-    standardize: str | bool,
+    standardize: bool,
     smoothing_fwhm: float,
     output_path: Path,
     analysis_level: str,
@@ -72,9 +72,9 @@ def run_postprocessing_dataset(
     group_mask : str or pathlib.Path
         Group level grey matter mask.
 
-    standardize : str or bool
-        Standardization options used in nilearn, passed to nilearn masker.
-        Options: True, False, "psc"
+    standardize : bool
+        Standardization to zscore or not used in nilearn, passed to nilearn \
+            masker.
 
     smoothing_fwhm : float
         Smoothing kernel size, passed to nilearn masker.

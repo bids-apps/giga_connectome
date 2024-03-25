@@ -108,7 +108,7 @@ def is_ica_aroma(strategy: STRATEGY_TYPE) -> bool:
 def denoise_nifti_voxel(
     strategy: STRATEGY_TYPE,
     group_mask: str | Path,
-    standardize: str | bool,
+    standardize: bool,
     smoothing_fwhm: float,
     img: str,
 ) -> Nifti1Image:
@@ -120,9 +120,9 @@ def denoise_nifti_voxel(
         Denoising strategy parameter to pass to load_confounds_strategy.
     group_mask : str | Path
         Path to the group mask.
-    standardize : str | bool
-        Standardize the data. If 'zscore', zscore the data. If 'psc', convert
-        the data to percent signal change. If False, do not standardize.
+    standardize : bool
+        Standardize the data. If True, zscore the data. If False, do \
+            not standardize.
     smoothing_fwhm : float
         Smoothing kernel size in mm.
     img : str

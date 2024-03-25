@@ -42,7 +42,7 @@ def workflow(args: argparse.Namespace) -> None:
     output_dir = args.output_dir
     working_dir = args.work_dir
     analysis_level = args.analysis_level
-    standardize = utils.parse_standardize_options(args.standardize)
+    standardize = True  # always standardising the time series
     smoothing_fwhm = args.smoothing_fwhm
     calculate_average_correlation = (
         args.calculate_intranetwork_average_correlation
@@ -70,7 +70,7 @@ def workflow(args: argparse.Namespace) -> None:
         output_dir=output_dir,
         atlas=atlas["name"],
         smoothing_fwhm=smoothing_fwhm,
-        standardize=args.standardize,
+        standardize="zscore",
         strategy=args.denoise_strategy,
         mni_space=template,
         average_correlation=calculate_average_correlation,
