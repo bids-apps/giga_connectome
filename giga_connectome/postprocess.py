@@ -7,6 +7,7 @@ import numpy as np
 from nilearn.connectome import ConnectivityMeasure
 from nilearn.maskers import NiftiLabelsMasker, NiftiMapsMasker
 from bids.layout import BIDSImageFile
+import pandas as pd
 
 from giga_connectome import utils
 from giga_connectome.connectome import generate_timeseries_connectomes
@@ -150,6 +151,10 @@ def run_postprocessing_dataset(
             )
             connectomes[desc].append(correlation_matrix)
 
+            with connectome_path.with_suffix(".tsv") as f:
+                df = pd.DataFrame(correlation_matrix)
+                df.to_csv(f, sep="\t", index=False)
+
             # dump to h5
             flag = _set_file_flag(connectome_path)
             with h5py.File(connectome_path, flag) as f:
@@ -160,9 +165,6 @@ def run_postprocessing_dataset(
                 timeseries_dset.attrs["RepetitionTime"] = img.entities[
                     "RepetitionTime"
                 ]
-                group.create_dataset(
-                    f"{attribute_name}_connectome", data=correlation_matrix
-                )
 
         gc_log.info(f"Saved to:\n{connectome_path}")
 
