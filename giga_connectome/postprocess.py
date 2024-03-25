@@ -161,15 +161,14 @@ def run_postprocessing_dataset(
                     continue
 
                 # extract timeseries and connectomes
-                (
-                    correlation_matrix,
-                    time_series_atlas,
-                ) = generate_timeseries_connectomes(
-                    masker,
-                    denoised_img,
-                    group_mask,
-                    correlation_measure,
-                    calculate_average_correlation,
+                (correlation_matrix, time_series_atlas, masker) = (
+                    generate_timeseries_connectomes(
+                        masker,
+                        denoised_img,
+                        group_mask,
+                        correlation_measure,
+                        calculate_average_correlation,
+                    )
                 )
 
                 # dump correlation_matrix to tsv
@@ -198,6 +197,17 @@ def run_postprocessing_dataset(
                 df = pd.DataFrame(time_series_atlas)
                 df.to_csv(timeseries_filename, sep="\t", index=False)
 
+                report = masker.generate_report()
+                report_filename = connectome_path / utils.output_filename(
+                    source_file=Path(img.filename).stem,
+                    atlas=atlas["name"],
+                    suffix="report",
+                    extension="html",
+                    strategy=strategy["name"],
+                    desc=desc,
+                )
+                report.save_as_html(report_filename)
+
             progress.update(task, advance=1)
 
     gc_log.info(f"Saved to:\n{connectome_path}")
@@ -208,8 +218,14 @@ def _get_masker(atlas_path: Path) -> NiftiLabelsMasker | NiftiMapsMasker:
     atlas_type = atlas_path.name.split("_")[-1].split(".nii")[0]
     if atlas_type == "dseg":
         atlas_masker = NiftiLabelsMasker(
-            labels_img=atlas_path, standardize=False
+            labels_img=atlas_path,
+            standardize=False,
+            cmap="grey",
         )
     elif atlas_type == "probseg":
-        atlas_masker = NiftiMapsMasker(maps_img=atlas_path, standardize=False)
+        atlas_masker = NiftiMapsMasker(
+            maps_img=atlas_path,
+            standardize=False,
+            cmap="grey",
+        )
     return atlas_masker
