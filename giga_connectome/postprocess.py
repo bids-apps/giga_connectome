@@ -8,7 +8,6 @@ import numpy as np
 from bids.layout import BIDSImageFile
 from nilearn.connectome import ConnectivityMeasure
 from nilearn.maskers import NiftiLabelsMasker, NiftiMapsMasker
-from tqdm import tqdm
 
 from giga_connectome import utils
 from giga_connectome.connectome import generate_timeseries_connectomes

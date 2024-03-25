@@ -9,7 +9,6 @@ import nibabel as nib
 from nibabel import Nifti1Image
 from nilearn.image import resample_to_img
 from pkg_resources import resource_filename
-from tqdm import tqdm
 
 from giga_connectome.logger import gc_logger
 from giga_connectome.utils import progress_bar
