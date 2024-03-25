@@ -73,14 +73,14 @@ jobs:
       run: python -m build
     - run: twine check dist/*
     - name: Upload sdist and wheel artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: dist
         path: dist/
     - name: Build git archive
       run: mkdir archive && git archive -v -o archive/archive.tgz HEAD
     - name: Upload git archive artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: archive
         path: archive/
@@ -197,12 +197,12 @@ jobs:
             --reindex-bids
 
       - name: Upload output artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: connectome
           path: ./outputs/
       - name: Upload docker image artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: docker-image
           path: ${HOME}/docker/image.tar
