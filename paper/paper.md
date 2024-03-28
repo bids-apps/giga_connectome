@@ -50,8 +50,8 @@ Finally the data is standardised as z-scores.
 
 The atlas for time series extraction was retrieved through `templateflow` [@templateflow],
 a brain template and atlas naming system with a Python API.
-The container image provides some default atlases (
-Harvard-Oxford [@makris_decreased_2006; @goldstein_hypothalamic_2007; @frazier_structural_2005; @desikan_automated_2006],
+The container image provides some default atlases
+(Harvard-Oxford [@makris_decreased_2006; @goldstein_hypothalamic_2007; @frazier_structural_2005; @desikan_automated_2006],
 Schaefer [@schaefer_local-global_2018],
 MIST [@urchs_mist_2019],
 and DiFuMo [@dadi_fine-grain_2020]) that are already available in the `templateflow` repository.
