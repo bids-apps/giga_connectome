@@ -32,7 +32,7 @@ standardised preprocessing and customised denoising.
 a popular software in the neuroimaging community, is a common choice for preprocessing.
 `fMRIPrep` performs minimal preprocessing, leaving a few steps for the end user: smoothing, denoising, and standardisation.
 The present software, `giga-connectome`,
-is a Brain Imaging Data Structure [BIDS; @bids]
+is a Brain Imaging Data Structure [BIDS; @bids; RRID:SCR_016124]
 compliant container image that aims to perform these steps as well as extract time series signals and generate connectomes for machine learning applications.
 All these steps are implemented with functions from `nilearn` [@Nilearn; RRID:SCR_001362],
 a python library for machine learning in neuroimaging.
@@ -47,7 +47,7 @@ Users can implement their own strategy using configuration files to directly int
 The details of the process can be found in the [user documentation](https://giga-connectome.readthedocs.io/en/stable/workflow.html).
 Finally the data is standardised as z-scores.
 
-The atlas for time series extraction was retrieved through `templateflow` [@templateflow],
+The atlas for time series extraction was retrieved through `templateflow` [@templateflow; RRID:SCR_021876],
 a brain template and atlas naming system with a Python API.
 The container image provides some default atlases
 (Harvard-Oxford [@makris_decreased_2006; @goldstein_hypothalamic_2007; @frazier_structural_2005; @desikan_automated_2006],
@@ -57,7 +57,7 @@ and DiFuMo [@dadi_fine-grain_2020]) that are already available in the `templatef
 Customised atlases will have to be formatted in `templateflow` convention and supplied using a configuration file.
 We aim to include more default atlases when they are included in the `templateflow` repository.
 
-The time series extraction is implemented with `nilearn` objects `NiftiLabelsMasker` and `NiftiMapsMasker` .
+The time series extraction is implemented with `nilearn` objects `NiftiLabelsMasker` and `NiftiMapsMasker`.
 The generated time series are used to construct connectomes calculated as Pearson's correlation with `nilearn` object `ConnectivityMeasure`.
 
 Finally the saved time series and connectomes follow the format of
@@ -70,7 +70,7 @@ More information about the usage, workflow, and outputs can be found on the
 
 # Statement of need
 
-Giga-connectome is created for large scale deployment on multiple `fMRIPrep` preprocessed neuroimaging datasets.
+`giga-connectome` is created for large scale deployment on multiple `fMRIPrep` preprocessed neuroimaging datasets.
 We aimed to create a tool that is lightweight in terms of code base complexity, software dependencies, and command line interface (CLI).
 The current software follows the BIDS-apps API [@bidsapp] and is the first of its kind that creates outputs in the BIDS-connectome.
 Both users and developers would benefit from the detailed definition of BIDS-apps API and BIDS-connectome for shared usage documentation and development guidelines.
@@ -94,9 +94,10 @@ ADHD200 [@adhd200],
 UK Biobank [@ukbiobank],
 and more.
 The generated time series and connectomes have been included in a registered report [@clarke_2024],
-and various work under preparation in the SIMEXP lab and CNeuromod project.
+and various work under preparation in the [SIMEXP lab](https://github.com/SIMEXP/)
+and [CNeuromod project](https://www.cneuromod.ca/).
 The data processing scripts using `giga-connectome` can be found
-[here](https://github.com/Hyedryn/ukbb-scripts/tree/dev) for UK Biobank
+[here for UK Biobank](https://github.com/Hyedryn/ukbb-scripts/tree/dev)
 and [this repository](https://github.com/SIMEXP/giga_preprocess2) for the other datasets.
 
 # Acknowledgement
