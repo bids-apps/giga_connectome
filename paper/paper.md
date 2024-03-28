@@ -18,8 +18,7 @@ authors:
     orcid: 0000-0002-9111-0699
     affiliation: 1
 affiliations:
-- name: Centre de Recherche de l'Institut Universitaire de Gériatrie de Montréal, Université de Montréal,
-  Montréal, QC, Canada
+- name: Centre de Recherche de l'Institut Universitaire de Gériatrie de Montréal, Université de Montréal, Montréal, QC, Canada
   index: 1
 date: XX April 2024
 bibliography: paper.bib
