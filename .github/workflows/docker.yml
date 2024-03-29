@@ -32,13 +32,15 @@ jobs:
     - uses: actions/setup-python@v5
     - name: install tox
       run: pip install tox
-    - run: echo ${HOME}
+    - run: |
+        echo ${HOME}
+        cd ~/work/giga_connectome/ && pwd
     - uses: actions/cache@v4
       id: cache
       env:
         cache-name: ds000017
       with:
-        path: "/home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data"
+        path: "~/work/giga_connectome/giga_connectome/giga_connectome/data/test_data"
         key: ${{ env.cache-name }}
     - if: ${{ steps.cache.outputs.cache-hit != 'true' }}
       name: Download fmriprep derivative of ds000017
