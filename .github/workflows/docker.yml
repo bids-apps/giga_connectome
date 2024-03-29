@@ -97,7 +97,7 @@ jobs:
 
   docker-push:
     runs-on: ubuntu-latest
-    needs: [docker-build]
+    needs: [docker-run]
     if:
     steps:
       - name: load image
