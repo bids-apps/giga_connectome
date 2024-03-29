@@ -14,7 +14,7 @@ WORKDIR /code
 
 COPY [".", "/code"]
 
-RUN pip3 install --no-cache-dir pip==23.0.1 && \
+RUN pip3 install --no-cache-dir pip==24.0 && \
     pip3 install --no-cache-dir --requirement requirements.txt && \
     python3 -c "from templateflow.api import get; get(['MNI152NLin2009cAsym', 'MNI152NLin6Asym'])" && \
     pip3 --no-cache-dir install .
