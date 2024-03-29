@@ -29,23 +29,20 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    - uses: actions/setup-python@v5
-    - name: install tox
-      run: pip install tox
-    - run: |
-        echo ${HOME}
-        pwd
-        ls ~/work/giga_connectome
     - uses: actions/cache@v4
       id: cache
       env:
         cache-name: ds000017
       with:
-        path: "~/work/giga_connectome/giga_connectome/giga_connectome/data/test_data"
+        path: "~/work/${{ env.REPO_NAME }}/${{ env.REPO_NAME }}/giga_connectome/data/test_data"
         key: ${{ env.cache-name }}
     - if: ${{ steps.cache.outputs.cache-hit != 'true' }}
+      uses: actions/setup-python@v5
+    - if: ${{ steps.cache.outputs.cache-hit != 'true' }}
       name: Download fmriprep derivative of ds000017
-      run: tox -e test_data
+      run: |
+        pip install tox
+        tox -e test_data
 
   docker-build:
     runs-on: ubuntu-latest
@@ -54,37 +51,43 @@ jobs:
         with:
           fetch-depth: 0
       - uses: actions/cache@v4
+        id: cache
         env:
           cache-name: docker
         with:
-          path: "~/docker/"
+          path: "~/work/${{ env.REPO_NAME }}/${{ env.REPO_NAME }}/docker"
           key: ${{ env.cache-name }}
+      - if: ${{ steps.cache.outputs.cache-hit == 'true' }}
+        run: docker load -i ~/work/${{ env.REPO_NAME }}/${{ env.REPO_NAME }}/docker/image.tar
       - name: Build the Docker image
         run: |
           docker build . --file Dockerfile --tag bids/giga_connectome
-          mkdir -p "~/docker"
-          docker save "bids/giga_connectome" > "~/docker/image.tar"
+          mkdir -p "~/work/${{ env.REPO_NAME }}/${{ env.REPO_NAME }}/docker"
+          docker save "bids/giga_connectome" > "~/work/${{ env.REPO_NAME }}/${{ env.REPO_NAME }}/docker/image.tar"
           docker images
 
   docker-run:
     runs-on: ubuntu-latest
     needs: [download-test-data, docker-build]
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Restore cached docker image
         uses: actions/cache/restore@v4
         env:
           cache-name: docker
         with:
-          path: "~/docker/"
+          path: "~/work/${{ env.REPO_NAME }}/${{ env.REPO_NAME }}/docker/"
           key: ${{ env.cache-name }}
       - name: Restore cached data ds000017
         uses: actions/cache/restore@v4
         with:
-          path: /home/runner/work/${{ github.repository }}/giga_connectome/data/test_data
+          path: "~/work/${{ env.REPO_NAME }}/${{ env.REPO_NAME }}/giga_connectome/data/test_data"
           key: ds000017
       - name: Test the Docker image
         run: |
-          docker load -i ${HOME}/docker/image.tar
+          docker load -i ~/work/${{ env.REPO_NAME }}/${{ env.REPO_NAME }}/docker/image.tar
           docker run --rm --read-only \
             -v /home/runner/work/${{ github.repository }}/giga_connectome/data/test_data:/test_data \
             -v ./outputs:/outputs \
@@ -101,13 +104,16 @@ jobs:
     runs-on: ubuntu-latest
     needs: [docker-run]
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Restore cached docker image
         uses: actions/cache/restore@v4
         with:
-          path: "~/docker/"
+          path: "~/work/${{ env.REPO_NAME }}/${{ env.REPO_NAME }}/docker/"
           key: docker
       - name: load image
-        run: docker load -i ~/docker/image.tar
+        run: docker load -i "~/work/${{ env.REPO_NAME }}/${{ env.REPO_NAME }}/docker/image.tar"
       - name: push unstable to dockerhub on tags or on main
         if:  ${{  github.ref_name }} == "main" || ${{  github.ref_type }} == "tag"
         run: |
