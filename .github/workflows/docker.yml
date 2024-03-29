@@ -55,13 +55,13 @@ jobs:
         env:
           cache-name: docker
         with:
-          path: "${HOME}/docker/image.tar"
+          path: "~/docker/"
           key: ${{ env.cache-name }}
       - name: Build the Docker image
         run: |
           docker build . --file Dockerfile --tag ${{env.USER_NAME}}/giga_connectome
-          mkdir -p "${HOME}/docker"
-          docker save "${{env.USER_NAME}}/giga_connectome" > "${HOME}/docker/image.tar"
+          mkdir -p "~/docker"
+          docker save "${{env.USER_NAME}}/giga_connectome" > "~/docker/image.tar"
           docker images
 
   docker-run:
@@ -71,7 +71,7 @@ jobs:
       - name: Restore cached docker image
         uses: actions/cache/restore@v4
         with:
-          path: "${HOME}/docker/image.tar"
+          path: "~/docker/"
           key: docker
       - name: Restore cached data ds000017
         uses: actions/cache/restore@v4
@@ -96,10 +96,14 @@ jobs:
   docker-push:
     runs-on: ubuntu-latest
     needs: [docker-run]
-    if:
     steps:
+      - name: Restore cached docker image
+        uses: actions/cache/restore@v4
+        with:
+          path: "~/docker/"
+          key: docker
       - name: load image
-        run: docker load -i ${HOME}/docker/image.tar
+        run: docker load -i ~/docker/image.tar
       - name: push unstable to dockerhub on tags or on main
         if:  ${{  github.ref_name }} == "main" || ${{  github.ref_type }} == "tag"
         run: |
