@@ -34,7 +34,8 @@ jobs:
       run: pip install tox
     - run: |
         echo ${HOME}
-        cd ~/work/giga_connectome/ && pwd
+        pwd
+        ls ~/work/giga_connectome
     - uses: actions/cache@v4
       id: cache
       env:
@@ -44,7 +45,6 @@ jobs:
         key: ${{ env.cache-name }}
     - if: ${{ steps.cache.outputs.cache-hit != 'true' }}
       name: Download fmriprep derivative of ds000017
-      id: download
       run: tox -e test_data
 
   docker-build:
@@ -61,9 +61,9 @@ jobs:
           key: ${{ env.cache-name }}
       - name: Build the Docker image
         run: |
-          docker build . --file Dockerfile --tag ${{env.USER_NAME}}/giga_connectome
+          docker build . --file Dockerfile --tag bids/giga_connectome
           mkdir -p "~/docker"
-          docker save "${{env.USER_NAME}}/giga_connectome" > "~/docker/image.tar"
+          docker save "bids/giga_connectome" > "~/docker/image.tar"
           docker images
 
   docker-run:
@@ -72,9 +72,11 @@ jobs:
     steps:
       - name: Restore cached docker image
         uses: actions/cache/restore@v4
+        env:
+          cache-name: docker
         with:
           path: "~/docker/"
-          key: docker
+          key: ${{ env.cache-name }}
       - name: Restore cached data ds000017
         uses: actions/cache/restore@v4
         with:
