@@ -21,8 +21,8 @@ permissions:
 env:
   USER_NAME: bids
   REPO_NAME: giga_connectome
-  DATA: /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data
-  IMAGE: /home/runner/work/giga_connectome/giga_connectome/docker/image/
+  DATA:  /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data
+  IMAGE: /home/runner/work/giga_connectome/giga_connectome/docker/
 
 jobs:
   download-test-data:
@@ -86,7 +86,7 @@ jobs:
         run: |
           docker load -i ${{ env.IMAGE }}/image.tar
           docker run --rm --read-only \
-            -v /home/runner/work/${{ github.repository }}/giga_connectome/data/test_data:/test_data \
+            -v ${{ env.DATA }}:/test_data \
             -v ./outputs:/outputs \
             -v ./outputs/working_dir:/work \
               bids/giga_connectome \
