@@ -21,6 +21,8 @@ permissions:
 env:
   USER_NAME: bids
   REPO_NAME: giga_connectome
+  DATA: /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data
+  IMAGE: /home/runner/work/giga_connectome/giga_connectome/docker/image/
 
 jobs:
   download-test-data:
@@ -31,11 +33,9 @@ jobs:
         fetch-depth: 0
     - uses: actions/cache@v4
       id: cache
-      env:
-        cache-name: ds000017
       with:
-        path: "~/work/${{ env.REPO_NAME }}/${{ env.REPO_NAME }}/giga_connectome/data/test_data"
-        key: ${{ env.cache-name }}
+        path: ${{ env.DATA }}
+        key: data
     - if: ${{ steps.cache.outputs.cache-hit != 'true' }}
       uses: actions/setup-python@v5
     - if: ${{ steps.cache.outputs.cache-hit != 'true' }}
@@ -52,18 +52,17 @@ jobs:
           fetch-depth: 0
       - uses: actions/cache@v4
         id: cache
-        env:
-          cache-name: docker
         with:
-          path: "~/work/${{ env.REPO_NAME }}/${{ env.REPO_NAME }}/docker"
-          key: ${{ env.cache-name }}
+          path: ${{ env.IMAGE }}
+          key: docker
       - if: ${{ steps.cache.outputs.cache-hit == 'true' }}
-        run: docker load -i ~/work/${{ env.REPO_NAME }}/${{ env.REPO_NAME }}/docker/image.tar
+        name: Load previous docker image
+        run: docker load -i ${{ env.IMAGE }}/image.tar
       - name: Build the Docker image
         run: |
           docker build . --file Dockerfile --tag bids/giga_connectome
-          mkdir -p "~/work/${{ env.REPO_NAME }}/${{ env.REPO_NAME }}/docker"
-          docker save "bids/giga_connectome" > "~/work/${{ env.REPO_NAME }}/${{ env.REPO_NAME }}/docker/image.tar"
+          mkdir -p ${{ env.IMAGE }}
+          docker save "bids/giga_connectome" > "${{ env.IMAGE }}/image.tar"
           docker images
 
   docker-run:
@@ -75,19 +74,17 @@ jobs:
           fetch-depth: 0
       - name: Restore cached docker image
         uses: actions/cache/restore@v4
-        env:
-          cache-name: docker
         with:
-          path: "~/work/${{ env.REPO_NAME }}/${{ env.REPO_NAME }}/docker/"
-          key: ${{ env.cache-name }}
+          path: ${{ env.IMAGE }}
+          key: docker
       - name: Restore cached data ds000017
         uses: actions/cache/restore@v4
         with:
-          path: "~/work/${{ env.REPO_NAME }}/${{ env.REPO_NAME }}/giga_connectome/data/test_data"
-          key: ds000017
+          path: ${{ env.DATA }}
+          key: data
       - name: Test the Docker image
         run: |
-          docker load -i ~/work/${{ env.REPO_NAME }}/${{ env.REPO_NAME }}/docker/image.tar
+          docker load -i ${{ env.IMAGE }}/image.tar
           docker run --rm --read-only \
             -v /home/runner/work/${{ github.repository }}/giga_connectome/data/test_data:/test_data \
             -v ./outputs:/outputs \
@@ -110,11 +107,11 @@ jobs:
       - name: Restore cached docker image
         uses: actions/cache/restore@v4
         with:
-          path: "~/work/${{ env.REPO_NAME }}/${{ env.REPO_NAME }}/docker/"
+          path: ${{ env.IMAGE }}
           key: docker
-      - name: load image
-        run: docker load -i "~/work/${{ env.REPO_NAME }}/${{ env.REPO_NAME }}/docker/image.tar"
-      - name: push unstable to dockerhub on tags or on main
+      - name: Load image
+        run: docker load -i ${{ env.IMAGE }}/image.tar
+      - name: Push unstable to dockerhub on tags or on main
         if:  ${{  github.ref_name }} == "main" || ${{  github.ref_type }} == "tag"
         run: |
           if [[ -n "${{ secrets.DOCKERHUB_TOKEN }}" ]]; then
@@ -131,7 +128,7 @@ jobs:
             : "No DOCKER_TOKEN, skipping push to DockerHub"
             exit 1
           fi
-      - name: push stable release to dockerhub on tags only
+      - name: Push stable release to dockerhub on tags only
         if: ${{  github.ref_type }} == "tag"
         run: |
           if [[ -n "${{ secrets.DOCKERHUB_TOKEN }}" ]]; then
