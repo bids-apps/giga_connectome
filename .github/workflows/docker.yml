@@ -32,12 +32,13 @@ jobs:
     - uses: actions/setup-python@v5
     - name: install tox
       run: pip install tox
+    - run: echo ${HOME}
     - uses: actions/cache@v4
       id: cache
       env:
         cache-name: ds000017
       with:
-        path: "/home/runner/work/${{ github.repository }}/giga_connectome/data/test_data"
+        path: "/home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data"
         key: ${{ env.cache-name }}
     - if: ${{ steps.cache.outputs.cache-hit != 'true' }}
       name: Download fmriprep derivative of ds000017
@@ -58,10 +59,10 @@ jobs:
           key: ${{ env.cache-name }}
       - name: Build the Docker image
         run: |
-          user_name="bids"
           docker build . --file Dockerfile --tag ${{env.USER_NAME}}/giga_connectome
           mkdir -p "${HOME}/docker"
           docker save "${{env.USER_NAME}}/giga_connectome" > "${HOME}/docker/image.tar"
+          docker images
 
   docker-run:
     runs-on: ubuntu-latest
