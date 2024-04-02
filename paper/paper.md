@@ -11,6 +11,8 @@ authors:
     orcid: 0000-0003-4078-2038
     affiliation: 1 # (Multiple affiliations must be quoted)
   - name: Rémi Gau
+    orcid: 0000-0002-1535-9767
+    affiliation: 2
   - name: Natasha Clarke
     affiliation: 1
   - name: Quentin Dessain
@@ -20,6 +22,8 @@ authors:
 affiliations:
 - name: Centre de Recherche de l'Institut Universitaire de Gériatrie de Montréal, Université de Montréal, Montréal, QC, Canada
   index: 1
+- name: Neuro Data Science ORIGAMI Laboratory, McConnell Brain Imaging Centre, Faculty of Medicine, McGill University, Montréal, Canada.
+  index: 2
 date: XX April 2024
 bibliography: paper.bib
 ---
