@@ -16,6 +16,8 @@ authors:
   - name: Natasha Clarke
     affiliation: 1
   - name: Quentin Dessain
+    orcid: 0000-0002-7314-0413
+    affiliation: 3
   - name: Pierre Bellec
     orcid: 0000-0002-9111-0699
     affiliation: 1
@@ -24,6 +26,8 @@ affiliations:
   index: 1
 - name: Neuro Data Science ORIGAMI Laboratory, McConnell Brain Imaging Centre, Faculty of Medicine, McGill University, Montréal, Canada.
   index: 2
+- name: Institute of Information and Communication Technologies, Electronics and Applied Mathematics (ICTEAM), UCLouvain, Louvain-la-Neuve, Belgium
+  index: 3
 date: XX April 2024
 bibliography: paper.bib
 ---
