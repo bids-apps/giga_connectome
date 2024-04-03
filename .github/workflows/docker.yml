@@ -50,14 +50,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      # - uses: actions/cache@v4
-      #   id: cache
-      #   with:
-      #     path: ${{ env.IMAGE }}
-      #     key: docker
-      # - if: ${{ steps.cache.outputs.cache-hit == 'true' }}
-      #   name: Load previous docker image
-      #   run: docker load -i ${{ env.IMAGE }}/image.tar
       - name: Build the Docker image
         run: |
           docker build . --file Dockerfile --tag bids/giga_connectome
@@ -97,9 +89,18 @@ jobs:
                 --participant_label 1 \
                 --reindex-bids
 
+      - name: Upload output artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: connectome
+          path: ./outputs/
+
   docker-push:
     runs-on: ubuntu-latest
     needs: [docker-run]
+    defaults:
+      run:
+          shell: bash -el {0}
     steps:
       - uses: actions/checkout@v4
         with:
