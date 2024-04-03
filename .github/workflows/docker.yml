@@ -85,7 +85,7 @@ jobs:
       - name: Test the Docker image
         run: |
           docker load -i ${{ env.IMAGE }}/image.tar
-          docker run --rm --read-only \
+          docker run --rm \
             -v ${{ env.DATA }}:/test_data \
             -v ./outputs:/outputs \
             -v ./outputs/working_dir:/work \
