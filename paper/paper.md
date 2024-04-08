@@ -20,7 +20,7 @@ authors:
     affiliation: 3
   - name: Pierre Bellec
     orcid: 0000-0002-9111-0699
-    affiliation: 1
+    affiliation: "1,4,5"
 affiliations:
 - name: Centre de Recherche de l'Institut Universitaire de Gériatrie de Montréal, Université de Montréal, Montréal, QC, Canada
   index: 1
@@ -28,6 +28,10 @@ affiliations:
   index: 2
 - name: Institute of Information and Communication Technologies, Electronics and Applied Mathematics (ICTEAM), UCLouvain, Louvain-la-Neuve, Belgium
   index: 3
+- name: Psychology Department, University of Montreal, Montreal, Canada
+  index: 4
+- name: Mila, University of Montreal, Montreal, Canada
+  index: 5
 date: XX April 2024
 bibliography: paper.bib
 ---
