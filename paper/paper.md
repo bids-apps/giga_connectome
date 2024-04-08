@@ -14,6 +14,7 @@ authors:
     orcid: 0000-0002-1535-9767
     affiliation: 2
   - name: Natasha Clarke
+    orcid: 0000-0003-2455-3614
     affiliation: 1
   - name: Quentin Dessain
     orcid: 0000-0002-7314-0413
