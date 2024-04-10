@@ -114,10 +114,10 @@ jobs:
         run: docker load -i ${{ env.IMAGE }}/image.tar
       - name: Push unstable to dockerhub on tags or on main
         if:  ${{  github.ref_name }} == "main" || ${{  github.ref_type }} == "tag"
-       env:
-         DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-         DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-       run: |
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
           if [[ -n "$DOCKERHUB_TOKEN" ]]; then
 
             echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
