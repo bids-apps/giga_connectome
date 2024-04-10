@@ -135,7 +135,7 @@ jobs:
       - name: Push stable release to dockerhub on tags only
         if: ${{  github.ref_type }} == "tag"
         run: |
-          if [[ -n "DOCKERHUB_TOKEN" ]]; then
+          if [[ -n "$DOCKERHUB_TOKEN" ]]; then
 
             echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME " --password-stdin
 
