@@ -114,10 +114,13 @@ jobs:
         run: docker load -i ${{ env.IMAGE }}/image.tar
       - name: Push unstable to dockerhub on tags or on main
         if:  ${{  github.ref_name }} == "main" || ${{  github.ref_type }} == "tag"
-        run: |
-          if [[ -n "${{ secrets.DOCKERHUB_TOKEN }}" ]]; then
+       env:
+         DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+         DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+       run: |
+          if [[ -n "$DOCKERHUB_TOKEN" ]]; then
 
-            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+            echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
 
             : "Pushing unstable versions to DockerHub"
 
@@ -132,9 +135,9 @@ jobs:
       - name: Push stable release to dockerhub on tags only
         if: ${{  github.ref_type }} == "tag"
         run: |
-          if [[ -n "${{ secrets.DOCKERHUB_TOKEN }}" ]]; then
+          if [[ -n "DOCKERHUB_TOKEN" ]]; then
 
-            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+            echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME " --password-stdin
 
             : "Pushing stable and latest versions to DockerHub for latest and  ${{  github.ref_name }}"
 
