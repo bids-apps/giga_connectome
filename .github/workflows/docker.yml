@@ -139,7 +139,7 @@ jobs:
 
             echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME " --password-stdin
 
-            : "Pushing stable and latest versions to DockerHub for latest and  ${{  github.ref_name }}"
+            echo "Pushing stable and latest versions to DockerHub for latest and  ${{  github.ref_name }}"
 
             latest="${{env.USER_NAME}}/${{env.REPO_NAME}}:latest"
             docker tag "${unstable}" "${latest}"
@@ -149,6 +149,6 @@ jobs:
             docker push "${tagged_release}"
 
           else
-              : "No DOCKER_TOKEN, skipping push to DockerHub"
+              echo "No DOCKER_TOKEN, skipping push to DockerHub"
               exit 1
           fi
