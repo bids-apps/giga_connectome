@@ -52,11 +52,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/cache@v4
-        id: cache
+      - name: Upload docker artifacts
+        uses: actions/upload-artifact@v4
         with:
+          name: docker
           path: ${{ env.IMAGE }}
-          key: docker
       - name: Build the Docker image
         run: |
           docker build . --file Dockerfile --tag ${{env.USER_NAME}}/${{env.REPO_NAME}}
@@ -71,11 +71,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Restore cached docker image
-        uses: actions/cache/restore@v4
+      - name: Restore docker image
+        uses: actions/download-artifact@v4
         with:
+          name: docker
           path: ${{ env.IMAGE }}
-          key: docker
       - name: Restore cached data ds000017
         uses: actions/cache/restore@v4
         with:
@@ -112,11 +112,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Restore cached docker image
-        uses: actions/cache/restore@v4
+      - name: Restore docker image
+        uses: actions/download-artifact@v4
         with:
+          name: docker
           path: ${{ env.IMAGE }}
-          key: docker
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
