@@ -7,6 +7,10 @@ on:
     tags: ['*']
   pull_request:
     branches: ['*']
+    paths:
+      - 'Dockerfile'
+      - 'requirements.txt'
+      - '.github/workflows/docker.yml'
   release:
     types: [published]
 
@@ -22,6 +26,8 @@ env:
   REPO_NAME: giga_connectome
   DATA:  /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data
   IMAGE: /home/runner/work/giga_connectome/giga_connectome/docker
+  IS_TAGGED: ${{ github.ref_type == 'tag' }}
+  IS_MAIN: ${{ github.ref == 'refs/heads/main' }}
 
 jobs:
   download-test-data:
@@ -102,10 +108,6 @@ jobs:
   docker-push:
     runs-on: ubuntu-latest
     needs: [docker-run]
-    env:
-      IS_TAGGED: ${{ github.ref_type == 'tag' }}
-      IS_MAIN: ${{ github.ref == 'refs/pull/126/merge' }}
-
     defaults:
       run:
           shell: bash -el {0}
