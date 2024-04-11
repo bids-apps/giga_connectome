@@ -3,10 +3,8 @@ name: docker
 
 on:
   push:
-    branches:
-    - main
-    tags:
-    - '*'
+    branches: ['main']
+    tags: ['*']
   pull_request:
     branches: ['*']
   release:
@@ -106,7 +104,7 @@ jobs:
     needs: [docker-run]
     env:
       IS_TAGGED: ${{ github.ref_type == 'tag' }}
-      IS_MAIN: ${{ github.ref == 'refs/126/merge' }}
+      IS_MAIN: ${{ github.ref == 'refs/pull/126/merge' }}
 
     defaults:
       run:
