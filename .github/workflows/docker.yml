@@ -22,7 +22,7 @@ env:
   USER_NAME: bids
   REPO_NAME: giga_connectome
   DATA:  /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data
-  IMAGE: /home/runner/work/giga_connectome/giga_connectome/docker/
+  IMAGE: /home/runner/work/giga_connectome/giga_connectome/docker
 
 jobs:
   download-test-data:
@@ -52,9 +52,9 @@ jobs:
           fetch-depth: 0
       - name: Build the Docker image
         run: |
-          docker build . --file Dockerfile --tag ${{env.USER_NAME}}/${{env.REPO_NAME}}
+          docker build . --file Dockerfile --tag bids/giga_connectome
           mkdir -p ${{ env.IMAGE }}
-          docker save "${{env.USER_NAME}}/${{env.REPO_NAME}}" > "${{ env.IMAGE }}/image.tar"
+          docker save "bids/giga_connectome" > "${{ env.IMAGE }}/image.tar"
           docker images
 
   docker-run:
@@ -81,13 +81,13 @@ jobs:
             -v ${{ env.DATA }}:/test_data \
             -v ./outputs:/outputs \
             -v ./outputs/working_dir:/work \
-              bids/giga_connectome \
-                /test_data/ds000017-fmriprep22.0.1-downsampled-nosurface \
-                /outputs \
-                participant \
-                -w /work \
-                --participant_label 1 \
-                --reindex-bids
+            bids/giga_connectome \
+            /test_data/ds000017-fmriprep22.0.1-downsampled-nosurface \
+            /outputs \
+            participant \
+            -w /work \
+            --participant_label 1 \
+            --reindex-bids
 
       - name: Upload output artifact
         uses: actions/upload-artifact@v4
