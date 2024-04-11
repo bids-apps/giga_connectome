@@ -50,6 +50,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - uses: actions/cache@v4
+        id: cache
+        with:
+          path: ${{ env.IMAGE }}
+          key: docker
       - name: Build the Docker image
         run: |
           docker build . --file Dockerfile --tag bids/giga_connectome
