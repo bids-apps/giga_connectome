@@ -52,17 +52,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Upload docker artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: docker
-          path: ${{ env.IMAGE }}
       - name: Build the Docker image
         run: |
           docker build . --file Dockerfile --tag ${{env.USER_NAME}}/${{env.REPO_NAME}}
           mkdir -p ${{ env.IMAGE }}
           docker save "${{env.USER_NAME}}/${{env.REPO_NAME}}" > "${{ env.IMAGE }}/image.tar"
           docker images
+      - name: Upload docker artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker
+          path: ${{ env.IMAGE }}
 
   docker-run:
     runs-on: ubuntu-latest
