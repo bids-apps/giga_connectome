@@ -52,9 +52,9 @@ jobs:
           fetch-depth: 0
       - name: Build the Docker image
         run: |
-          docker build . --file Dockerfile --tag bids/giga_connectome
+          docker build . --file Dockerfile --tag ${{env.USER_NAME}}/${{env.REPO_NAME}}
           mkdir -p ${{ env.IMAGE }}
-          docker save "bids/giga_connectome" > "${{ env.IMAGE }}/image.tar"
+          docker save "${{env.USER_NAME}}/${{env.REPO_NAME}}" > "${{ env.IMAGE }}/image.tar"
           docker images
 
   docker-run:
@@ -110,45 +110,28 @@ jobs:
         with:
           path: ${{ env.IMAGE }}
           key: docker
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Load image
         run: docker load -i ${{ env.IMAGE }}/image.tar
       - name: Push unstable to dockerhub on tags or on main
-        if:  ${{  github.ref_name }} == "main" || ${{  github.ref_type }} == "tag"
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
-          if [[ -n "$DOCKERHUB_TOKEN" ]]; then
-
-            echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-
-            : "Pushing unstable versions to DockerHub"
-
-            unstable="${{env.USER_NAME}}/${{env.REPO_NAME}}:unstable"
-
-            docker tag "${{env.USER_NAME}}/${{env.REPO_NAME}}" "${unstable}"
-            docker push "${unstable}"
-          else
-            : "No DOCKER_TOKEN, skipping push to DockerHub"
-            exit 1
-          fi
+          echo "Pushing unstable versions to DockerHub"
+          unstable="${{env.USER_NAME}}/${{env.REPO_NAME}}:unstable"
+          docker tag "${{env.USER_NAME}}/${{env.REPO_NAME}}" "${unstable}"
+          docker push "${unstable}"
       - name: Push stable release to dockerhub on tags only
-        if: ${{  github.ref_type }} == "tag"
         run: |
-          if [[ -n "$DOCKERHUB_TOKEN" ]]; then
+          echo "Pushing stable and latest versions to DockerHub for latest and  ${{  github.ref_name }}"
 
-            echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME " --password-stdin
+          unstable="${{env.USER_NAME}}/${{env.REPO_NAME}}:unstable"
+          latest="${{env.USER_NAME}}/${{env.REPO_NAME}}:latest"
+          docker tag "${unstable}" "${latest}"
+          docker push "${latest}"
 
-            : "Pushing stable and latest versions to DockerHub for latest and  ${{  github.ref_name }}"
-
-            latest="${{env.USER_NAME}}/${{env.REPO_NAME}}:latest"
-            docker tag "${unstable}" "${latest}"
-            docker push "${latest}"
-            tagged_release="${{env.USER_NAME}}/${{env.REPO_NAME}}:${{  github.ref_name }}"
-            docker tag "${unstable}" "${tagged_release}"
-            docker push "${tagged_release}"
-
-          else
-              : "No DOCKER_TOKEN, skipping push to DockerHub"
-              exit 1
-          fi
+          tagged_release="${{env.USER_NAME}}/${{env.REPO_NAME}}:${{  github.ref_name }}"
+          docker tag "${unstable}" "${tagged_release}"
+          docker push "${tagged_release}"
