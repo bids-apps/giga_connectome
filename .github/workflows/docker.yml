@@ -10,6 +10,8 @@ on:
   pull_request:
     branches:
     - main
+  release:
+    types: [published]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -57,9 +59,9 @@ jobs:
           key: docker
       - name: Build the Docker image
         run: |
-          docker build . --file Dockerfile --tag bids/giga_connectome
+          docker build . --file Dockerfile --tag ${{env.USER_NAME}}/${{env.REPO_NAME}}
           mkdir -p ${{ env.IMAGE }}
-          docker save "bids/giga_connectome" > "${{ env.IMAGE }}/image.tar"
+          docker save "${{env.USER_NAME}}/${{env.REPO_NAME}}" > "${{ env.IMAGE }}/image.tar"
           docker images
 
   docker-run:
@@ -86,7 +88,7 @@ jobs:
             -v ${{ env.DATA }}:/test_data \
             -v ./outputs:/outputs \
             -v ./outputs/working_dir:/work \
-            bids/giga_connectome \
+            ${{env.USER_NAME}}/${{env.REPO_NAME}} \
             /test_data/ds000017-fmriprep22.0.1-downsampled-nosurface \
             /outputs \
             participant \
@@ -123,22 +125,22 @@ jobs:
       - name: Load image
         run: docker load -i ${{ env.IMAGE }}/image.tar
       - name: Push unstable to dockerhub on tags or on main
-        if: ${{  github.ref_name }} == "main" || ${{  github.ref_type }} == "tag"
+        if: ${{ github.ref_name == 'main' || github.ref_type == 'tag' }}
         run: |
           echo "Pushing unstable versions to DockerHub"
           unstable="${{env.USER_NAME}}/${{env.REPO_NAME}}:unstable"
           docker tag "${{env.USER_NAME}}/${{env.REPO_NAME}}" "${unstable}"
           docker push "${unstable}"
       - name: Push stable release to dockerhub on tags only
-        if: ${{  github.ref_type }} == "tag"
+        if: ${{ github.ref_type == 'tag' }}
         run: |
-          echo "Pushing stable and latest versions to DockerHub for latest and  ${{  github.ref_name }}"
+          echo "Pushing stable and latest versions to DockerHub for latest and  ${{ github.ref_name }}"
 
           unstable="${{env.USER_NAME}}/${{env.REPO_NAME}}:unstable"
           latest="${{env.USER_NAME}}/${{env.REPO_NAME}}:latest"
           docker tag "${unstable}" "${latest}"
           docker push "${latest}"
 
-          tagged_release="${{env.USER_NAME}}/${{env.REPO_NAME}}:${{  github.ref_name }}"
+          tagged_release="${{env.USER_NAME}}/${{env.REPO_NAME}}:${{ github.ref_name }}"
           docker tag "${unstable}" "${tagged_release}"
           docker push "${tagged_release}"
