@@ -18,7 +18,7 @@ gc_log = gc_logger()
 
 def fetch_tpl_atlas() -> None:
     """Download datasets from templateflow."""
-    atlases = ["Schaefer2018", "DiFuMo"]
+    atlases = ["Schaefer2018", "DiFuMo", "HOSPA, HOCPA, HOCPAL"]
     for atlas in atlases:
         tf_path = tf.api.get("MNI152NLin2009cAsym", atlas=atlas)
         if isinstance(tf_path, list) and len(tf_path) > 0:
