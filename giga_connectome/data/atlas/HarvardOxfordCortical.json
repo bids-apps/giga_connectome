@@ -1,0 +1,14 @@
+{
+    "name": "HarvardOxfordCortical",
+    "parameters": {
+        "atlas": "HOCPA",
+        "template": "MNI152NLin2009cAsym",
+        "resolution": "02",
+        "suffix": "dseg"
+    },
+    "desc": [
+        "th25",
+        "th50"
+    ],
+    "templateflow_dir" : null
+}

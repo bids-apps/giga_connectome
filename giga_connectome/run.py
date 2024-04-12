@@ -6,6 +6,9 @@ from typing import Sequence
 
 from giga_connectome import __version__
 from giga_connectome.workflow import workflow
+from giga_connectome.atlas import get_atlas_labels
+
+preset_atlas = get_atlas_labels()
 
 
 def global_parser() -> argparse.ArgumentParser:
@@ -58,7 +61,7 @@ def global_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--atlas",
         help="The choice of atlas for time series extraction. Default atlas "
-        "choices are: 'Schaefer20187Networks, 'MIST', 'DiFuMo'. User can pass "
+        f"choices are: {preset_atlas}. User can pass "
         "a path to a json file containing configuration for their own choice "
         "of atlas. The default is 'Schaefer20187Networks'.",
         default="Schaefer20187Networks",

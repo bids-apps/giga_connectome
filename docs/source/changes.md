@@ -6,12 +6,17 @@ Released MONTH YEAR
 
 ### New
 
+- [EHN] Add Harvard-Oxford atlas. (@htwangtw) [#117](https://github.com/bids-apps/giga_connectome/issues/117)
 - [DOCS] Improved documentation on using customised configuration files. (@htwangtw)
 - [ENH] use logger instead of print statements. (@Remi-Gau)
 
 ### Fixes
 
 - [FIX] Bump nilearn version to 0.10.2 to fix issues [#26](https://github.com/bids-apps/giga_connectome/issues/26) and [#27](https://github.com/bids-apps/giga_connectome/issues/27). (@Remi-Gau)
+
+### Enhancements
+
+- [ENH] Reduce the docker image size. (@htwangtw)
 
 ### Changes
 

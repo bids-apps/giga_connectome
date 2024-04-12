@@ -28,7 +28,7 @@ Pull from `Dockerhub` (Recommended)
 
 ```bash
 docker pull bids/giga_connectome:latest
-docker run -ti --rm --read-only bids/giga_connectome --help
+docker run -ti --rm bids/giga_connectome --help
 ```
 
 If you want to get the bleeding-edge version of the app,
