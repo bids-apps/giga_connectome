@@ -20,8 +20,7 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-  "h5py",
-  "nilearn[plotting] >=0.10.2",
+  "nilearn[plotting] >=0.10.3",
   "pybids >=0.15.0, <0.16.0",
   "templateflow < 23.0.0",
   "setuptools",
@@ -36,7 +35,7 @@ giga_connectome = "giga_connectome.run:main"
 [project.optional-dependencies]
 dev = [
   "black",
-  "flaek8",
+  "flake8",
   "pre-commit",
   "giga_connectome[test]",
   'tox',
@@ -81,7 +80,7 @@ exclude = [
 [tool.black]
 target-version = ['py38']
 exclude = "giga_connectome/_version.py"
-line_length = 79
+line-length = 79
 
 [tool.mypy]
 check_untyped_defs = true
