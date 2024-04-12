@@ -58,7 +58,7 @@ docs = [
 tests = ["giga_connectome[test]"]
 
 [project.urls]
-"Homepage" = "https://github.com/simexp/giga_connectome"
+"Homepage" = "https://github.com/bids-apps/giga_connectome"
 "Documentation" = "https://giga-connectome.readthedocs.io/en/latest/"
 
 [tool.hatch.version]

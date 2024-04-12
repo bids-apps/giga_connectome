@@ -16,7 +16,7 @@ We encourage the users to use the container version of the BIDS app, hence all d
 Users can use the preset template as examples for creating their own configuration files.
 This section will walk through the details of the configuration files and extra steps needed.
 
-All presets can be found in [`giga_connectome/data`](https://github.com/SIMEXP/giga_connectome/tree/main/giga_connectome/data).
+All presets can be found in [`giga_connectome/data`](https://github.com/bids-apps/giga_connectome/tree/main/giga_connectome/data).
 
 ### Denoising strategy
 
@@ -38,7 +38,7 @@ In a `json` file, define the customised strategy in the following format:
 }
 ```
 
-See examples in [`giga_connectome/data/denoise_strategy`](https://github.com/SIMEXP/giga_connectome/tree/main/giga_connectome/data/denoise_strategy).
+See examples in [`giga_connectome/data/denoise_strategy`](https://github.com/bids-apps/giga_connectome/tree/main/giga_connectome/data/denoise_strategy).
 
 2. Mount the path to the configuration file to the container and pass the **mounted path** to `--denoise-strategy`.
 
@@ -118,7 +118,7 @@ Example:
 }
 ```
 
-See examples in [`giga_connectome/data`](https://github.com/SIMEXP/giga_connectome/tree/main/giga_connectome/data).
+See examples in [`giga_connectome/data`](https://github.com/bids-apps/giga_connectome/tree/main/giga_connectome/data).
 
 4. Mount the path to the configuration file to the container and pass the **mounted path** to `--atlas`.
 The path in your configuration file under `templateflow_dir` should be exported as an environment variable of the container.

@@ -221,12 +221,12 @@ def create_ds_description(output_dir: Path) -> None:
             {
                 "Name": "giga_connectome",
                 "Version": __version__,
-                "CodeURL": "https://github.com/SIMEXP/giga_connectome.git",
+                "CodeURL": "https://github.com/bids-apps/giga_connectome.git",
             }
         ],
         "HowToAcknowledge": (
             "Please refer to our repository: "
-            "https://github.com/SIMEXP/giga_connectome.git."
+            "https://github.com/bids-apps/giga_connectome.git."
         ),
     }
     with open(output_dir / "dataset_description.json", "w") as f:
@@ -243,7 +243,7 @@ def create_sidecar(output_path: Path) -> None:
         "ValidDiagonal": True,
         "StorageFormat": "Full",
         "NonNegative": "",
-        "Code": "https://github.com/SIMEXP/giga_connectome.git",
+        "Code": "https://github.com/bids-apps/giga_connectome.git",
     }
     with open(output_path, "w") as f:
         json.dump(metadata, f, indent=4)
