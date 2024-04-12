@@ -1,8 +1,8 @@
 # What’s new
 
-## 0.4.1dev
+## 0.5.0
 
-Released MONTH YEAR
+Released April 2024
 
 ### New
 
@@ -13,10 +13,14 @@ Released MONTH YEAR
 
 - [FIX] Bump nilearn version to 0.10.2 to fix issues [#26](https://github.com/bids-apps/giga_connectome/issues/26) and [#27](https://github.com/bids-apps/giga_connectome/issues/27). (@Remi-Gau)
 
+### Enhancements
+
 ### Changes
 
 - [ENH] Make output more BIDS compliant. (@Remi-Gau)
 - [MAINT] Pin dependencies for docker build for better reproducibility. (@Remi-Gau)
+- [MAINT] Automate docker build and release. (@Remi-Gau, @htwangtw)
+- [DOCS] Update the release and post-release procedure (@htwangtw)
 
 ## 0.4.0
 
