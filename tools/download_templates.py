@@ -18,11 +18,13 @@ gc_log = gc_logger()
 
 def fetch_tpl_atlas() -> None:
     """Download datasets from templateflow."""
-    atlases = ["Schaefer2018", "DiFuMo", "HOSPA, HOCPA, HOCPAL"]
+    atlases = ["Schaefer2018", "DiFuMo", "HOSPA", "HOCPA", "HOCPAL"]
     for atlas in atlases:
         tf_path = tf.api.get("MNI152NLin2009cAsym", atlas=atlas)
         if isinstance(tf_path, list) and len(tf_path) > 0:
             gc_log.info(f"{atlas} exists.")
+        else:
+            gc_log.error(f"{atlas} does not exist.")
     # download MNI grey matter template
     tf.api.get("MNI152NLin2009cAsym", label="GM")
 
