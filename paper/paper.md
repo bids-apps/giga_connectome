@@ -9,27 +9,27 @@ authors:
   - name: Hao-Ting Wang
     corresponding: true
     orcid: 0000-0003-4078-2038
-    affiliation: 1 # (Multiple affiliations must be quoted)
+    affiliation: "1,2" # (Multiple affiliations must be quoted)
   - name: Rémi Gau
     orcid: 0000-0002-1535-9767
-    affiliation: 2
+    affiliation: 3
   - name: Natasha Clarke
     orcid: 0000-0003-2455-3614
     affiliation: 1
   - name: Quentin Dessain
     orcid: 0000-0002-7314-0413
-    affiliation: 3
+    affiliation: 4
   - name: Pierre Bellec
     orcid: 0000-0002-9111-0699
-    affiliation: "1,4,5"
+    affiliation: "1,2,5"
 affiliations:
 - name: Centre de Recherche de l'Institut Universitaire de Gériatrie de Montréal, Université de Montréal, Montréal, QC, Canada
   index: 1
-- name: Neuro Data Science ORIGAMI Laboratory, McConnell Brain Imaging Centre, Faculty of Medicine, McGill University, Montréal, Canada.
-  index: 2
-- name: Institute of Information and Communication Technologies, Electronics and Applied Mathematics (ICTEAM), UCLouvain, Louvain-la-Neuve, Belgium
-  index: 3
 - name: Psychology Department, University of Montreal, Montreal, Canada
+  index: 2
+- name: Neuro Data Science ORIGAMI Laboratory, McConnell Brain Imaging Centre, Faculty of Medicine, McGill University, Montréal, Canada.
+  index: 3
+- name: Institute of Information and Communication Technologies, Electronics and Applied Mathematics (ICTEAM), UCLouvain, Louvain-la-Neuve, Belgium
   index: 4
 - name: Mila, University of Montreal, Montreal, Canada
   index: 5

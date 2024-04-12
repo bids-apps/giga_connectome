@@ -6,6 +6,7 @@ on:
     - maint/*
     tags:
     - '*'
+    paths: ['giga_connectome/*', '.github/workflows/test.yml', 'pyproject.toml', 'requirements.txt', 'Dockerfile']
   pull_request:
     branches:
     - main

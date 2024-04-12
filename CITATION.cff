@@ -20,10 +20,13 @@ authors:
   - family-names: Wang
     given-names: Hao-Ting
     email: htwangtw@gmail.com
+  - family-names: Gau
+    given-names: Rémi
   - family-names: Dessain
     given-names: Quentin
-  - family-names: Natasha
-    given-names: Clarke
-
+  - family-names: Clarke
+    given-names: Natasha
+  - family-names: Bellec
+    given-names: Pierre
 
 license: MIT
