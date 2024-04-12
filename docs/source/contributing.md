@@ -167,7 +167,7 @@ Add these changes and submit a PR:
 ```bash
 git add docs/
 git commit -m "REL x.y.z"
-git push origin REL-x.y.z
+git push upstream REL-x.y.z
 ```
 
 Once the PR has been reviewed and merged, pull from master and tag the merge commit:
