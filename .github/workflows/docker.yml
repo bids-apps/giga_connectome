@@ -97,7 +97,7 @@ jobs:
             -v ./outputs/working_dir:/work \
             ${{env.USER_NAME}}/${{env.REPO_NAME}} \
             /test_data/ds000017-fmriprep22.0.1-downsampled-nosurface \
-            "/outputs_${{ matrix.atlas }}" \
+            /outputs \
             participant \
             -w /work \
             --atlas ${{ matrix.atlas }} \
@@ -107,7 +107,7 @@ jobs:
       - name: Upload output artifact
         uses: actions/upload-artifact@v4
         with:
-          name: connectome
+          name: connectome_${{ matrix.atlas }}
           path: ./outputs/
 
   docker-push:
