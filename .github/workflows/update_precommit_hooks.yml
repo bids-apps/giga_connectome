@@ -27,7 +27,7 @@ jobs:
     update_precommit_hooks:
 
     # only run on upstream repo
-        if: github.repository_owner == 'SIMEXP'
+        if: github.repository_owner == 'bids-apps'
 
         runs-on: ubuntu-latest
         steps:

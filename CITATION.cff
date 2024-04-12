@@ -9,7 +9,7 @@ abstract:
 
 message: "If you use this software, please cite it as below."
 
-repository-code: "https://github.com/SIMEXP/giga_connectome"
+repository-code: "https://github.com/bids-apps/giga_connectome"
 
 contact:
   - email: htwangtw@gmail.com

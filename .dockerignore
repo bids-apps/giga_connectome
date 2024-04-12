@@ -13,10 +13,7 @@ dist
 *.egg-info
 .eggs/**/*
 .eggs
-src/**/*
-src/
-notebooks/
-.maint/
-.maint/**/*
+
+docs
 
 Makefile

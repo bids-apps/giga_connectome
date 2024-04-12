@@ -7,12 +7,12 @@ Pull the latest image from docker hub, available for version > `0.4.0`(Recommend
 Apptainer (formerly known as Singularity; recommended):
 
 ```bash
-apptainer build giga_connectome.simg docker://haotingwang/giga_connectome:latest
+apptainer build giga_connectome.simg docker://bids/giga_connectome:latest
 ```
 
 Docker:
 ```bash
-docker pull haotingwang/giga_connectome:latest
+docker pull bids/giga_connectome:latest
 ```
 
 ## Install as a python package
@@ -20,7 +20,7 @@ docker pull haotingwang/giga_connectome:latest
 Install the project in a Python environment:
 
 ```bash
-pip install git+https://github.com/SIMEXP/giga_connectome.git@0.4.0
+pip install git+https://github.com/bids-apps/giga_connectome.git@0.4.0
 ```
 
 This method is available for all versions.
