@@ -11,8 +11,8 @@ provides utilities to extract, denoise time-series on a parcellation and compute
 Currently there's no standalone one stop solution to generate connectomes from fMRIPrep outputs.
 This BIDS-app combines Nilearn, TemplateFlow to denoise the data and generate timeseries and functional
 connectomes directly from fMRIPrep outputs.
-The workflow comes with several built in denoising strategies and three choices of atlases
-(MIST, Schaefer 7 networks, DiFuMo).
+The workflow comes with several built in denoising strategies and several choices of atlases
+(MIST, Schaefer 7 networks, DiFuMo, Harvard-Oxford).
 Users can customise their own strategies and atlases using the configuration json files.
 
 .. toctree::

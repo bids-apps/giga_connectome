@@ -2,7 +2,7 @@
 
 ## Quick start (container)
 
-Pull the latest image from docker hub, available for version > `0.4.0`(Recommended)
+Pull the latest image from docker hub, available for version > `0.5.0`(Recommended)
 
 Apptainer (formerly known as Singularity; recommended):
 
@@ -20,7 +20,7 @@ docker pull bids/giga_connectome:latest
 Install the project in a Python environment:
 
 ```bash
-pip install git+https://github.com/bids-apps/giga_connectome.git@0.4.0
+pip install git+https://github.com/bids-apps/giga_connectome.git
 ```
 
 This method is available for all versions.

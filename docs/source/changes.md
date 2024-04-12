@@ -1,5 +1,17 @@
 # What’s new
 
+## 0.5.1.dev
+
+**Released MONTH YEAR**
+
+### New
+
+### Fixes
+
+### Enhancements
+
+### Changes
+
 ## 0.5.0
 
 Released April 2024
