@@ -97,7 +97,7 @@ jobs:
             -v ./outputs/working_dir:/work \
             ${{env.USER_NAME}}/${{env.REPO_NAME}} \
             /test_data/ds000017-fmriprep22.0.1-downsampled-nosurface \
-            /outputs \
+            "/outputs_${{ matrix.atlas }}" \
             participant \
             -w /work \
             --atlas ${{ matrix.atlas }} \
