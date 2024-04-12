@@ -33,7 +33,7 @@ affiliations:
   index: 4
 - name: Mila, University of Montreal, Montreal, Canada
   index: 5
-date: XX April 2024
+date: 12 April 2024
 bibliography: paper.bib
 ---
 
