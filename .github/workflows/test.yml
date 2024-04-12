@@ -10,7 +10,7 @@ on:
     branches:
     - main
     - maint/*
-    paths: ['giga_connectome/*', '.github/workflows/test.yml', 'pyproject.toml', 'requirements.txt', 'Dockerfile']
+    paths: ['giga_connectome/*', 'pyproject.toml', 'requirements.txt', 'Dockerfile']
 
 defaults:
   run:

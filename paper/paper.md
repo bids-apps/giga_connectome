@@ -57,7 +57,7 @@ and worked with the `fmriprep` developers while implementing a key Application P
 `load_confounds`, implemented in the software library `nilearn`.
 The tool provides some preset strategies based on @wang_continuous_2024 and the current long-term support release `fMRIPrep`.
 Users can implement their own strategy using configuration files to directly interact with the `load_confounds` API.
-The details of the process can be found in the [user documentation](https://giga-connectome.readthedocs.io/en/stable/workflow.html).
+The details of the process can be found in the [user documentation](https://giga-connectome.readthedocs.io/en/latest/workflow.html).
 Finally the data is standardised as z-scores.
 
 The atlas for time series extraction was retrieved through `templateflow` [@templateflow; RRID:SCR_021876],
