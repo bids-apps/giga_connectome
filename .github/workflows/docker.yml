@@ -27,8 +27,6 @@ env:
   REPO_NAME: giga_connectome
   DATA:  /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data
   IMAGE: /home/runner/work/giga_connectome/giga_connectome/docker
-  IS_TAGGED: ${{ github.ref_type == 'tag' }}
-  IS_MAIN: ${{ github.ref == 'refs/heads/main' }}
 
 jobs:
   download-test-data:
@@ -116,7 +114,7 @@ jobs:
     defaults:
       run:
           shell: bash -el {0}
-    if: ${{ env.IS_MAIN == 'true' || env.IS_TAGGED == 'true' }}
+    if: ${{ github.ref == 'refs/heads/main' || github.ref_type == 'tag' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -140,7 +138,7 @@ jobs:
           docker tag "${{env.USER_NAME}}/${{env.REPO_NAME}}" "${unstable}"
           docker push "${unstable}"
       - name: Push stable release to dockerhub on tags only
-        if: ${{ env.IS_TAGGED == 'true' }}
+        if: ${{ github.ref_type == 'tag' }}
         run: |
           echo "Pushing stable and latest versions to DockerHub for latest and  ${{ github.ref_name }}"
 
