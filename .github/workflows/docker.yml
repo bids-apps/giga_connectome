@@ -116,6 +116,7 @@ jobs:
     defaults:
       run:
           shell: bash -el {0}
+    if: ${{ env.IS_MAIN == 'true' || env.IS_TAGGED == 'true' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -133,7 +134,6 @@ jobs:
       - name: Load image
         run: docker load -i ${{ env.IMAGE }}/image.tar
       - name: Push unstable to dockerhub on tags or on main
-        if: ${{ env.IS_MAIN == 'true' || env.IS_TAGGED == 'true' }}
         run: |
           echo "Pushing unstable versions to DockerHub"
           unstable="${{env.USER_NAME}}/${{env.REPO_NAME}}:unstable"
