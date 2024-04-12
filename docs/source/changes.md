@@ -14,6 +14,10 @@ Released MONTH YEAR
 
 - [FIX] Bump nilearn version to 0.10.2 to fix issues [#26](https://github.com/bids-apps/giga_connectome/issues/26) and [#27](https://github.com/bids-apps/giga_connectome/issues/27). (@Remi-Gau)
 
+### Enhancements
+
+- [ENH] Reduce the docker image size. (@htwangtw)
+
 ### Changes
 
 - [ENH] Make output more BIDS compliant. (@Remi-Gau)
