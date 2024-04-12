@@ -1,5 +1,5 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![codecov](https://codecov.io/gh/SIMEXP/giga_connectome/branch/main/graph/badge.svg?token=P4EGV7NKZ8)](https://codecov.io/gh/SIMEXP/giga_connectome)
+[![codecov](https://codecov.io/gh/bids-apps/giga_connectome/branch/main/graph/badge.svg?token=P4EGV7NKZ8)](https://codecov.io/gh/bids-apps/giga_connectome)
 [![.github/workflows/test.yml](https://github.com/SIMEXP/giga_connectome/actions/workflows/test.yml/badge.svg)](https://github.com/SIMEXP/giga_connectome/actions/workflows/test.yml)
 [![pre-commit](https://github.com/SIMEXP/giga_connectome/actions/workflows/run_precommit.yml/badge.svg)](https://github.com/SIMEXP/giga_connectome/actions/workflows/run_precommit.yml)
 [![Documentation Status](https://readthedocs.org/projects/giga-connectome/badge/?version=stable)](https://giga-connectome.readthedocs.io/en/latest/?badge=stable)
