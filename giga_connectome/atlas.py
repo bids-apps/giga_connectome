@@ -15,9 +15,6 @@ from giga_connectome.utils import progress_bar
 
 gc_log = gc_logger()
 
-
-PRESET_ATLAS = ["DiFuMo", "MIST", "Schaefer20187Networks"]
-
 ATLAS_CONFIG_TYPE = TypedDict(
     "ATLAS_CONFIG_TYPE",
     {
@@ -174,8 +171,10 @@ def _check_altas_config(
         atlas configuration not containing the correct keys.
     """
     # load the file first if the input is not already a dictionary
+    atlas_dir = resource_filename("giga_connectome", "data/atlas")
+    preset_atlas = [p.stem for p in Path(atlas_dir).glob("*.json")]
     if isinstance(atlas, (str, Path)):
-        if atlas in PRESET_ATLAS:
+        if atlas in preset_atlas:
             config_path = Path(
                 resource_filename(
                     "giga_connectome", f"data/atlas/{atlas}.json"
