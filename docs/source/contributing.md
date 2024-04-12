@@ -143,7 +143,7 @@ giga_connectome \
 
 Currently this project is not pushed to PyPi.
 We simply tag the version on the repository so users can reference the version of installation.
-You need to be a administrator of the upstream repository (`SIMEXP/giga_connectome`) to do this.
+You need to be a administrator of the upstream repository (`bids-apps/giga_connectome`) to do this.
 
 ```bash
 git checkout main

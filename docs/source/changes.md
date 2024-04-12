@@ -11,7 +11,7 @@ Released MONTH YEAR
 
 ### Fixes
 
-- [FIX] Bump nilearn version to 0.10.2 to fix issues [#26](https://github.com/SIMEXP/giga_connectome/issues/26) and [#27](https://github.com/SIMEXP/giga_connectome/issues/27). (@Remi-Gau)
+- [FIX] Bump nilearn version to 0.10.2 to fix issues [#26](https://github.com/bids-apps/giga_connectome/issues/26) and [#27](https://github.com/bids-apps/giga_connectome/issues/27). (@Remi-Gau)
 
 ### Changes
 

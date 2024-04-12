@@ -1,9 +1,10 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![codecov](https://codecov.io/gh/bids-apps/giga_connectome/branch/main/graph/badge.svg?token=P4EGV7NKZ8)](https://codecov.io/gh/bids-apps/giga_connectome)
-[![.github/workflows/test.yml](https://github.com/SIMEXP/giga_connectome/actions/workflows/test.yml/badge.svg)](https://github.com/SIMEXP/giga_connectome/actions/workflows/test.yml)
-[![pre-commit](https://github.com/SIMEXP/giga_connectome/actions/workflows/run_precommit.yml/badge.svg)](https://github.com/SIMEXP/giga_connectome/actions/workflows/run_precommit.yml)
+[![.github/workflows/test.yml](https://github.com/bids-apps/giga_connectome/actions/workflows/test.yml/badge.svg)](https://github.com/bids-apps/giga_connectome/actions/workflows/test.yml)
+[![pre-commit](https://github.com/bids-apps/giga_connectome/actions/workflows/run_precommit.yml/badge.svg)](https://github.com/bids-apps/giga_connectome/actions/workflows/run_precommit.yml)
 [![Documentation Status](https://readthedocs.org/projects/giga-connectome/badge/?version=stable)](https://giga-connectome.readthedocs.io/en/latest/?badge=stable)
 ![https://github.com/psf/black](https://img.shields.io/badge/code%20style-black-000000.svg)
+![](https://img.shields.io/docker/pulls/bids/giga_connectome)
 
 # giga_connectome
 
@@ -23,24 +24,29 @@ Users can customise their own strategies and atlases using the configuration jso
 
 ## Quick start
 
-Clone the project and build from `Dockerfile` (Recommended)
+Pull from `Dockerhub` (Recommended)
 
+```bash
+docker pull bids/giga_connectome:latest
+docker run -ti --rm --read-only bids/giga_connectome --help
 ```
-git clone git@github.com:SIMEXP/giga_connectome.git
-cd giga_connectome
-docker build . --file Dockerfile
-docker run -ti --rm --read-only giga_connectome --help
+
+If you want to get the bleeding-edge version of the app,
+pull the `unstable` version.
+
+```bash
+docker pull bids/giga_connectome:unstable
 ```
 
 ## How to report errors
 
-Please use the [GitHub issue](https://github.com/SIMEXP/giga_connectome/issues) to report errors.
+Please use the [GitHub issue](https://github.com/bids-apps/giga_connectome/issues) to report errors.
 Check out the open issues first to see if we're already working on it.
-If not, [open up a new issue](https://github.com/SIMEXP/giga_connectome/issues/new)!
+If not, [open up a new issue](https://github.com/bids-apps/giga_connectome/issues/new)!
 
 ## How to contribute
 
-You can review open [issues]((https://github.com/SIMEXP/giga_connectome/issues)) that we are looking for help with.
+You can review open [issues]((https://github.com/bids-apps/giga_connectome/issues)) that we are looking for help with.
 If you submit a new pull request please be as detailed as possible in your comments.
 
 ## Acknowledgements
