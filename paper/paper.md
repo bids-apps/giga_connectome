@@ -97,7 +97,7 @@ or preprocessing software with fMRIPrep support such as C-PAC [@cpac]
 and CONN [@conn; RRID:SCR_009550].
 These tools  provide more flexibility and options for denoising and more types of downstream feature extraction for a wider range of fMRI analysis.
 `giga-connectome` was intentionally designed with a narrow scope for quick deployment and the ease for machine learning researchers to adopt.
-We hope this modular implementation can eventually be included as part of these existing workflows so all fMRIPrep outputs can share a time series and connectome extraction tool that's minimal and streamlined.
+We hope this modular implementation can eventually be included as part of these existing workflows so all `fMRIPrep` outputs can share a time series and connectome extraction tool that's minimal and streamlined.
 Furthermore, this lean design choice aims to reduce the barrier to learning the code base and the ease of on-boarding new contributors.
 We hope this choice will invite more users to contribute to the tool and benefit from the open source neuroimaging community.
 
