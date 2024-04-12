@@ -150,6 +150,12 @@ def resample_atlas_collection(
     return resampled_atlases
 
 
+def get_atlas_labels() -> List[str]:
+    """Get the list of available atlas labels."""
+    atlas_dir = resource_filename("giga_connectome", "data/atlas")
+    return [p.stem for p in Path(atlas_dir).glob("*.json")]
+
+
 def _check_altas_config(
     atlas: str | Path | dict[str, Any]
 ) -> ATLAS_CONFIG_TYPE:
