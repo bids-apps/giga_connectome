@@ -139,26 +139,65 @@ giga_connectome \
     participant
 ```
 
-## Making a release
+## Prepare a release
 
 Currently this project is not pushed to PyPi.
 We simply tag the version on the repository so users can reference the version of installation.
-You need to be a administrator of the upstream repository (`bids-apps/giga_connectome`) to do this.
+The release process will trigger a new tagged docker build of the software.
+
+Switch to a new branch locally:
+
+```bash
+git checkout -b REL-x.y.z
+```
+First we need to prepare the release by updating the file `giga_connectome/docs/changes.md` to make sure all the new features, enhancements, and bug fixes are included in their respective sections.
+
+Finally, we need to change the title from x.y.z.dev to x.y.z
+
+```markdown
+## x.y.z
+
+**Released MONTH YEAR**
+
+### New
+...
+```
+Add these changes and submit a PR:
+
+```bash
+git add docs/
+git commit -m "REL x.y.z"
+git push upstream REL-x.y.z
+```
+
+Once the PR has been reviewed and merged, pull from master and tag the merge commit:
 
 ```bash
 git checkout main
 git pull upstream main
-git tag -a x.y.z -m "Some descriptions"
+git tag x.y.z
 git push upstream --tags
 ```
 
-Afterwards, please build the docker container and push to docker hub:
+## Post-release
 
-```bash
-docker login -u haotingwang
-docker build . --file Dockerfile --tag haotingwang/giga_connectome:x.y.z
-docker push haotingwang/giga_connectome
+At this point, the release has been made.
+
+We also need to create a new section in `giga_connectome/docs/changes.md` with a title and the usual New, Enhancements, Bug Fixes, and Changes sections for the version currently under development:
+
+```markdown
+
+## x.y.z+1.dev
+
+**Released MONTH YEAR**
+
+### New
+
+### Fixes
+
+### Enhancements
+
+### Changes
 ```
-Before any further discussion, this will be pushed to HTW's docker hub.
 
 Based on contributing guidelines from the [STEMMRoleModels](https://github.com/KirstieJane/STEMMRoleModels/blob/gh-pages/CONTRIBUTING.md) project and [Nilearn contribution guidelines](https://nilearn.github.io/stable/development.html).
