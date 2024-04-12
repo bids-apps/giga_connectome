@@ -6,6 +6,7 @@ Released MONTH YEAR
 
 ### New
 
+- [EHN] Add Harvard-Oxford atlas. (@htwangtw) [#117](https://github.com/bids-apps/giga_connectome/issues/117)
 - [DOCS] Improved documentation on using customised configuration files. (@htwangtw)
 - [ENH] use logger instead of print statements. (@Remi-Gau)
 
