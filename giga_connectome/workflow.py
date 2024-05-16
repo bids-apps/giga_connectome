@@ -6,14 +6,12 @@ from __future__ import annotations
 
 import argparse
 
-from giga_connectome import (
-    generate_gm_mask_atlas,
-    get_denoise_strategy,
-    load_atlas_setting,
-    methods,
-    run_postprocessing_dataset,
-    utils,
-)
+from giga_connectome.mask import generate_gm_mask_atlas
+from giga_connectome.atlas import load_atlas_setting
+from giga_connectome.denoise import get_denoise_strategy
+from giga_connectome import methods, utils
+from giga_connectome.postprocess import run_postprocessing_dataset
+
 from giga_connectome.denoise import is_ica_aroma
 from giga_connectome.logger import gc_logger
 

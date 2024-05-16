@@ -13,7 +13,11 @@ from nilearn.maskers import NiftiLabelsMasker, NiftiMapsMasker
 from giga_connectome import utils
 from giga_connectome.atlas import ATLAS_SETTING_TYPE
 from giga_connectome.connectome import generate_timeseries_connectomes
-from giga_connectome.denoise import STRATEGY_TYPE, denoise_nifti_voxel
+from giga_connectome.denoise import (
+    STRATEGY_TYPE,
+    denoise_nifti_voxel,
+    denoise_meta_data,
+)
 from giga_connectome.logger import gc_logger
 from giga_connectome.utils import progress_bar
 
@@ -122,6 +126,7 @@ def run_postprocessing_dataset(
             denoised_img = denoise_nifti_voxel(
                 strategy, group_mask, standardize, smoothing_fwhm, img.path
             )
+
             # parse file name
             subject, session, specifier = utils.parse_bids_name(img.path)
 
@@ -141,12 +146,13 @@ def run_postprocessing_dataset(
                 extension="json",
             )
             utils.check_path(json_filename)
-            with open(json_filename, "w") as f:
-                json.dump(
-                    {"SamplingFrequency": 1 / img.entities["RepetitionTime"]},
-                    f,
-                    indent=4,
+            if denoised_img:
+                meta_data = denoise_meta_data(strategy, img.path)
+                meta_data["SamplingFrequency"] = (
+                    1 / img.entities["RepetitionTime"]
                 )
+                with open(json_filename, "w") as f:
+                    json.dump(meta_data, f, indent=4)
 
             for desc, masker in atlas_maskers.items():
 
