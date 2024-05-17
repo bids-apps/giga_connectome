@@ -71,7 +71,7 @@ jobs:
     needs: [download-test-data, docker-build]
     strategy:
       matrix:
-        atlas: ['Schaefer20187Networks', 'MIST', 'DiFuMo', 'HarvardOxfordCortical', 'HarvardOxfordCorticalSymmetricSplit', 'HarvardOxfordSubcortical']
+        atlas: ['Schaefer2018', 'MIST', 'DiFuMo', 'HarvardOxfordCortical', 'HarvardOxfordCorticalSymmetricSplit', 'HarvardOxfordSubcortical']
     steps:
       - uses: actions/checkout@v4
         with:
