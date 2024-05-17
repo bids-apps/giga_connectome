@@ -27,7 +27,7 @@ gc_log = gc_logger()
 
 
 def generate_gm_mask_atlas(
-    working_dir: Path,
+    atlases_dir: Path,
     atlas: ATLAS_SETTING_TYPE,
     template: str,
     masks: list[BIDSImageFile],
@@ -36,7 +36,7 @@ def generate_gm_mask_atlas(
     # check masks; isolate this part and make sure to make it a validate
     # templateflow template with a config file
     subject, _, _ = utils.parse_bids_name(masks[0].path)
-    subject_mask_dir = working_dir / subject / "func"
+    subject_mask_dir = atlases_dir / subject / "func"
     subject_mask_dir.mkdir(exist_ok=True, parents=True)
     target_subject_mask_file_name: str = utils.output_filename(
         source_file=masks[0].path,

@@ -102,9 +102,9 @@ def run_postprocessing_dataset(
     for atlas_path in resampled_atlases:
         if isinstance(atlas_path, str):
             atlas_path = Path(atlas_path)
-        desc = atlas_path.name.split("desc-")[-1].split("_")[0]
-        atlas_maskers[desc] = _get_masker(atlas_path)
-        connectomes[desc] = []
+        seg = atlas_path.name.split("seg-")[-1].split("_")[0]
+        atlas_maskers[seg] = _get_masker(atlas_path)
+        connectomes[seg] = []
 
     correlation_measure = ConnectivityMeasure(
         kind="correlation", vectorize=False, discard_diagonal=False
@@ -136,12 +136,14 @@ def run_postprocessing_dataset(
                 connectome_path = connectome_path / session
             connectome_path = connectome_path / "func"
 
-            # All timeseries derivatives have the same metadata
-            # so one json file for them all.
+            # All timeseries derivatives of the same scan have the same
+            # metadata so one json file for them all.
             # see https://bids.neuroimaging.io/bep012
             json_filename = connectome_path / utils.output_filename(
                 source_file=Path(img.filename).stem,
                 atlas=atlas["name"],
+                atlas_desc="",
+                strategy=strategy["name"],
                 suffix="timeseries",
                 extension="json",
             )
@@ -154,14 +156,11 @@ def run_postprocessing_dataset(
                 with open(json_filename, "w") as f:
                     json.dump(meta_data, f, indent=4)
 
-            for desc, masker in atlas_maskers.items():
+            for seg, masker in atlas_maskers.items():
 
                 if not denoised_img:
                     time_series_atlas, correlation_matrix = None, None
-                    attribute_name = (
-                        f"{subject}_{specifier}"
-                        f"_atlas-{atlas['name']}_desc-{desc}"
-                    )
+                    attribute_name = f"{subject}_{specifier}" f"_seg-{seg}"
                     gc_log.info(f"{attribute_name}: no volume after scrubbing")
                     progress.update(task, advance=1)
                     continue
@@ -177,6 +176,8 @@ def run_postprocessing_dataset(
                     )
                 )
 
+                # reverse engineer atlas_desc
+                desc = seg.split(atlas["name"])[-1]
                 # dump correlation_matrix to tsv
                 relmat_filename = connectome_path / utils.output_filename(
                     source_file=Path(img.filename).stem,

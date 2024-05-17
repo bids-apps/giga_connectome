@@ -37,7 +37,7 @@ def workflow(args: argparse.Namespace) -> None:
     # set file paths
     bids_dir = args.bids_dir
     output_dir = args.output_dir
-    working_dir = args.work_dir
+    atlases_dir = args.atlases_dir
     standardize = True  # always standardising the time series
     smoothing_fwhm = args.smoothing_fwhm
     calculate_average_correlation = (
@@ -54,7 +54,7 @@ def workflow(args: argparse.Namespace) -> None:
 
     # check output path
     output_dir.mkdir(parents=True, exist_ok=True)
-    working_dir.mkdir(parents=True, exist_ok=True)
+    atlases_dir.mkdir(parents=True, exist_ok=True)
 
     # get template information; currently we only support the fmriprep defaults
     template = (
@@ -80,7 +80,7 @@ def workflow(args: argparse.Namespace) -> None:
             [subject], template, bids_dir, args.reindex_bids, bids_filters
         )
         subject_mask_nii, subject_seg_niis = generate_gm_mask_atlas(
-            working_dir, atlas, template, subj_data["mask"]
+            atlases_dir, atlas, template, subj_data["mask"]
         )
 
         gc_log.info(f"Generate subject level connectomes: sub-{subject}")

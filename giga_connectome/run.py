@@ -51,20 +51,20 @@ def global_parser() -> argparse.ArgumentParser:
         nargs="+",
     )
     parser.add_argument(
-        "-w",
-        "--work-dir",
+        "-a",
+        "--atlases-dir",
         action="store",
         type=Path,
-        default=Path("work").absolute(),
-        help="Path where intermediate results should be stored.",
+        default=Path("atlases").absolute(),
+        help="Path where subject specific segmentations are stored.",
     )
     parser.add_argument(
         "--atlas",
         help="The choice of atlas for time series extraction. Default atlas "
         f"choices are: {preset_atlas}. User can pass "
         "a path to a json file containing configuration for their own choice "
-        "of atlas. The default is 'Schaefer20187Networks'.",
-        default="Schaefer20187Networks",
+        "of atlas. The default is 'Schaefer2018'.",
+        default="Schaefer2018",
     )
     parser.add_argument(
         "--denoise-strategy",
