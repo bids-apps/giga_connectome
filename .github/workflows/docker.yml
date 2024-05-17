@@ -92,12 +92,12 @@ jobs:
           docker run --rm \
             -v ${{ env.DATA }}:/test_data \
             -v ./outputs:/outputs \
-            -v ./outputs/working_dir:/work \
+            -v ./outputs/atlases:/atlases \
             ${{env.USER_NAME}}/${{env.REPO_NAME}} \
             /test_data/ds000017-fmriprep22.0.1-downsampled-nosurface \
             /outputs \
             participant \
-            -w /work \
+            -a /atlases \
             --atlas ${{ matrix.atlas }} \
             --participant_label 1 \
             --reindex-bids

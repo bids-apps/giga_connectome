@@ -47,7 +47,7 @@ An example using Apptainer (formerly known as Singularity):
 ```bash
 FMRIPREP_DIR=/path/to/fmriprep_output
 OUTPUT_DIR=/path/to/connectom_output
-WORKING_DIR=/path/to/working_dir
+ATLASES_DIR=/path/to/atlases
 DENOISE_CONFIG=/path/to/denoise_config.json
 
 GIGA_CONNECTOME=/path/to/giga-connectome.simg
@@ -55,10 +55,10 @@ GIGA_CONNECTOME=/path/to/giga-connectome.simg
 apptainer run \
     --bind ${FMRIPREP_DIR}:/data/input \
     --bind ${OUTPUT_DIR}:/data/output \
-    --bind ${WORKING_DIR}:/data/working \
+    --bind ${ATLASES_DIR}:/data/atlases \
     --bind ${DENOISE_CONFIG}:/data/denoise_config.json \
     ${GIGA_CONNECTOME} \
-    -w /data/working \
+    -a /data/atlases \
     --denoise-strategy /data/denoise_config.json \
     /data/input \
     /data/output \
@@ -128,7 +128,7 @@ An example using Apptainer (formerly known as Singularity):
 ```bash
 FMRIPREP_DIR=/path/to/fmriprep_output
 OUTPUT_DIR=/path/to/connectom_output
-WORKING_DIR=/path/to/working_dir
+ATLASES_DIR=/path/to/atlases
 ATLAS_CONFIG=/path/to/atlas_config.json
 
 GIGA_CONNECTOME=/path/to/giga-connectome.simg
@@ -138,10 +138,10 @@ export APPTAINERENV_TEMPLATEFLOW_HOME=/data/atlas
 apptainer run \
     --bind ${FMRIPREP_DIR}:/data/input \
     --bind ${OUTPUT_DIR}:/data/output \
-    --bind ${WORKING_DIR}:/data/working \
+    --bind ${ATLASES_DIR}:/data/atlases \
     --bind ${ATLAS_CONFIG}:/data/atlas_config.json \
     ${GIGA_CONNECTOME} \
-    -w /data/working \
+    -s /data/atlases \
     --atlas /data/atlas_config.json \
     /data/input \
     /data/output \

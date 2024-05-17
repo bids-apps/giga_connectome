@@ -1,11 +1,12 @@
 # What’s new
 
-## 0.5.1.dev
+## 0.6.0.dev
 
 **Released MONTH YEAR**
 
 ### New
 
+- [EHN] `--work-dir` is now renamed to `--atlases-dir`
 - [EHN] Add details of denoising strategy to the meta data of the time series extraction. (@htwangtw) [#144](https://github.com/bids-apps/giga_connectome/issues/144)
 
 ### Fixes
@@ -16,6 +17,9 @@
 ### Enhancements
 
 ### Changes
+
+- [EHN] Merge `atlas-` and the atlas description `desc-` into one filed `seg-` defined under 'Derivatives-Image data type' in BIDS. (@htwangtw) [#143](https://github.com/bids-apps/giga_connectome/issues/143)
+- [EHN] Working directory is now renamed as `atlases/` to reflect on the atlases directory mentioned in BEP017.
 
 ## 0.5.0
 

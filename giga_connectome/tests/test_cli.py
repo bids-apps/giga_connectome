@@ -48,7 +48,7 @@ def test_smoke(tmp_path, capsys):
         [
             "--participant_label",
             "1",
-            "-w",
+            "-a",
             str(atlases_dir),
             "--atlas",
             "Schaefer2018",
