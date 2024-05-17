@@ -184,7 +184,7 @@ def run_postprocessing_dataset(
                     suffix="relmat",
                     extension="tsv",
                     strategy=strategy["name"],
-                    desc=desc,
+                    atlas_desc=desc,
                 )
                 utils.check_path(relmat_filename)
                 df = pd.DataFrame(correlation_matrix)
@@ -197,7 +197,7 @@ def run_postprocessing_dataset(
                     suffix="timeseries",
                     extension="tsv",
                     strategy=strategy["name"],
-                    desc=desc,
+                    atlas_desc=desc,
                 )
                 utils.check_path(timeseries_filename)
                 df = pd.DataFrame(time_series_atlas)
@@ -210,7 +210,7 @@ def run_postprocessing_dataset(
                     suffix="report",
                     extension="html",
                     strategy=strategy["name"],
-                    desc=desc,
+                    atlas_desc=desc,
                 )
                 report.save_as_html(report_filename)
 

@@ -79,7 +79,7 @@ def workflow(args: argparse.Namespace) -> None:
         subj_data, _ = utils.get_bids_images(
             [subject], template, bids_dir, args.reindex_bids, bids_filters
         )
-        group_mask, resampled_atlases = generate_gm_mask_atlas(
+        subject_mask_nii, subject_seg_niis = generate_gm_mask_atlas(
             working_dir, atlas, template, subj_data["mask"]
         )
 
@@ -88,9 +88,9 @@ def workflow(args: argparse.Namespace) -> None:
         run_postprocessing_dataset(
             strategy,
             atlas,
-            resampled_atlases,
+            subject_seg_niis,
             subj_data["bold"],
-            group_mask,
+            subject_mask_nii,
             standardize,
             smoothing_fwhm,
             output_dir,
