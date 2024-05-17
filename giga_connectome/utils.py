@@ -255,32 +255,33 @@ def output_filename(
     suffix: str,
     extension: str,
     strategy: str | None = None,
-    desc: str | None = None,
+    atlas_desc: str | None = None,
 ) -> str:
     """Generate output filneme."""
-    root: str | list[str] = source_file.split("_")[:-1]
+    subject, session, specifier = parse_bids_name(source_file)
+    seg = f"seg-{atlas}{atlas_desc}"
+    if extension != "nii.gz":
+        root: str = f"{subject}_{specifier}"
 
-    # drop entities
-    # that are redundant or
-    # to make sure we get a single file across
-    root = [x for x in root if "desc" not in x]
+        if extension != "json":
+            root += f"_{seg}"
 
-    root = "_".join(root)
-    if root != "":
-        root += "_"
+        if suffix == "relmat":
+            root += "_meas-PearsonCorrelation"
 
-    root += f"atlas-{atlas}"
+        if strategy is None:
+            strategy = ""
 
-    if suffix == "relmat":
-        root += "_meas-PearsonCorrelation"
+        return (
+            f"{root}_desc-denoise{strategy.capitalize()}_{suffix}.{extension}"
+        )
 
-    if suffix == "timeseries" and extension == "json":
-        return f"{root}_timeseries.json"
-
-    if strategy is None:
-        strategy = ""
-
-    return f"{root}_desc-{desc}{strategy.capitalize()}_{suffix}.{extension}"
+    elif suffix == "mask":
+        reference = parse_bids_filename(source_file)
+        tpl: str = f"space-{reference['space']}_res-{reference['res']}"
+        return f"{subject}_{tpl}_label-GM_{suffix}.{extension}"
+    else:
+        return f"{subject}_{seg}_{suffix}.{extension}"
 
 
 def progress_bar(text: str, color: str = "green") -> Progress:

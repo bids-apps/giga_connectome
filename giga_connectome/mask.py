@@ -21,6 +21,7 @@ from scipy.ndimage import binary_closing
 
 from giga_connectome.atlas import ATLAS_SETTING_TYPE, resample_atlas_collection
 from giga_connectome.logger import gc_logger
+from giga_connectome import utils
 
 gc_log = gc_logger()
 
@@ -34,46 +35,65 @@ def generate_gm_mask_atlas(
     """ """
     # check masks; isolate this part and make sure to make it a validate
     # templateflow template with a config file
-
-    group_mask_dir = working_dir / "groupmasks" / f"tpl-{template}"
-    group_mask_dir.mkdir(exist_ok=True, parents=True)
-
-    group_mask, resampled_atlases = None, None
-    if group_mask_dir.exists():
-        group_mask, resampled_atlases = _check_pregenerated_masks(
-            template, working_dir, atlas
+    subject, _, _ = utils.parse_bids_name(masks[0].path)
+    subject_mask_dir = working_dir / subject / "func"
+    subject_mask_dir.mkdir(exist_ok=True, parents=True)
+    target_subject_mask_file_name: str = utils.output_filename(
+        source_file=masks[0].path,
+        atlas="",
+        suffix="mask",
+        extension="nii.gz",
+        strategy="",
+        atlas_desc="",
+    )
+    target_subject_seg_file_names: list[str] = [
+        utils.output_filename(
+            source_file=masks[0].path,
+            atlas=atlas["name"],
+            suffix=atlas["type"],
+            extension="nii.gz",
+            strategy="",
+            atlas_desc=atlas_desc,
         )
+        for atlas_desc in atlas["file_paths"]
+    ]
+    target_subject_mask, target_subject_seg = _check_pregenerated_masks(
+        subject_mask_dir,
+        target_subject_mask_file_name,
+        target_subject_seg_file_names,
+    )
 
-    if not group_mask:
+    if not target_subject_mask:
         # grey matter group mask is only supplied in MNI152NLin2009c(A)sym
-        group_mask_nii = generate_group_mask(
+        subject_mask_nii = generate_subject_gm_mask(
             [m.path for m in masks], "MNI152NLin2009cAsym"
         )
-        current_file_name = (
-            f"tpl-{template}_res-dataset_label-GM_desc-group_mask.nii.gz"
-        )
-        group_mask = group_mask_dir / current_file_name
-        nib.save(group_mask_nii, group_mask)
-
-    if not resampled_atlases:
-        resampled_atlases = resample_atlas_collection(
-            template, atlas, group_mask_dir, group_mask
+        nib.save(
+            subject_mask_nii, subject_mask_dir / target_subject_mask_file_name
         )
 
-    return group_mask, resampled_atlases
+    if not target_subject_seg:
+        subject_seg_niis = resample_atlas_collection(
+            target_subject_seg_file_names,
+            atlas,
+            subject_mask_dir,
+            subject_mask_nii,
+        )
+
+    return subject_mask_nii, subject_seg_niis
 
 
-def generate_group_mask(
+def generate_subject_gm_mask(
     imgs: Sequence[Path | str | Nifti1Image],
     template: str = "MNI152NLin2009cAsym",
     templateflow_dir: Path | None = None,
     n_iter: int = 2,
 ) -> Nifti1Image:
     """
-    Generate a group EPI grey matter mask, and overlaid with a MNI grey
+    Generate a subject EPI grey matter mask, and overlaid with a MNI grey
     matter template.
-    The Group EPI mask will ensure the signal extraction is from the most
-    overlapping voxels.
+    The subject EPI mask will ensure the signal extraction is from the most
+    overlapping voxels for all scans of the subject.
 
     Parameters
     ----------
@@ -267,38 +287,30 @@ def _check_mask_affine(
 
 
 def _check_pregenerated_masks(
-    template: str, working_dir: Path, atlas: ATLAS_SETTING_TYPE
-) -> tuple[Path | None, list[Path] | None]:
+    subject_mask_dir: Path,
+    subject_mask_file_name: str,
+    subject_seg_file_names: list[str],
+) -> tuple[bool, bool]:
     """Check if the working directory is populated with needed files."""
-    output_dir = working_dir / "groupmasks" / f"tpl-{template}"
-    group_mask: Path | None = (
-        output_dir
-        / f"tpl-{template}_res-dataset_label-GM_desc-group_mask.nii.gz"
-    )
-    if group_mask and not group_mask.exists():
-        group_mask = None
-    else:
+    # subject grey matter mask
+    if target_subject_mask := (
+        subject_mask_dir / subject_mask_file_name
+    ).exists():
         gc_log.info(
-            f"Found pregenerated group level grey matter mask: {group_mask}"
+            "Found pregenerated group level grey matter mask: "
+            f"{subject_mask_dir / subject_mask_file_name}"
         )
 
     # atlas
-    resampled_atlases: list[Path] = []
-    for desc in atlas["file_paths"]:
-        filename = (
-            f"tpl-{template}_"
-            f"atlas-{atlas['name']}_"
-            "res-dataset_"
-            f"desc-{desc}_"
-            f"{atlas['type']}.nii.gz"
-        )
-        resampled_atlases.append(output_dir / filename)
-    all_exist = [file_path.exists() for file_path in resampled_atlases]
-    if not all(all_exist):
-        return group_mask, None
-    else:
+    all_exist = [
+        (subject_mask_dir / file_path).exists()
+        for file_path in subject_seg_file_names
+    ]
+    if target_subject_seg := all(all_exist):
         gc_log.info(
-            f"Found resampled atlases:\n{[str(x) for x in resampled_atlases]}."
-            "\nSkipping group level mask generation step."
+            "Found resampled atlases:\n"
+            f"{[filepath for filepath in subject_seg_file_names]} "
+            f"in {subject_mask_dir}."
+            "\nSkipping individual segmentation generation step."
         )
-    return group_mask, resampled_atlases
+    return target_subject_mask, target_subject_seg

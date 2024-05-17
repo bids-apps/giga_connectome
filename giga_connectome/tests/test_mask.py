@@ -6,22 +6,25 @@ from nilearn import datasets
 from giga_connectome import mask
 
 
-def test_generate_group_mask():
+def test_generate_subject_gm_mask():
     """Generate group epi grey matter mask and resample atlas."""
+    # use different subject in the test, should work the same
     data = datasets.fetch_development_fmri(n_subjects=3)
     imgs = data.func
 
-    group_epi_mask = mask.generate_group_mask(imgs)
+    group_epi_mask = mask.generate_subject_gm_mask(imgs)
     # match the post processing details: https://osf.io/wjtyq
     assert group_epi_mask.shape == (50, 59, 50)
-    diff_tpl = mask.generate_group_mask(imgs, template="MNI152NLin2009aAsym")
+    diff_tpl = mask.generate_subject_gm_mask(
+        imgs, template="MNI152NLin2009aAsym"
+    )
     assert diff_tpl.shape == (50, 59, 50)
 
     # test bad inputs
     with pytest.raises(
         ValueError, match="TemplateFlow does not supply template blah"
     ):
-        mask.generate_group_mask(imgs, template="blah")
+        mask.generate_subject_gm_mask(imgs, template="blah")
 
 
 def test_check_mask_affine():
