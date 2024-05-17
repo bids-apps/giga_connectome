@@ -50,7 +50,7 @@ METADATA_TYPE = TypedDict(
         "NumberOfVolumesDiscardedByMotionScrubbing": int,
         "NumberOfVolumesDiscardedByNonsteadyStatesDetector": int,
         "MeanFramewiseDisplacement": float,
-        "SamplingFrequency": Any | None,
+        "SamplingFrequency": float,
     },
 )
 
@@ -154,7 +154,7 @@ def denoise_meta_data(strategy: STRATEGY_TYPE, img: str) -> METADATA_TYPE:
         "NumberOfVolumesDiscardedByMotionScrubbing": n_scrub,
         "NumberOfVolumesDiscardedByNonsteadyStatesDetector": n_non_steady,
         "MeanFramewiseDisplacement": mean_fd,
-        "SamplingFrequency": None,  # place holder
+        "SamplingFrequency": np.nan,  # place holder
     }
     return meta_data
 
