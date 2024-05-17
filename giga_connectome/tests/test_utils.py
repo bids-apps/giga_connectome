@@ -60,84 +60,60 @@ def test_get_subject_lists():
     assert subjects[0] == "01"
 
 
-def test_output_filename():
+@pytest.mark.parametrize(
+    "suffix,extension,target",
+    [
+        (
+            "timeseries",
+            "tsv",
+            "sub-01_ses-ah_task-rest_run-1_seg-fake100_desc-denoiseSimple_timeseries.tsv",
+        ),
+        (
+            "timeseries",
+            "json",
+            "sub-01_ses-ah_task-rest_run-1_desc-denoiseSimple_timeseries.json",
+        ),
+        (
+            "relmat",
+            "tsv",
+            "sub-01_ses-ah_task-rest_run-1_seg-fake100_meas-PearsonCorrelation_desc-denoiseSimple_relmat.tsv",
+        ),
+        (
+            "report",
+            "html",
+            "sub-01_ses-ah_task-rest_run-1_seg-fake100_desc-denoiseSimple_report.html",
+        ),
+    ],
+)
+def test_output_filename(suffix, extension, target):
     source_file = "sub-01_ses-ah_task-rest_run-1_space-MNIfake_res-2_desc-preproc_bold.nii.gz"
-    atlas = "fake"
-    atlas_desc = "100"
-    strategy = "simple"
 
     generated_target = utils.output_filename(
         source_file=source_file,
-        atlas=atlas,
-        suffix="timeseries",
-        extension="tsv",
-        strategy=strategy,
-        atlas_desc=atlas_desc,
+        atlas="fake",
+        suffix=suffix,
+        extension=extension,
+        strategy="simple",
+        atlas_desc="100",
     )
-    assert (
-        "sub-01_ses-ah_task-rest_run-1_seg-fake100_desc-denoiseSimple_timeseries.tsv"
-        == generated_target
-    )
+    assert target == generated_target
 
-    generated_target = utils.output_filename(
-        source_file=source_file,
-        atlas=atlas,
-        suffix="timeseries",
-        extension="json",
-        strategy=strategy,
-        atlas_desc=atlas_desc,
-    )
-    assert (
-        "sub-01_ses-ah_task-rest_run-1_desc-denoiseSimple_timeseries.json"
-        == generated_target
-    )
 
-    generated_target = utils.output_filename(
-        source_file=source_file,
-        atlas=atlas,
-        suffix="relmat",
-        extension="tsv",
-        strategy=strategy,
-        atlas_desc=atlas_desc,
-    )
-    assert (
-        "sub-01_ses-ah_task-rest_run-1_seg-fake100_meas-PearsonCorrelation_desc-denoiseSimple_relmat.tsv"
-        == generated_target
-    )
-
-    generated_target = utils.output_filename(
-        source_file=source_file,
-        atlas=atlas,
-        suffix="report",
-        extension="html",
-        strategy=strategy,
-        atlas_desc=atlas_desc,
-    )
-    assert (
-        "sub-01_ses-ah_task-rest_run-1_seg-fake100_desc-denoiseSimple_report.html"
-        == generated_target
-    )
-
+@pytest.mark.parametrize(
+    "atlas,atlas_desc,suffix,target",
+    [
+        ("fake", "100", "dseg", "sub-01_seg-fake100_dseg.nii.gz"),
+        ("", "", "mask", "sub-01_space-MNIfake_res-2_label-GM_mask.nii.gz"),
+    ],
+)
+def test_output_filename_seg(atlas, atlas_desc, suffix, target):
     source_file = "sub-01_ses-ah_task-rest_run-1_space-MNIfake_res-2_desc-brain_mask.nii.gz"
-
     generated_target = utils.output_filename(
         source_file=source_file,
         atlas=atlas,
-        suffix="dseg",
+        suffix=suffix,
         extension="nii.gz",
         strategy="",
         atlas_desc=atlas_desc,
     )
-    assert "sub-01_seg-fake100_dseg.nii.gz" == generated_target
-
-    generated_target = utils.output_filename(
-        source_file=source_file,
-        atlas="",
-        suffix="mask",
-        extension="nii.gz",
-        strategy="",
-        atlas_desc="",
-    )
-    assert (
-        "sub-01_space-MNIfake_res-2_label-GM_mask.nii.gz" == generated_target
-    )
+    assert target == generated_target
