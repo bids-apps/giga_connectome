@@ -6,7 +6,12 @@
 
 ### New
 
+- [EHN] Add details of denoising strategy to the meta data of the time series extraction. (@htwangtw) [#144](https://github.com/bids-apps/giga_connectome/issues/144)
+
 ### Fixes
+
+- [MAINT] Remove recurrsive import. (@htwangtw) [#135](https://github.com/bids-apps/giga_connectome/issues/135)
+- [DOCS] Remove`meas` entity in timeseries outputs in the documentation. (@htwangtw) [#136](https://github.com/bids-apps/giga_connectome/issues/136)
 
 ### Enhancements
 

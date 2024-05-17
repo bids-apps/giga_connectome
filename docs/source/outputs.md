@@ -18,7 +18,7 @@ and each atlas the following data files will be generated
 
 - a `[matches]_atlas-{atlas}_meas-PearsonCorrelation_desc-{atlas_description}{denoise_strategy}_relmat.tsv`
   file that contains the correlation matrix between all the regions of the atlas
-- a `[matches]_atlas-{atlas}_meas-PearsonCorrelation_desc-{atlas description}{denoise_strategy}_timeseries.tsv`
+- a `[matches]_atlas-{atlas}_desc-{atlas description}{denoise_strategy}_timeseries.tsv`
   file that contains the extracted timeseries for each region of the atlas
 
 - `{atlas}` refers to the name of the atlas used (for example, `Schaefer20187Networks`)
