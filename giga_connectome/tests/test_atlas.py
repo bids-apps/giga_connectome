@@ -1,4 +1,4 @@
-from giga_connectome import load_atlas_setting
+from giga_connectome.atlas import load_atlas_setting
 
 
 def test_load_atlas_setting():
