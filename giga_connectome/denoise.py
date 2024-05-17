@@ -120,10 +120,16 @@ def is_ica_aroma(strategy: STRATEGY_TYPE) -> bool:
 def denoise_meta_data(strategy: STRATEGY_TYPE, img: str) -> METADATA_TYPE:
     """Get metadata of the denoising process.
 
+    Including: column names of the confound regressors, number of
+    volumes discarded by motion scrubbing, number of volumes discarded
+    by non-steady states detector, mean framewise displacement and
+    place holder for sampling frequency (1/TR).
+
     Parameters
     ----------
     strategy : dict
-        Denoising strategy parameter to pass to load_confounds_strategy.
+        Denoising strategy parameter to pass to load_confounds_strategy
+        or load_confounds.
     img : str
         Path to the nifti image to denoise.
 
