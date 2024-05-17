@@ -142,7 +142,11 @@ def denoise_meta_data(strategy: STRATEGY_TYPE, img: str) -> METADATA_TYPE:
     _, sample_mask_non_steady = fmriprep.load_confounds(
         img, strategy=["high_pass"]
     )
-    n_non_steady = cf.shape[0] - sample_mask_non_steady.shape[0]
+    n_non_steady = (
+        cf.shape[0] - sample_mask_non_steady.shape[0]
+        if sample_mask_non_steady is not None
+        else 0
+    )
     n_scrub = 0
     if "scrubbing" in strategy["parameters"].get(
         "denoise_strategy", ""
