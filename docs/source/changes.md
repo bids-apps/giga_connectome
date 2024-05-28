@@ -6,8 +6,8 @@
 
 ### New
 
-- [EHN] Default atlas `Schaefer20187Networks` is renamed to `Schaefer2018`. (@htwangtw)
-- [EHN] `--work-dir` is now renamed to `--atlases-dir`. (@htwangtw)
+- [EHN] Default atlas `Schaefer20187Networks` is renamed to `Schaefer2018`. `Schaefer20187Networks` will be deprecated ub 0.7.0. (@htwangtw)
+- [EHN] `--work-dir` is now renamed to `--atlases-dir`. `--work-dir` will be deprecated ub 0.7.0. (@htwangtw)
 - [EHN] Add details of denoising strategy to the meta data of the time series extraction. (@htwangtw) [#144](https://github.com/bids-apps/giga_connectome/issues/144)
 
 ### Fixes
