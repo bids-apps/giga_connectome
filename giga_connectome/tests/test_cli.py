@@ -40,6 +40,7 @@ def test_smoke(tmp_path, capsys):
     )
     output_dir = tmp_path / "output"
     atlases_dir = tmp_path / "atlases"
+    work_dir = tmp_path / "work"
 
     if not Path(output_dir).exists:
         Path(output_dir).mkdir()
@@ -48,6 +49,8 @@ def test_smoke(tmp_path, capsys):
         [
             "--participant_label",
             "1",
+            "-w",
+            str(work_dir),
             "-a",
             str(atlases_dir),
             "--atlas",
@@ -61,6 +64,8 @@ def test_smoke(tmp_path, capsys):
             "participant",
         ]
     )
+    captured = capsys.readouterr()
+    assert "has been deprecated" in captured.out
 
     output_folder = output_dir / "sub-1" / "ses-timepoint1" / "func"
 

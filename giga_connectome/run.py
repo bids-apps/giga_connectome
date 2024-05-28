@@ -7,8 +7,27 @@ from typing import Sequence
 from giga_connectome import __version__
 from giga_connectome.workflow import workflow
 from giga_connectome.atlas import get_atlas_labels
+from giga_connectome.logger import gc_logger
+
+gc_log = gc_logger()
 
 preset_atlas = get_atlas_labels()
+deprecations = {
+    # parser attribute name: (replacement flag, version slated to be removed in)
+    'work-dir': ('--atlases-dir', '0.7.0'),
+}
+
+class DeprecatedAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        new_opt, rem_vers = deprecations.get(self.dest, (None, None))
+        msg = (
+            f"{self.option_strings} has been deprecated and will be removed in "
+            f"{rem_vers or 'a later version'}."
+        )
+        if new_opt:
+            msg += f' Please use `{new_opt}` instead.'
+        gc_log.warning(msg)
+        delattr(namespace, self.dest)
 
 
 def global_parser() -> argparse.ArgumentParser:
@@ -57,6 +76,12 @@ def global_parser() -> argparse.ArgumentParser:
         type=Path,
         default=Path("atlases").absolute(),
         help="Path where subject specific segmentations are stored.",
+    )
+    parser.add_argument(
+        "-w",
+        "--work-dir",
+        action=DeprecatedAction,
+        help="This argument is deprecated. Please use --atlas-dir instead.",
     )
     parser.add_argument(
         "--atlas",
