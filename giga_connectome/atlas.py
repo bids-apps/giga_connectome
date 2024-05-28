@@ -177,7 +177,7 @@ def _check_altas_config(
     KeyError
         atlas configuration not containing the correct keys.
     """
-    if atlas in deprecations:
+    if isinstance(atlas, str) and atlas in deprecations:
         new_name, version = deprecations[atlas]
         gc_log.warning(
             f"{atlas} has been deprecated and will be removed in "
