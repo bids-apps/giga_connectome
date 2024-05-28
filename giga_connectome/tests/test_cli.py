@@ -33,7 +33,7 @@ def test_help(capsys):
 
 
 @pytest.mark.smoke
-def test_smoke(tmp_path, capsys):
+def test_smoke(tmp_path, caplog):
     bids_dir = resource_filename(
         "giga_connectome",
         "data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface",
@@ -54,7 +54,7 @@ def test_smoke(tmp_path, capsys):
             "-a",
             str(atlases_dir),
             "--atlas",
-            "Schaefer20187Networks",  # use Schaefer2018 when updating 0.7.0
+            "Schaefer2018",
             "--denoise-strategy",
             "simple",
             "--reindex-bids",
@@ -64,8 +64,7 @@ def test_smoke(tmp_path, capsys):
             "participant",
         ]
     )
-    captured = capsys.readouterr()
-    assert "has been deprecated" in captured.out.split()[0]
+    assert "has been deprecated" in caplog.text.splitlines()[0]
 
     output_folder = output_dir / "sub-1" / "ses-timepoint1" / "func"
 
