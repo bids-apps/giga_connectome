@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+from typing import Any
 import argparse
 from pathlib import Path
 from typing import Sequence
@@ -13,19 +13,27 @@ gc_log = gc_logger()
 
 preset_atlas = get_atlas_labels()
 deprecations = {
-    # parser attribute name: (replacement flag, version slated to be removed in)
-    'work-dir': ('--atlases-dir', '0.7.0'),
+    # parser attribute name:
+    # (replacement flag, version slated to be removed in)
+    "work-dir": ("--atlases-dir", "0.7.0"),
 }
 
+
 class DeprecatedAction(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
+    def __call__(
+        self,
+        parser: argparse.ArgumentParser,
+        namespace: argparse.Namespace,
+        values: str | Sequence[Any] | None,
+        option_string: str | None = None,
+    ) -> None:
         new_opt, rem_vers = deprecations.get(self.dest, (None, None))
         msg = (
-            f"{self.option_strings} has been deprecated and will be removed in "
-            f"{rem_vers or 'a later version'}."
+            f"{self.option_strings} has been deprecated and will be removed "
+            f"in {rem_vers or 'a later version'}."
         )
         if new_opt:
-            msg += f' Please use `{new_opt}` instead.'
+            msg += f" Please use `{new_opt}` instead."
         gc_log.warning(msg)
         delattr(namespace, self.dest)
 
