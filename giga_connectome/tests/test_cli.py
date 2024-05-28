@@ -33,13 +33,14 @@ def test_help(capsys):
 
 
 @pytest.mark.smoke
-def test_smoke(tmp_path, capsys):
+def test_smoke(tmp_path, caplog):
     bids_dir = resource_filename(
         "giga_connectome",
         "data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface",
     )
     output_dir = tmp_path / "output"
-    work_dir = tmp_path / "output/work"
+    atlases_dir = tmp_path / "atlases"
+    work_dir = tmp_path / "work"
 
     if not Path(output_dir).exists:
         Path(output_dir).mkdir()
@@ -50,8 +51,10 @@ def test_smoke(tmp_path, capsys):
             "1",
             "-w",
             str(work_dir),
+            "-a",
+            str(atlases_dir),
             "--atlas",
-            "Schaefer20187Networks",
+            "Schaefer2018",
             "--denoise-strategy",
             "simple",
             "--reindex-bids",
@@ -61,32 +64,32 @@ def test_smoke(tmp_path, capsys):
             "participant",
         ]
     )
+    assert "has been deprecated" in caplog.text.splitlines()[0]
 
     output_folder = output_dir / "sub-1" / "ses-timepoint1" / "func"
 
     base = (
         "sub-1_ses-timepoint1_task-probabilisticclassification"
-        "_run-01_space-MNI152NLin2009cAsym_res-2"
-        "_atlas-Schaefer20187Networks"
+        "_run-01_seg-Schaefer2018100Parcels7Networks"
     )
-
+    ts_base = (
+        "sub-1_ses-timepoint1_task-probabilisticclassification"
+        "_run-01_desc-denoiseSimple"
+    )
     relmat_file = output_folder / (
-        base
-        + "_meas-PearsonCorrelation"
-        + "_desc-100Parcels7NetworksSimple_relmat.tsv"
+        base + "_meas-PearsonCorrelation" + "_desc-denoiseSimple_relmat.tsv"
     )
     assert relmat_file.exists()
     relmat = pd.read_csv(relmat_file, sep="\t")
     assert len(relmat) == 100
-
-    json_file = relmat_file = output_folder / (base + "_timeseries.json")
+    json_file = relmat_file = output_folder / (ts_base + "_timeseries.json")
     assert json_file.exists()
     with open(json_file, "r") as f:
         content = json.load(f)
         assert content.get("SamplingFrequency") == 0.5
 
     timeseries_file = relmat_file = output_folder / (
-        base + "_desc-100Parcels7NetworksSimple_timeseries.tsv"
+        base + "_desc-denoiseSimple_timeseries.tsv"
     )
     assert timeseries_file.exists()
     timeseries = pd.read_csv(timeseries_file, sep="\t")

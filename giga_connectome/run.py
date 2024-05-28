@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+from typing import Any
 import argparse
 from pathlib import Path
 from typing import Sequence
@@ -7,8 +7,35 @@ from typing import Sequence
 from giga_connectome import __version__
 from giga_connectome.workflow import workflow
 from giga_connectome.atlas import get_atlas_labels
+from giga_connectome.logger import gc_logger
+
+gc_log = gc_logger()
 
 preset_atlas = get_atlas_labels()
+deprecations = {
+    # parser attribute name:
+    # (replacement flag, version slated to be removed in)
+    "work-dir": ("--atlases-dir", "0.7.0"),
+}
+
+
+class DeprecatedAction(argparse.Action):
+    def __call__(
+        self,
+        parser: argparse.ArgumentParser,
+        namespace: argparse.Namespace,
+        values: str | Sequence[Any] | None,
+        option_string: str | None = None,
+    ) -> None:
+        new_opt, rem_vers = deprecations.get(self.dest, (None, None))
+        msg = (
+            f"{self.option_strings} has been deprecated and will be removed "
+            f"in {rem_vers or 'a later version'}."
+        )
+        if new_opt:
+            msg += f" Please use `{new_opt}` instead."
+        gc_log.warning(msg)
+        delattr(namespace, self.dest)
 
 
 def global_parser() -> argparse.ArgumentParser:
@@ -51,20 +78,26 @@ def global_parser() -> argparse.ArgumentParser:
         nargs="+",
     )
     parser.add_argument(
-        "-w",
-        "--work-dir",
+        "-a",
+        "--atlases-dir",
         action="store",
         type=Path,
-        default=Path("work").absolute(),
-        help="Path where intermediate results should be stored.",
+        default=Path("atlases").absolute(),
+        help="Path where subject specific segmentations are stored.",
+    )
+    parser.add_argument(
+        "-w",
+        "--work-dir",
+        action=DeprecatedAction,
+        help="This argument is deprecated. Please use --atlas-dir instead.",
     )
     parser.add_argument(
         "--atlas",
         help="The choice of atlas for time series extraction. Default atlas "
         f"choices are: {preset_atlas}. User can pass "
         "a path to a json file containing configuration for their own choice "
-        "of atlas. The default is 'Schaefer20187Networks'.",
-        default="Schaefer20187Networks",
+        "of atlas. The default is 'Schaefer2018'.",
+        default="Schaefer2018",
     )
     parser.add_argument(
         "--denoise-strategy",

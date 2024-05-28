@@ -30,6 +30,12 @@ ATLAS_SETTING_TYPE = TypedDict(
     {"name": str, "file_paths": Dict[str, List[Path]], "type": str},
 )
 
+deprecations = {
+    # parser attribute name:
+    # (replacement, version slated to be removed in)
+    "Schaefer20187Networks": ("Schaefer2018", "0.7.0"),
+}
+
 
 def load_atlas_setting(
     atlas: str | Path | dict[str, Any],
@@ -94,60 +100,55 @@ def load_atlas_setting(
 
 
 def resample_atlas_collection(
-    template: str,
+    subject_seg_file_names: list[str],
     atlas_config: ATLAS_SETTING_TYPE,
-    group_mask_dir: Path,
-    group_mask: Nifti1Image,
+    subject_mask_dir: Path,
+    subject_mask: Nifti1Image,
 ) -> list[Path]:
     """Resample a atlas collection to group grey matter mask.
 
     Parameters
     ----------
-    template: str
-        Templateflow template name. This template should match the template of
-        `all_masks`.
+    subject_atlas_file_names: list of str
+        File names of subject atlas segmentations.
 
     atlas_config: dict
         Atlas name. Currently support Schaefer20187Networks, MIST, DiFuMo.
 
-    group_mask_dir: pathlib.Path
+    subject_mask_dir: pathlib.Path
         Path to where the outputs are saved.
 
-    group_mask : nibabel.nifti1.Nifti1Image
-        EPI (grey matter) mask for the current group of subjects.
+    subject_mask : nibabel.nifti1.Nifti1Image
+        EPI (grey matter) mask for the subject.
 
     Returns
     -------
     list of pathlib.Path
-        Paths to atlases sampled to group level grey matter mask.
+        Paths to subject specific segmentations created from atlases sampled
+        to individual grey matter mask.
     """
     gc_log.info("Resample atlas to group grey matter mask.")
-    resampled_atlases = []
+    subject_seg = []
 
     with progress_bar(text="Resampling atlases") as progress:
         task = progress.add_task(
             description="resampling", total=len(atlas_config["file_paths"])
         )
 
-        for desc in atlas_config["file_paths"]:
+        for seg_file, desc in zip(
+            subject_seg_file_names, atlas_config["file_paths"]
+        ):
             parcellation = atlas_config["file_paths"][desc]
             parcellation_resampled = resample_to_img(
-                parcellation, group_mask, interpolation="nearest"
+                parcellation, subject_mask, interpolation="nearest"
             )
-            filename = (
-                f"tpl-{template}_"
-                f"atlas-{atlas_config['name']}_"
-                "res-dataset_"
-                f"desc-{desc}_"
-                f"{atlas_config['type']}.nii.gz"
-            )
-            save_path = group_mask_dir / filename
+            save_path = subject_mask_dir / seg_file
             nib.save(parcellation_resampled, save_path)
-            resampled_atlases.append(save_path)
+            subject_seg.append(save_path)
 
         progress.update(task, advance=1)
 
-    return resampled_atlases
+    return subject_seg
 
 
 def get_atlas_labels() -> List[str]:
@@ -176,9 +177,18 @@ def _check_altas_config(
     KeyError
         atlas configuration not containing the correct keys.
     """
+    if isinstance(atlas, str) and atlas in deprecations:
+        new_name, version = deprecations[atlas]
+        gc_log.warning(
+            f"{atlas} has been deprecated and will be removed in "
+            f"{version}. Please use {new_name} instead."
+        )
+        atlas = new_name
+
     # load the file first if the input is not already a dictionary
     atlas_dir = resource_filename("giga_connectome", "data/atlas")
     preset_atlas = [p.stem for p in Path(atlas_dir).glob("*.json")]
+
     if isinstance(atlas, (str, Path)):
         if atlas in preset_atlas:
             config_path = Path(
@@ -188,6 +198,10 @@ def _check_altas_config(
             )
         elif Path(atlas).exists():
             config_path = Path(atlas)
+        else:
+            raise FileNotFoundError(
+                f"Atlas configuration file {atlas} not found."
+            )
 
         with open(config_path, "r") as file:
             atlas_config = json.load(file)
