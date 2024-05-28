@@ -36,6 +36,7 @@ deprecations = {
     "Schaefer20187Networks": ("Schaefer2018", "0.7.0"),
 }
 
+
 def load_atlas_setting(
     atlas: str | Path | dict[str, Any],
 ) -> ATLAS_SETTING_TYPE:
