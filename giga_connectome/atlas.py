@@ -30,6 +30,11 @@ ATLAS_SETTING_TYPE = TypedDict(
     {"name": str, "file_paths": Dict[str, List[Path]], "type": str},
 )
 
+deprecations = {
+    # parser attribute name:
+    # (replacement, version slated to be removed in)
+    "Schaefer20187Networks": ("Schaefer2018", "0.7.0"),
+}
 
 def load_atlas_setting(
     atlas: str | Path | dict[str, Any],
@@ -171,9 +176,18 @@ def _check_altas_config(
     KeyError
         atlas configuration not containing the correct keys.
     """
+    if atlas in deprecations:
+        new_name, version = deprecations[atlas]
+        gc_log.warning(
+            f"{atlas} has been deprecated and will be removed in "
+            f"{version}. Please use {new_name} instead."
+        )
+        atlas = new_name
+
     # load the file first if the input is not already a dictionary
     atlas_dir = resource_filename("giga_connectome", "data/atlas")
     preset_atlas = [p.stem for p in Path(atlas_dir).glob("*.json")]
+
     if isinstance(atlas, (str, Path)):
         if atlas in preset_atlas:
             config_path = Path(
@@ -183,6 +197,10 @@ def _check_altas_config(
             )
         elif Path(atlas).exists():
             config_path = Path(atlas)
+        else:
+            raise FileNotFoundError(
+                f"Atlas configuration file {atlas} not found."
+            )
 
         with open(config_path, "r") as file:
             atlas_config = json.load(file)

@@ -54,7 +54,7 @@ def test_smoke(tmp_path, capsys):
             "-a",
             str(atlases_dir),
             "--atlas",
-            "Schaefer2018",
+            "Schaefer20187Networks",  # use Schaefer2018 when updating 0.7.0
             "--denoise-strategy",
             "simple",
             "--reindex-bids",
@@ -65,7 +65,7 @@ def test_smoke(tmp_path, capsys):
         ]
     )
     captured = capsys.readouterr()
-    assert "has been deprecated" in captured.out
+    assert "has been deprecated" in captured.out.split()[0]
 
     output_folder = output_dir / "sub-1" / "ses-timepoint1" / "func"
 
