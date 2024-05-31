@@ -71,6 +71,10 @@ def generate_gm_mask_atlas(
         nib.save(
             subject_mask_nii, subject_mask_dir / target_subject_mask_file_name
         )
+    else:
+        subject_mask_nii = load_img(
+            subject_mask_dir / target_subject_mask_file_name
+        )
 
     if not target_subject_seg:
         subject_seg_niis = resample_atlas_collection(
