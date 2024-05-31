@@ -1,5 +1,5 @@
-#  https://hub.docker.com/layers/library/python/3.9-slim-bullseye/images/sha256-de58dcff6a8ccd752899e667aded074ad3e8f5fd552969ec11276adcb18930a4
-FROM python@sha256:de58dcff6a8ccd752899e667aded074ad3e8f5fd552969ec11276adcb18930a4
+# https://hub.docker.com/layers/library/python/3.12.3-slim-bullseye/images/sha256-11ee4eb9e164c0ff4aeb4eef37163aedc358f57045f394f719b8c130190a440d
+FROM python@sha256:6fa552fb879325884b0c1b6792d14ae9500d246c8b19cc27876d84c7c41117ff
 
 ARG DEBIAN_FRONTEND="noninteractive"
 
