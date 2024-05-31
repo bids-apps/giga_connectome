@@ -59,6 +59,8 @@ def test_smoke(tmp_path, caplog):
             "simple",
             "--reindex-bids",
             "--calculate-intranetwork-average-correlation",
+            "--bids-filter-file",
+            str(Path(bids_dir).parent / "bids_filter.json"),
             str(bids_dir),
             str(output_dir),
             "participant",
@@ -117,6 +119,7 @@ def test_smoke(tmp_path, caplog):
     )
 
     # deleate gm mask to trigger rerun the atlas generation
+
     gm_path = (
         atlases_dir
         / "sub-1"

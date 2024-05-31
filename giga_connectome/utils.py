@@ -278,7 +278,8 @@ def output_filename(
 
     elif suffix == "mask":
         reference = parse_bids_filename(source_file)
-        tpl: str = f"space-{reference['space']}_res-{reference['res']}"
+        tpl: str = f"space-{reference['space']}"
+        tpl += f"_res-{reference['res']}" if "res" in reference else ""
         return f"{subject}_{tpl}_label-GM_{suffix}.{extension}"
     else:
         return f"{subject}_{seg}_{suffix}.{extension}"
