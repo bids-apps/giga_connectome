@@ -72,7 +72,9 @@ def generate_gm_mask_atlas(
             subject_mask_nii, subject_mask_dir / target_subject_mask_file_name
         )
     else:
-        subject_mask_nii = load_img(target_subject_mask)
+        subject_mask_nii = load_img(
+            subject_mask_dir / target_subject_mask_file_name
+        )
 
     if not target_subject_seg or not target_subject_mask:
         # resample if the grey matter mask was not generated
@@ -85,11 +87,10 @@ def generate_gm_mask_atlas(
         )
     else:
         subject_seg_niis = [
-            load_img(subject_mask_dir / i)
-            for i in target_subject_seg_file_names
+            subject_mask_dir / i for i in target_subject_seg_file_names
         ]
 
-    return subject_mask_nii, subject_seg_niis
+    return subject_mask_dir / target_subject_mask_file_name, subject_seg_niis
 
 
 def generate_subject_gm_mask(
