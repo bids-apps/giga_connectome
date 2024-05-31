@@ -74,7 +74,9 @@ def generate_gm_mask_atlas(
     else:
         subject_mask_nii = load_img(target_subject_mask)
 
-    if not target_subject_seg:
+    if not target_subject_seg or not target_subject_mask:
+        # resample if the grey matter mask was not generated
+        # or the atlas was not present
         subject_seg_niis = resample_atlas_collection(
             target_subject_seg_file_names,
             atlas,
@@ -82,7 +84,10 @@ def generate_gm_mask_atlas(
             subject_mask_nii,
         )
     else:
-        subject_seg_niis = [load_img(i) for i in target_subject_seg_file_names]
+        subject_seg_niis = [
+            load_img(subject_mask_dir / i)
+            for i in target_subject_seg_file_names
+        ]
 
     return subject_mask_nii, subject_seg_niis
 

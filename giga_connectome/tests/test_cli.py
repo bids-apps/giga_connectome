@@ -59,6 +59,8 @@ def test_smoke(tmp_path, caplog):
             "simple",
             "--reindex-bids",
             "--calculate-intranetwork-average-correlation",
+            "--bids-filter-file",
+            str(Path(bids_dir).parent / "bids_filter.json"),
             str(bids_dir),
             str(output_dir),
             "participant",
@@ -94,3 +96,31 @@ def test_smoke(tmp_path, caplog):
     assert timeseries_file.exists()
     timeseries = pd.read_csv(timeseries_file, sep="\t")
     assert len(timeseries.columns) == 100
+
+    gm_path = (
+        atlases_dir
+        / "sub-1"
+        / "func"
+        / "sub-1_space-MNI152NLin2009cAsym_res-2_label-GM_mask.nii.gz"
+    )
+    # delete gm_path
+    gm_path.unlink()
+    # rerun
+    main(
+        [
+            "--participant_label",
+            "1",
+            "-a",
+            str(atlases_dir),
+            "--atlas",
+            "Schaefer2018",
+            "--denoise-strategy",
+            "simple",
+            "--calculate-intranetwork-average-correlation",
+            "--bids-filter-file",
+            str(Path(bids_dir).parent / "bids_filter.json"),
+            str(bids_dir),
+            str(output_dir),
+            "participant",
+        ]
+    )
