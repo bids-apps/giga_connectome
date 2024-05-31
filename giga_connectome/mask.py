@@ -75,7 +75,6 @@ def generate_gm_mask_atlas(
         subject_mask_nii = load_img(target_subject_mask)
 
     if not target_subject_seg:
-        subject_mask_nii = target_subject_mask_file_name
         subject_seg_niis = resample_atlas_collection(
             target_subject_seg_file_names,
             atlas,
