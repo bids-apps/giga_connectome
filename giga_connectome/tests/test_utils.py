@@ -100,14 +100,32 @@ def test_output_filename(suffix, extension, target):
 
 
 @pytest.mark.parametrize(
-    "atlas,atlas_desc,suffix,target",
+    "source_file,atlas,atlas_desc,suffix,target",
     [
-        ("fake", "100", "dseg", "sub-01_seg-fake100_dseg.nii.gz"),
-        ("", "", "mask", "sub-01_space-MNIfake_res-2_label-GM_mask.nii.gz"),
+        (
+            "sub-01_ses-ah_task-rest_run-1_space-MNIfake_res-2_desc-brain_mask.nii.gz",
+            "fake",
+            "100",
+            "dseg",
+            "sub-01_seg-fake100_dseg.nii.gz",
+        ),
+        (
+            "sub-01_ses-ah_task-rest_run-1_space-MNIfake_res-2_desc-brain_mask.nii.gz",
+            "",
+            "",
+            "mask",
+            "sub-01_space-MNIfake_res-2_label-GM_mask.nii.gz",
+        ),
+        (
+            "sub-01_ses-ah_task-rest_run-1_space-MNIfake_desc-brain_mask.nii.gz",
+            "",
+            "",
+            "mask",
+            "sub-01_space-MNIfake_label-GM_mask.nii.gz",
+        ),
     ],
 )
-def test_output_filename_seg(atlas, atlas_desc, suffix, target):
-    source_file = "sub-01_ses-ah_task-rest_run-1_space-MNIfake_res-2_desc-brain_mask.nii.gz"
+def test_output_filename_seg(source_file, atlas, atlas_desc, suffix, target):
     generated_target = utils.output_filename(
         source_file=source_file,
         atlas=atlas,
