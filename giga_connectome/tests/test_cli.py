@@ -66,6 +66,7 @@ def test_smoke(tmp_path, caplog):
             "participant",
         ]
     )
+    # check outputs
     assert "has been deprecated" in caplog.text.splitlines()[0]
 
     output_folder = output_dir / "sub-1" / "ses-timepoint1" / "func"
@@ -96,6 +97,28 @@ def test_smoke(tmp_path, caplog):
     assert timeseries_file.exists()
     timeseries = pd.read_csv(timeseries_file, sep="\t")
     assert len(timeseries.columns) == 100
+
+    # immediately rerun should cover the case where the output already exists
+    main(
+        [
+            "--participant_label",
+            "1",
+            "-a",
+            str(atlases_dir),
+            "--atlas",
+            "Schaefer2018",
+            "--denoise-strategy",
+            "simple",
+            "--calculate-intranetwork-average-correlation",
+            "--bids-filter-file",
+            str(Path(bids_dir).parent / "bids_filter.json"),
+            str(bids_dir),
+            str(output_dir),
+            "participant",
+        ]
+    )
+
+    # deleate gm mask to trigger rerun the atlas generation
 
     gm_path = (
         atlases_dir
