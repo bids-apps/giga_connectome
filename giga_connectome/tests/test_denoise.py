@@ -13,7 +13,6 @@ def test_denoise_nifti_voxel():
         strategy=strategy,
         img=img_file,
     )
-
     assert len(meta_data["ConfoundRegressors"]) == 36
     assert meta_data["NumberOfVolumesDiscardedByMotionScrubbing"] == 12
     assert meta_data["NumberOfVolumesDiscardedByNonsteadyStatesDetector"] == 2
@@ -26,11 +25,9 @@ def test_denoise_nifti_voxel():
         strategy=strategy,
         img=img_file,
     )
-
     assert len(meta_data["ConfoundRegressors"]) == 30
     assert meta_data["NumberOfVolumesDiscardedByMotionScrubbing"] == 0
     assert meta_data["NumberOfVolumesDiscardedByNonsteadyStatesDetector"] == 2
     testing.assert_almost_equal(
         meta_data["MeanFramewiseDisplacement"], 0.107, decimal=3
     )
-    print(type(meta_data["NumberOfVolumesDiscardedByMotionScrubbing"]))
