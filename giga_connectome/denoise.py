@@ -153,11 +153,9 @@ def denoise_meta_data(strategy: STRATEGY_TYPE, img: str) -> METADATA_TYPE:
         if sample_mask_non_steady is not None
         else 0
     )
-    n_scrub = 0
-    if "scrubbing" in strategy["parameters"].get(
-        "denoise_strategy", ""
-    ) or "srub" in strategy["parameters"].get("strategy", []):
-        n_scrub = cf.shape[0] - sm.shape[0] - n_non_steady
+    # sample mask = \
+    #   number of scan - scrubbed volumes - non steady states
+    n_scrub = 0 if sm is None else cf.shape[0] - sm.shape[0] - n_non_steady
 
     meta_data: METADATA_TYPE = {
         "ConfoundRegressors": cf.columns.tolist(),
