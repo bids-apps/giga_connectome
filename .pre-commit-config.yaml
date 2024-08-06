@@ -11,10 +11,10 @@ repos:
     -   id: check-added-large-files
         args: ['--maxkb=1000']
 -   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.11.0
+    rev: v1.11.1
     hooks:
     -   id: mypy
-        additional_dependencies: [types-all, pandas-stubs, types-tqdm]
+        additional_dependencies: [pandas-stubs, types-tqdm, types-setuptools, types-Jinja2]
         args: [--config-file=pyproject.toml]
 -   repo: https://github.com/psf/black-pre-commit-mirror
     rev: 24.4.2
@@ -29,7 +29,7 @@ repos:
         args: ["--skip=*.svg"]
         exclude: 'paper/.*'
 -   repo: https://github.com/PyCQA/flake8
-    rev: 7.1.0
+    rev: 7.1.1
     hooks:
     -   id: flake8
 -   repo: https://github.com/hadolint/hadolint
