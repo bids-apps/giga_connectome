@@ -12,6 +12,7 @@
 
 ### Fixes
 
+- [FIX] Make sure version docker images matches version of package in the image (@Remi-Gau) [#169](https://github.com/bids-apps/giga_connectome/issues/169)
 - [MAINT] Remove recurrsive import. (@htwangtw) [#135](https://github.com/bids-apps/giga_connectome/issues/135)
 - [DOCS] Remove`meas` entity in timeseries outputs in the documentation. (@htwangtw) [#136](https://github.com/bids-apps/giga_connectome/issues/136)
 
