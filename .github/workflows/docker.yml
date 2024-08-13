@@ -59,7 +59,10 @@ jobs:
           docker build . --file Dockerfile --tag ${{env.USER_NAME}}/${{env.REPO_NAME}}
           mkdir -p ${{ env.IMAGE }}
           docker save "${{env.USER_NAME}}/${{env.REPO_NAME}}" > "${{ env.IMAGE }}/image.tar"
+      - name: Check image size and version
+        run: |
           docker images
+          docker run --rm ${{env.USER_NAME}}/${{env.REPO_NAME}} --version
       - name: Upload docker artifacts
         uses: actions/upload-artifact@v4
         with:
