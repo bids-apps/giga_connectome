@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Sequence
 
 from giga_connectome import __version__
-from giga_connectome.workflow import workflow
 from giga_connectome.atlas import get_atlas_labels
 from giga_connectome.logger import gc_logger
 
@@ -156,6 +155,10 @@ def main(argv: None | Sequence[str] = None) -> None:
     parser = global_parser()
 
     args = parser.parse_args(argv)
+
+    # local import to speed up CLI response
+    # when just askig for --help or --version
+    from giga_connectome.workflow import workflow
 
     workflow(args)
 
