@@ -43,6 +43,7 @@ def get_bids_images(
         validate=False,
         derivatives=False,
         reset_database=reindex_bids,
+        config=["bids", "derivatives"],
     )
 
     layout_get_kwargs = {

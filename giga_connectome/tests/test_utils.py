@@ -4,6 +4,9 @@ import pytest
 from bids.tests import get_test_data_path
 from pkg_resources import resource_filename
 
+from nilearn._utils.data_gen import create_fake_bids_dataset
+
+
 from giga_connectome import utils
 
 
@@ -135,3 +138,20 @@ def test_output_filename_seg(source_file, atlas, atlas_desc, suffix, target):
         atlas_desc=atlas_desc,
     )
     assert target == generated_target
+
+
+def test_desc_entity_recognised(tmp_path):
+
+    create_fake_bids_dataset(tmp_path, n_sub=1, n_ses=1, n_runs=[1, 1])
+
+    subjects = ["01"]
+    template = "MNI"
+    reindex_bids = True
+
+    utils.get_bids_images(
+        subjects,
+        template,
+        tmp_path / "bids_dataset" / "derivatives",
+        reindex_bids,
+        bids_filters=None,
+    )
