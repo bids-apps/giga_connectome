@@ -2,7 +2,7 @@
 
 ## Setting up your environment for development
 
-1. Fork the repository from github and clone your fork locally
+1. Fork the repository from github and clone your fork locally (see [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account) to setup your ssh key):
 
 ```bash
 git clone git@github.com:<your_username>/giga_connectome.git
