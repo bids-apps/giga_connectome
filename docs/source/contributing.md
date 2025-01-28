@@ -117,7 +117,7 @@ One your PR is ready a member of the development team will review your changes t
 
 Once the PR is ready to merge, we will add you to our contributor page [All Contributors bot](https://allcontributors.org/) to celebrate your contributions.
 
-See [All Contributors bot](https://allcontributors.org/docs/en/bot/usage) usage note.
+See [All Contributors bot](https://allcontributors.org/docs/en/bot/usage) usage note for adding contributors.
 
 ### Running the demo
 
