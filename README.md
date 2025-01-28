@@ -66,6 +66,9 @@ If you submit a new pull request please be as detailed as possible in your comme
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/shnizzedy"><img src="https://avatars.githubusercontent.com/u/5974438?v=4?s=100" width="100px;" alt="Jon Cluce"/><br /><sub><b>Jon Cluce</b></sub></a><br /><a href="#bug-shnizzedy" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/emullier"><img src="https://avatars.githubusercontent.com/u/43587002?v=4?s=100" width="100px;" alt="Emeline Mullier"/><br /><sub><b>Emeline Mullier</b></sub></a><br /><a href="#bug-emullier" title="Bug reports">🐛</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://jdkent.github.io/"><img src="https://avatars.githubusercontent.com/u/12564882?v=4?s=100" width="100px;" alt="James Kent"/><br /><sub><b>James Kent</b></sub></a><br /><a href="#bug-jdkent" title="Bug reports">🐛</a> <a href="#doc-jdkent" title="Documentation">📖</a></td>
+    </tr>
   </tbody>
 </table>
 
