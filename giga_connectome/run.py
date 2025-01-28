@@ -69,6 +69,7 @@ def global_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--participant-label",
+        "--participant_label",
         help="The label(s) of the participant(s) that should be analyzed. The "
         "label corresponds to sub-<participant-label> from the BIDS spec (so "
         "it does not include 'sub-'). If this parameter is not provided all "
@@ -109,6 +110,7 @@ def global_parser() -> argparse.ArgumentParser:
         default="simple",
     )
     parser.add_argument(
+        "--smoothing_fwhm",
         "--smoothing-fwhm",
         help="Size of the full-width at half maximum in millimeters of "
         "the spatial smoothing to apply to the signal. The default is 5.0.",
