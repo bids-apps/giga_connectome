@@ -40,7 +40,7 @@ dev = [
   "giga_connectome[test]",
   'tox',
   'mypy',
-  'types-all',
+  'types-setuptools',
   'pandas-stubs',
   'types-tqdm'
 ]
