@@ -55,6 +55,13 @@ If you submit a new pull request please be as detailed as possible in your comme
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/clarkenj"><img src="https://avatars.githubusercontent.com/u/57987005?v=4?s=100" width="100px;" alt="Natasha Clarke"/><br /><sub><b>Natasha Clarke</b></sub></a><br /><a href="#userTesting-clarkenj" title="User Testing">📓</a> <a href="#example-clarkenj" title="Examples">💡</a> <a href="#bug-clarkenj" title="Bug reports">🐛</a></td>
+    </tr>
+  </tbody>
+</table>
 
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
