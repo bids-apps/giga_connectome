@@ -78,6 +78,16 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "jdkent",
+      "name": "James Kent",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12564882?v=4",
+      "profile": "https://jdkent.github.io/",
+      "contributions": [
+        "bug",
+        "doc"
+      ]
     }
   ]
 }
