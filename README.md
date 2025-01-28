@@ -58,6 +58,7 @@ If you submit a new pull request please be as detailed as possible in your comme
 <table>
   <tbody>
     <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Hyedryn"><img src="https://avatars.githubusercontent.com/u/5383293?v=4?s=100" width="100px;" alt="Quentin Dessain"/><br /><sub><b>Quentin Dessain</b></sub></a><br /><a href="#userTesting-Hyedryn" title="User Testing">📓</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://wanghaoting.com/"><img src="https://avatars.githubusercontent.com/u/13743617?v=4?s=100" width="100px;" alt="Hao-Ting Wang"/><br /><sub><b>Hao-Ting Wang</b></sub></a><br /><a href="#ideas-htwangtw" title="Ideas, Planning, & Feedback">🤔</a> <a href="#research-htwangtw" title="Research">🔬</a> <a href="#code-htwangtw" title="Code">💻</a> <a href="#test-htwangtw" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
