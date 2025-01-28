@@ -55,6 +55,13 @@ If you submit a new pull request please be as detailed as possible in your comme
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Hyedryn"><img src="https://avatars.githubusercontent.com/u/5383293?v=4?s=100" width="100px;" alt="Quentin Dessain"/><br /><sub><b>Quentin Dessain</b></sub></a><br /><a href="#userTesting-Hyedryn" title="User Testing">📓</a></td>
+    </tr>
+  </tbody>
+</table>
 
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
