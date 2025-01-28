@@ -29,8 +29,8 @@
           "userTesting",
           "platform"
         ]
-      },
-      {
+    },
+    {
         "login": "clarkenj",
         "name": "Natasha Clarke",
         "avatar_url": "https://avatars.githubusercontent.com/u/57987005?v=4",
@@ -40,6 +40,6 @@
           "example",
           "bug"
         ]
-      }
+    }
   ]
 }
