@@ -262,9 +262,11 @@ def _check_mask_affine(
             key_to_header[affine_hashable] = affine
 
     if isinstance(mask_imgs[0], Nifti1Image):
-        mask_arrays = np.arange(len(mask_imgs))
+        # this looks janky, but this is for mypy to understand the type
+        mask_arrays = np.array(np.arange(len(mask_imgs)).tolist())
     else:
         mask_arrays = np.array(mask_imgs)
+
     # get most common values
     common_affine = max(
         set(header_info["affine"]), key=header_info["affine"].count
