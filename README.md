@@ -1,3 +1,4 @@
+[![All Contributors](https://img.shields.io/github/all-contributors/bids-apps/giga_connectome?color=ee8449&style=flat)](#contributors)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![codecov](https://codecov.io/gh/bids-apps/giga_connectome/branch/main/graph/badge.svg?token=P4EGV7NKZ8)](https://codecov.io/gh/bids-apps/giga_connectome)
 [![.github/workflows/test.yml](https://github.com/bids-apps/giga_connectome/actions/workflows/test.yml/badge.svg)](https://github.com/bids-apps/giga_connectome/actions/workflows/test.yml)
@@ -48,6 +49,17 @@ If not, [open up a new issue](https://github.com/bids-apps/giga_connectome/issue
 
 You can review open [issues]((https://github.com/bids-apps/giga_connectome/issues)) that we are looking for help with.
 If you submit a new pull request please be as detailed as possible in your comments.
+
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 
 ## Acknowledgements
 

@@ -115,6 +115,10 @@ This tells the development team that your pull request is a "work-in-progress", 
 
 One your PR is ready a member of the development team will review your changes to confirm that they can be merged into the main codebase.
 
+Once the PR is ready to merge, we will add you to our contributor page [All Contributors bot](https://allcontributors.org/) to celebrate your contributions.
+
+See [All Contributors bot](https://allcontributors.org/docs/en/bot/usage) usage note for adding contributors.
+
 ### Running the demo
 
 You can run a demo of the bids app by downloading some test data.
