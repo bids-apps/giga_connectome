@@ -21,25 +21,25 @@
       ]
     },
     {
-        "login": "Hyedryn",
-        "name": "Quentin Dessain",
-        "avatar_url": "https://avatars.githubusercontent.com/u/5383293?v=4",
-        "profile": "https://github.com/Hyedryn",
-        "contributions": [
-          "userTesting",
-          "platform"
-        ]
+      "login": "Hyedryn",
+      "name": "Quentin Dessain",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5383293?v=4",
+      "profile": "https://github.com/Hyedryn",
+      "contributions": [
+        "userTesting",
+        "platform"
+      ]
     },
     {
-        "login": "clarkenj",
-        "name": "Natasha Clarke",
-        "avatar_url": "https://avatars.githubusercontent.com/u/57987005?v=4",
-        "profile": "https://github.com/clarkenj",
-        "contributions": [
-          "userTesting",
-          "example",
-          "bug"
-        ]
+      "login": "clarkenj",
+      "name": "Natasha Clarke",
+      "avatar_url": "https://avatars.githubusercontent.com/u/57987005?v=4",
+      "profile": "https://github.com/clarkenj",
+      "contributions": [
+        "userTesting",
+        "example",
+        "bug"
+      ]
     }
   ]
 }
