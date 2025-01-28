@@ -60,6 +60,15 @@
         "ideas",
         "financial"
       ]
+    },
+    {
+      "login": "shnizzedy",
+      "name": "Jon Cluce",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5974438?v=4",
+      "profile": "https://github.com/shnizzedy",
+      "contributions": [
+        "bug"
+      ]
     }
   ]
 }
