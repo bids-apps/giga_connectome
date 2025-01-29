@@ -47,7 +47,7 @@ def test_smoke(tmp_path, caplog):
 
     main(
         [
-            "--participant_label",
+            "--participant-label",
             "1",
             "-w",
             str(work_dir),
@@ -101,7 +101,7 @@ def test_smoke(tmp_path, caplog):
     # immediately rerun should cover the case where the output already exists
     main(
         [
-            "--participant_label",
+            "--participant-label",
             "1",
             "-a",
             str(atlases_dir),
@@ -131,7 +131,7 @@ def test_smoke(tmp_path, caplog):
     # rerun
     main(
         [
-            "--participant_label",
+            "--participant-label",
             "1",
             "-a",
             str(atlases_dir),
