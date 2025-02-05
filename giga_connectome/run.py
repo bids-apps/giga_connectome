@@ -49,8 +49,8 @@ def global_parser() -> argparse.ArgumentParser:
         "bids_dir",
         action="store",
         type=Path,
-        help="The directory with the input dataset (e.g. fMRIPrep derivative)"
-        "formatted according to the BIDS standard.",
+        help="The directory with the input dataset formatted according to the "
+        "BIDS standard  (i.e. unaltered fMRIPrep derivative directory).",
     )
     parser.add_argument(
         "output_dir",

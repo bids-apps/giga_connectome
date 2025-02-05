@@ -27,11 +27,13 @@ source giga_connectome/bin/activate
 pip install -e .[dev]
 ```
 
-4. Install pre-commit hooks to run all the checks before each commit.
+4. Get atlases packaged in the container
 
 ```bash
-pre-commit install
+python ./tools/download_templates.py
 ```
+
+You will find the files in local user's home directory under `~/.cache/templateflow/`.
 
 5. Install the data required for testing from zenodo
 
@@ -41,13 +43,11 @@ This can be done using tox by running:
 tox -e test_data
 ```
 
-6. Get atlases packaged in the container
+6. Install pre-commit hooks to run all the checks before each commit.
 
 ```bash
-python ./tools/download_templates.py
+pre-commit install
 ```
-
-You will find the files in local user's home directory under `~/.cache/templateflow/`.
 
 ## Contributing to code
 
