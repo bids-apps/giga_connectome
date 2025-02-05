@@ -158,7 +158,7 @@ def get_atlas_labels() -> List[str]:
 
 
 def _check_altas_config(
-    atlas: str | Path | dict[str, Any]
+    atlas: str | Path | dict[str, Any],
 ) -> ATLAS_CONFIG_TYPE:
     """Load the configuration file.
 

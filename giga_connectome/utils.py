@@ -87,7 +87,7 @@ def get_bids_images(
 
 
 def check_filter(
-    bids_filters: None | dict[str, dict[str, str]]
+    bids_filters: None | dict[str, dict[str, str]],
 ) -> dict[str, dict[str, str]]:
     """Should only have bold and mask."""
     if not bids_filters:
@@ -105,7 +105,7 @@ def check_filter(
 
 
 def _filter_pybids_none_any(
-    dct: dict[str, None | str]
+    dct: dict[str, None | str],
 ) -> dict[str, Query.NONE | Query.ANY]:
     return {
         k: Query.NONE if v is None else (Query.ANY if v == "*" else v)
