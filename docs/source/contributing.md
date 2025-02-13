@@ -8,7 +8,13 @@
 git clone git@github.com:<your_username>/giga_connectome.git
 ```
 
-2. Set up a virtual environment to work in using whichever environment management tool you're used to and activate it. For example:
+2. Pull the submodules for fetching atlases.
+
+```bash
+git submodule update --init --recursive
+```
+
+3. Set up a virtual environment to work in using whichever environment management tool you're used to and activate it. For example:
 
 ```bash
 python3 -m venv giga_connectome
@@ -21,11 +27,13 @@ source giga_connectome/bin/activate
 pip install -e .[dev]
 ```
 
-4. Install pre-commit hooks to run all the checks before each commit.
+4. Get atlases packaged in the container
 
 ```bash
-pre-commit install
+python ./tools/download_templates.py
 ```
+
+You will find the files in local user's home directory under `~/.cache/templateflow/`.
 
 5. Install the data required for testing from zenodo
 
@@ -33,6 +41,12 @@ This can be done using tox by running:
 
 ```bash
 tox -e test_data
+```
+
+6. Install pre-commit hooks to run all the checks before each commit.
+
+```bash
+pre-commit install
 ```
 
 ## Contributing to code
@@ -121,13 +135,14 @@ See [All Contributors bot](https://allcontributors.org/docs/en/bot/usage) usage 
 
 ### Running the demo
 
-You can run a demo of the bids app by downloading some test data.
+You can run a demo of the bids app by downloading some test data and atlases.
 
 Run the following from the root of the repository.
 
 ```bash
 pip install tox
 tox -e test_data
+python ./tools/download_templates.py
 ```
 
 ```bash

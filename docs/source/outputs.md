@@ -7,8 +7,8 @@ Metadata files content is described in this BIDS extension proposal.
 
 ## Participant level
 
-For each participant that was passed to `--participant_label`
-(or all participants under `bids_dir` if no `--participant_label` is passed),
+For each participant that was passed to `--participant-label`
+(or all participants under `bids_dir` if no `--participant-label` is passed),
 the output will be save in `sub-<participant_id>/[ses-<ses_id>]/func`.
 
 ### Data files
