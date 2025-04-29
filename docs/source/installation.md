@@ -15,13 +15,12 @@ Docker:
 docker pull bids/giga_connectome:latest
 ```
 
-## Install as a python package
+## Install as a python package (not recommended)
 
-Install the project in a Python environment:
+The project is written as an installable python package, however,
+it is not recommended for non contributors.
 
-```bash
-pip install git+https://github.com/bids-apps/giga_connectome.git
-```
-
-This method is available for all versions.
-Change the tag based on version you would like to use.
+If you wish to install giga-connectome as a python package,
+please follow the full instruction in
+[Setting up your environment for development](./contributing.md#setting-up-your-environment-for-development) step 1 to 4.
+These steps will ensure the installed package retain all the functions as the container image.

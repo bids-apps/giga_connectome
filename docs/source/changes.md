@@ -9,12 +9,15 @@
 - [EHN] Default atlas `Schaefer20187Networks` is renamed to `Schaefer2018`. `Schaefer20187Networks` will be deprecated ub 0.7.0. (@htwangtw)
 - [EHN] `--work-dir` is now renamed to `--atlases-dir`. `--work-dir` will be deprecated ub 0.7.0. (@htwangtw)
 - [EHN] Add details of denoising strategy to the meta data of the time series extraction. (@htwangtw) [#144](https://github.com/bids-apps/giga_connectome/issues/144)
+- [DOCS] Add instructions to download atlases packaged in the container for contributors. (@htwangtw)
+- [DOCS] Add All Contributors bot. (@htwangtw)
 
 ### Fixes
 
 - [FIX] Make sure version docker images matches version of package in the image (@Remi-Gau) [#169](https://github.com/bids-apps/giga_connectome/issues/169)
 - [MAINT] Remove recurrsive import. (@htwangtw) [#135](https://github.com/bids-apps/giga_connectome/issues/135)
 - [DOCS] Remove`meas` entity in timeseries outputs in the documentation. (@htwangtw) [#136](https://github.com/bids-apps/giga_connectome/issues/136)
+- [FIX] Incompatible types in assignment of variable `mask_array` in `giga_connectome/mask.py`. (@htwangtw) [#189](https://github.com/bids-apps/giga_connectome/pull/189)
 
 ### Enhancements
 
@@ -22,6 +25,7 @@
 
 - [EHN] Merge `atlas-` and the atlas description `desc-` into one filed `seg-` defined under 'Derivatives-Image data type' in BIDS. (@htwangtw) [#143](https://github.com/bids-apps/giga_connectome/issues/143)
 - [EHN] Working directory is now renamed as `atlases/` to reflect on the atlases directory mentioned in BEP017.
+- [EHN] Use hyphen instead of underscores for CLI arguments `participant-label` and `smoothing-fwhm`. Underscore variation will be deprecated ub 0.7.0. (@htwangtw) [#190](https://github.com/bids-apps/giga_connectome/pull/190)
 
 ## 0.5.0
 
