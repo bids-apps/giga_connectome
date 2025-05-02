@@ -127,24 +127,85 @@ See examples in [`giga_connectome/data/denoise_strategy`](https://github.com/bid
 An example using Apptainer (formerly known as Singularity):
 
 ```bash
-FMRIPREP_DIR=/path/to/fmriprep_output
-OUTPUT_DIR=/path/to/connectom_output
-ATLASES_DIR=/path/to/atlases
-DENOISE_CONFIG=/path/to/denoise_config.json
+# create denoising strategy
+mkdir custome_denoise
+DATA=${HOME}/giga_connectome/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface
+OUTPUT_DIR=${HOME}/custome_denoise/connectom_output
+ATLASES_DIR=${HOME}/custome_denoise/atlas_output
+DENOISE_CONFIG=${HOME}/custome_denoise/denoise_config.json
 
-GIGA_CONNECTOME=/path/to/giga-connectome.simg
+GIGA_CONNECTOME=${HOME}/giga-connectome.simg
+
+# create denoise file
+cat << EOF > ${DENOISE_CONFIG}
+{
+    "name": "custom_compcor",
+    "function": "load_confounds",
+    "parameters": {
+        "strategy": ["high_pass", "motion", "compcor"],
+        "motion": "basic",
+        "n_compcor": 5,
+        "compcor": "anat_combined",
+        "global_signal": "basic",
+        "demean": true
+    }
+}
+EOF
 
 apptainer run \
-    --bind ${FMRIPREP_DIR}:/data/input \
+    --bind ${DATA}:/data/input \
     --bind ${OUTPUT_DIR}:/data/output \
     --bind ${ATLASES_DIR}:/data/atlases \
     --bind ${DENOISE_CONFIG}:/data/denoise_config.json \
     ${GIGA_CONNECTOME} \
     -a /data/atlases \
+    --atlas Schaefer2018 \
     --denoise-strategy /data/denoise_config.json \
     /data/input \
     /data/output \
     participant
+```
+
+For Docker:
+
+```bash
+# create denoising strategy
+mkdir custome_denoise
+DATA=${HOME}/giga_connectome/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface
+OUTPUT_DIR=${HOME}/custome_denoise/connectom_output
+ATLASES_DIR=${HOME}/custome_denoise/atlas_output
+DENOISE_CONFIG=${HOME}/custome_denoise/denoise_config.json
+
+GIGA_CONNECTOME=${HOME}/giga-connectome.simg
+
+# create denoise file
+cat << EOF > ${DENOISE_CONFIG}
+{
+    "name": "custom_compcor",
+    "function": "load_confounds",
+    "parameters": {
+        "strategy": ["high_pass", "motion", "compcor"],
+        "motion": "basic",
+        "n_compcor": 5,
+        "compcor": "anat_combined",
+        "global_signal": "basic",
+        "demean": true
+    }
+}
+EOF
+
+docker run --rm \
+    -v ${DATA}:/data/input \
+    -v ${OUTPUT_DIR}:/data/output \
+    -v ${ATLASES_DIR}:/data/atlases \
+    -v ${DENOISE_CONFIG}:/data/denoise_config.json \
+    bids/giga_connectome:unstable \
+    /data/input \
+    /data/output \
+    participant \
+    -a /data/atlases \
+    --atlas Schaefer2018 \
+    --denoise-strategy /data/denoise_config.json
 ```
 
 ### Atlas
