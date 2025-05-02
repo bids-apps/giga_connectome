@@ -64,7 +64,7 @@ apptainer run \
     /outputs \
     participant \
     -a /atlases \
-    --atlas Schaefer20187Networks \
+    --atlas Schaefer2018 \
     --denoise-strategy simple \
     --reindex-bids
 ```
@@ -84,7 +84,7 @@ docker run --rm \
     /outputs \
     participant \
     -a /atlases \
-    --atlas Schaefer20187Networks \
+    --atlas Schaefer2018 \
     --denoise-strategy simple \
     --reindex-bids
 ```
@@ -200,7 +200,7 @@ Example:
 }
 ```
 
-See examples in [`giga_connectome/data/atlas/`](../../giga_connectome/data/atlas/).
+See examples in [`giga_connectome/data/atlas/`](https://github.com/bids-apps/giga_connectome/tree/main/giga_connectome/data/atlas).
 
 4. Mount the path to the configuration file to the container and pass the **mounted path** to `--atlas`.
 The path in your configuration file under `templateflow_dir` should be exported as an environment variable of the container.
@@ -223,7 +223,7 @@ apptainer run \
     --bind ${ATLASES_DIR}:/data/atlases \
     --bind ${ATLAS_CONFIG}:/data/atlas_config.json \
     ${GIGA_CONNECTOME} \
-    -s /data/atlases \
+    -a /data/atlases \
     --atlas /data/atlas_config.json \
     /data/input \
     /data/output \

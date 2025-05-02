@@ -125,10 +125,10 @@ def global_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--bids-filter-file",
         type=Path,
-        help="A JSON file describing custom BIDS input filters using PyBIDS."
+        help="A JSON file describing custom BIDS input filters using PyBIDS. "
         "We use the same format as described in fMRIPrep documentation: "
         "https://fmriprep.org/en/latest/faq.html#"
-        "how-do-i-select-only-certain-files-to-be-input-to-fmriprep"
+        "how-do-i-select-only-certain-files-to-be-input-to-fmriprep "
         "However, the query filed should always be 'bold'",
     )
     parser.add_argument(
