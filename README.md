@@ -49,6 +49,7 @@ If not, [open up a new issue](https://github.com/bids-apps/giga_connectome/issue
 
 You can review open [issues]((https://github.com/bids-apps/giga_connectome/issues)) that we are looking for help with.
 If you submit a new pull request please be as detailed as possible in your comments.
+If you have any question related how to create a pull request, you can check our [documentation for contributors](https://giga-connectome.readthedocs.io/en/latest/contributing.html).
 
 ## Contributors
 
@@ -79,9 +80,20 @@ If you submit a new pull request please be as detailed as possible in your comme
 
 ## Acknowledgements
 
-If you use nilearn, please cite the corresponding paper: Abraham 2014,
-Front. Neuroinform., Machine learning for neuroimaging with scikit-learn
-http://dx.doi.org/10.3389/fninf.2014.00014
+Giga-connectome uses `nilearn` under the hood,
+hence please consider cite nilearn using the Zenodo DOI:
+
+```
+@software{Nilearn,
+    author = {Nilearn contributors},
+    license = {BSD-4-Clause},
+    title = {{nilearn}},
+    url = {https://github.com/nilearn/nilearn},
+    doi = {https://doi.org/10.5281/zenodo.8397156}
+}
+```
+Nilearn’s Research Resource Identifier (RRID) is:
+[RRID:SCR_001362](https://rrid.site/data/record/nlx_144509-1/SCR_001362/resolver?q=nilearn&l=nilearn&i=rrid:scr_001362)
 
 We acknowledge all the nilearn developers
 (https://github.com/nilearn/nilearn/graphs/contributors)
