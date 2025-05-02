@@ -129,7 +129,7 @@ def global_parser() -> argparse.ArgumentParser:
         "We use the same format as described in fMRIPrep documentation: "
         "https://fmriprep.org/en/latest/faq.html#"
         "how-do-i-select-only-certain-files-to-be-input-to-fmriprep "
-        "However, the query filed should always be 'bold'",
+        "\nHowever, the query filed should always be 'bold'",
     )
     parser.add_argument(
         "--calculate-intranetwork-average-correlation",
