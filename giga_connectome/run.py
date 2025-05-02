@@ -82,7 +82,7 @@ def global_parser() -> argparse.ArgumentParser:
         "--atlases-dir",
         action="store",
         type=Path,
-        default=Path("atlases"),
+        default=Path("./atlases"),
         help="Path where subject specific segmentations are stored.",
     )
     parser.add_argument(
