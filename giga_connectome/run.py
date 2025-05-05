@@ -89,7 +89,7 @@ def global_parser() -> argparse.ArgumentParser:
         "-w",
         "--work-dir",
         action=DeprecatedAction,
-        help="This argument is deprecated. Please use '--atlas-dir' instead.",
+        help="This argument is deprecated. Please use --atlases-dir instead.",
     )
     parser.add_argument(
         "--atlas",
