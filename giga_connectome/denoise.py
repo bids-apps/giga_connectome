@@ -147,7 +147,7 @@ def denoise_meta_data(strategy: STRATEGY_TYPE, img: str) -> METADATA_TYPE:
     framewise_displacement = cf_full["framewise_displacement"]
     mean_fd = np.mean(framewise_displacement)
     # get non steady state volumes
-    n_non_steady = len(lc_utils.find_confounds(cf_full, ["cosine"]))
+    n_non_steady = len(lc_utils.find_confounds(cf_full, ["non_steady_state"]))
     # sample mask = \
     #   number of scan - number of scrubbed volumes \
     #   - number of non steady states volumes
