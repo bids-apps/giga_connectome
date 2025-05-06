@@ -2,7 +2,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![codecov](https://codecov.io/gh/bids-apps/giga_connectome/branch/main/graph/badge.svg?token=P4EGV7NKZ8)](https://codecov.io/gh/bids-apps/giga_connectome)
 [![.github/workflows/test.yml](https://github.com/bids-apps/giga_connectome/actions/workflows/test.yml/badge.svg)](https://github.com/bids-apps/giga_connectome/actions/workflows/test.yml)
-[![pre-commit](https://github.com/bids-apps/giga_connectome/actions/workflows/run_precommit.yml/badge.svg)](https://github.com/bids-apps/giga_connectome/actions/workflows/run_precommit.yml)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/bids-apps/giga_connectome/main.svg)](https://results.pre-commit.ci/latest/github/bids-apps/giga_connectome/main)
 [![Documentation Status](https://readthedocs.org/projects/giga-connectome/badge/?version=stable)](https://giga-connectome.readthedocs.io/en/latest/?badge=stable)
 ![https://github.com/psf/black](https://img.shields.io/badge/code%20style-black-000000.svg)
 ![](https://img.shields.io/docker/pulls/bids/giga_connectome)
