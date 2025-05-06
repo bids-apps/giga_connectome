@@ -147,3 +147,23 @@ def test_smoke(tmp_path, caplog):
             "participant",
         ]
     )
+
+    # rerun but with icaaroma
+    main(
+        [
+            "--participant-label",
+            "1",
+            "-a",
+            str(atlases_dir),
+            "--atlas",
+            "Schaefer2018",
+            "--denoise-strategy",
+            "icaaroma",
+            "--calculate-intranetwork-average-correlation",
+            "--bids-filter-file",
+            str(Path(bids_dir).parent / "bids_filter.json"),
+            str(bids_dir),
+            str(output_dir),
+            "participant",
+        ]
+    )

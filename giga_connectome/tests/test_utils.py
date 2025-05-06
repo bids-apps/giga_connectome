@@ -5,9 +5,44 @@ from bids.tests import get_test_data_path
 from pkg_resources import resource_filename
 
 from nilearn._utils.data_gen import create_fake_bids_dataset
+from giga_connectome.denoise import get_denoise_strategy
 
 
 from giga_connectome import utils
+
+
+def test_prepare_bidsfilter_and_template():
+    # regular strategy and no user bids filter
+    strategy = get_denoise_strategy("simple")
+    user_bids_filter = None
+    template, bids_filters = utils.prepare_bidsfilter_and_template(
+        strategy, user_bids_filter
+    )
+    assert template == "MNI152NLin2009cAsym"
+    assert bids_filters == {}
+
+    # icaaroma and no user bids filter
+    strategy = get_denoise_strategy("icaaroma")
+    template, bids_filters = utils.prepare_bidsfilter_and_template(
+        strategy, user_bids_filter
+    )
+    assert template == "MNI152NLin6Asym"
+    assert type(bids_filters) is dict
+    assert bids_filters["bold"]["desc"] == "smoothAROMAnonaggr"
+    assert bids_filters["mask"]["space"] == "MNI152NLin2009cAsym"
+
+    # icaaroma and user bids filter
+    user_bids_filter = {
+        "bold": {"task": "probabilisticclassification", "run": "1"},
+    }
+    template, bids_filters = utils.prepare_bidsfilter_and_template(
+        strategy, user_bids_filter
+    )
+    assert template == "MNI152NLin6Asym"
+    assert type(bids_filters) is dict
+    assert bids_filters["bold"]["task"] == "probabilisticclassification"
+    assert bids_filters["bold"]["desc"] == "smoothAROMAnonaggr"
+    assert bids_filters["mask"]["space"] == "MNI152NLin2009cAsym"
 
 
 def test_get_bids_images():
@@ -18,13 +53,32 @@ def test_get_bids_images():
         "data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface",
     )
     reindex_bids = True
-    bids_filters = {
+    user_bids_filters = {
         "bold": {"task": "probabilisticclassification", "run": "1"},
     }  # task and run should apply to both mask and bold
     subj_data, _ = utils.get_bids_images(
-        subjects, template, bids_dir, reindex_bids, bids_filters
+        subjects, template, bids_dir, reindex_bids, user_bids_filters
     )
     assert len(subj_data["bold"]) == len(subj_data["mask"])
+
+    # test for icaaroma
+    strategy = get_denoise_strategy("icaaroma")
+    template, bids_filters = utils.prepare_bidsfilter_and_template(
+        strategy, user_bids_filters
+    )
+    print(bids_filters)
+    subj_data, _ = utils.get_bids_images(
+        subjects, template, bids_dir, reindex_bids, bids_filters
+    )
+    print(subj_data)
+    assert len(subj_data["bold"]) == len(subj_data["mask"])
+    assert (
+        all(
+            "desc-smoothAROMAnonaggr_bold.nii.gz" in img.path
+            for img in subj_data["bold"]
+        )
+        == True
+    )
 
 
 def test_check_check_filter():

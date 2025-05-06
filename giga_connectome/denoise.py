@@ -47,6 +47,7 @@ METADATA_TYPE = TypedDict(
     "METADATA_TYPE",
     {
         "ConfoundRegressors": List[str],
+        "ICAAROMANoiseComponents": List[str],
         "NumberOfVolumesDiscardedByMotionScrubbing": int,
         "NumberOfVolumesDiscardedByNonsteadyStatesDetector": int,
         "MeanFramewiseDisplacement": float,
@@ -139,26 +140,29 @@ def denoise_meta_data(strategy: STRATEGY_TYPE, img: str) -> METADATA_TYPE:
         Metadata of the denoising process.
     """
     cf, sm = strategy["function"](img, **strategy["parameters"])
-    cf_file = lc_utils.get_confounds_file(img, flag_full_aroma=False)
-    framewise_displacement = pd.read_csv(cf_file, sep="\t")[
-        "framewise_displacement"
-    ]
+    cf_file = lc_utils.get_confounds_file(
+        img, flag_full_aroma=is_ica_aroma(strategy)
+    )
+    cf_full = pd.read_csv(cf_file, sep="\t")
+    framewise_displacement = cf_full["framewise_displacement"]
     mean_fd = np.mean(framewise_displacement)
     # get non steady state volumes
-    _, sample_mask_non_steady = fmriprep.load_confounds(
-        img, strategy=["high_pass"]
-    )
-    n_non_steady = (
-        cf.shape[0] - sample_mask_non_steady.shape[0]
-        if sample_mask_non_steady is not None
-        else 0
-    )
+    n_non_steady = len(lc_utils.find_confounds(cf_full, ["non_steady_state"]))
     # sample mask = \
-    #   number of scan - scrubbed volumes - non steady states
-    n_scrub = 0 if sm is None else cf.shape[0] - sm.shape[0] - n_non_steady
+    #   number of scan - number of scrubbed volumes \
+    #   - number of non steady states volumes
+    n_scrub = 0 if sm is None else (cf.shape[0] - sm.shape[0] - n_non_steady)
+
+    # get ICA AROMA confounds regressors
+    # It will not be used in the denoising process as it was already
+    # regressed out in the fMRIPrep pipeline.
+    # But the number of components still contribute to the
+    # loss of temporal degrees of freedom.
+    ica_aroma_components = lc_utils.find_confounds(cf_full, ["aroma"])
 
     meta_data: METADATA_TYPE = {
         "ConfoundRegressors": cf.columns.tolist(),
+        "ICAAROMANoiseComponents": ica_aroma_components,
         "NumberOfVolumesDiscardedByMotionScrubbing": n_scrub,
         "NumberOfVolumesDiscardedByNonsteadyStatesDetector": n_non_steady,
         "MeanFramewiseDisplacement": mean_fd,

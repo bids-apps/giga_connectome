@@ -12,7 +12,6 @@ from giga_connectome.denoise import get_denoise_strategy
 from giga_connectome import methods, utils
 from giga_connectome.postprocess import run_postprocessing_dataset
 
-from giga_connectome.denoise import is_ica_aroma
 from giga_connectome.logger import gc_logger
 
 gc_log = gc_logger()
@@ -43,23 +42,22 @@ def workflow(args: argparse.Namespace) -> None:
     calculate_average_correlation = (
         args.calculate_intranetwork_average_correlation
     )
-    bids_filters = utils.parse_bids_filter(args.bids_filter_file)
-
     subjects = utils.get_subject_lists(args.participant_label, bids_dir)
     strategy = get_denoise_strategy(args.denoise_strategy)
 
     atlas = load_atlas_setting(args.atlas)
+    user_bids_filter = utils.parse_bids_filter(args.bids_filter_file)
+
+    # get template information and update BIDS filters
+    template, bids_filters = utils.prepare_bidsfilter_and_template(
+        strategy, user_bids_filter
+    )
 
     set_verbosity(args.verbosity)
 
     # check output path
     output_dir.mkdir(parents=True, exist_ok=True)
     atlases_dir.mkdir(parents=True, exist_ok=True)
-
-    # get template information; currently we only support the fmriprep defaults
-    template = (
-        "MNI152NLin6Asym" if is_ica_aroma(strategy) else "MNI152NLin2009cAsym"
-    )
 
     gc_log.info(f"Indexing BIDS directory:\n\t{bids_dir}")
 
