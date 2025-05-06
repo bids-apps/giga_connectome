@@ -41,7 +41,7 @@ def test_denoise_nifti_voxel():
         strategy=strategy,
         img=img_file,
     )
-    assert len(meta_data["ConfoundRegressors"]) == 15
+    assert len(meta_data["ConfoundRegressors"]) == 6
     assert len(meta_data["ICAAROMANoiseComponents"]) == 9
     assert meta_data["NumberOfVolumesDiscardedByMotionScrubbing"] == 0
     assert meta_data["NumberOfVolumesDiscardedByNonsteadyStatesDetector"] == 2
