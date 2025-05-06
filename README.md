@@ -69,6 +69,7 @@ If you have any question related how to create a pull request, you can check our
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://jdkent.github.io/"><img src="https://avatars.githubusercontent.com/u/12564882?v=4?s=100" width="100px;" alt="James Kent"/><br /><sub><b>James Kent</b></sub></a><br /><a href="#bug-jdkent" title="Bug reports">🐛</a> <a href="#doc-jdkent" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://marcel.stimberg.info"><img src="https://avatars.githubusercontent.com/u/1381982?v=4?s=100" width="100px;" alt="Marcel Stimberg"/><br /><sub><b>Marcel Stimberg</b></sub></a><br /><a href="#userTesting-mstimberg" title="User Testing">📓</a> <a href="#doc-mstimberg" title="Documentation">📖</a> <a href="#bug-mstimberg" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>
