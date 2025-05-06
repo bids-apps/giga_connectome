@@ -26,10 +26,10 @@ from giga_connectome.denoise import is_ica_aroma, STRATEGY_TYPE
 gc_log = gc_logger()
 
 
-def prepare_for_filter_template(
+def prepare_bidsfilter_and_template(
     strategy: STRATEGY_TYPE,
     user_bids_filter: None | dict[str, dict[str, str]],
-) -> tuple[str, None | dict[str, dict[str, str]]]:
+) -> tuple[str, dict[str, dict[str, str]]]:
     """
     Prepare the template and BIDS filters for ICA AROMA.
     This solution only applies to fMRIPrep version < 23.1.0.
@@ -48,6 +48,7 @@ def prepare_for_filter_template(
     tuple[str, None | dict[str, dict[str, str]]]
         The template and BIDS filters.
     """
+    user_bids_filter = check_filter(user_bids_filter)
     if is_ica_aroma(strategy):
         template = "MNI152NLin6Asym"
         bids_filters = {  # this only applies to fMRIPrep version < 23.1.0
@@ -60,7 +61,8 @@ def prepare_for_filter_template(
             },
         }
         if user_bids_filter:
-            bids_filters.update(user_bids_filter)
+            for suffix, entities in user_bids_filter.items():
+                bids_filters[suffix].update(entities)
         return template, bids_filters
     else:
         return "MNI152NLin2009cAsym", user_bids_filter
@@ -77,6 +79,7 @@ def get_bids_images(
     Apply BIDS filter to the base filter we are using.
     Modified from fmripprep
     """
+
     bids_filters = check_filter(bids_filters)
 
     layout = BIDSLayout(
@@ -92,7 +95,6 @@ def get_bids_images(
         "return_type": "object",
         "subject": subjects,
         "session": Query.OPTIONAL,
-        "space": template,
         "task": Query.ANY,
         "run": Query.OPTIONAL,
         "extension": ".nii.gz",
@@ -100,11 +102,13 @@ def get_bids_images(
     queries = {
         "bold": {
             "desc": "preproc",
+            "space": template,
             "suffix": "bold",
             "datatype": "func",
         },
         "mask": {
             "suffix": "mask",
+            "space": "MNI152NLin2009cAsym",
             "datatype": "func",
         },
     }

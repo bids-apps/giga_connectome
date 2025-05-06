@@ -49,7 +49,7 @@ def workflow(args: argparse.Namespace) -> None:
     user_bids_filter = utils.parse_bids_filter(args.bids_filter_file)
 
     # get template information and update BIDS filters
-    template, bids_filters = utils.prepare_for_filter_template(
+    template, bids_filters = utils.prepare_bidsfilter_and_template(
         strategy, user_bids_filter
     )
 
