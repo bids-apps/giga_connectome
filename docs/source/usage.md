@@ -64,7 +64,7 @@ apptainer run \
     /outputs \
     participant \
     -a /atlases \
-    --atlas Schaefer20187Networks \
+    --atlas Schaefer2018 \
     --denoise-strategy simple \
     --reindex-bids
 ```
@@ -84,7 +84,7 @@ docker run --rm \
     /outputs \
     participant \
     -a /atlases \
-    --atlas Schaefer20187Networks \
+    --atlas Schaefer2018 \
     --denoise-strategy simple \
     --reindex-bids
 ```
@@ -122,34 +122,91 @@ In a `json` file, define the customised strategy in the following format:
 
 See examples in [`giga_connectome/data/denoise_strategy`](https://github.com/bids-apps/giga_connectome/tree/main/giga_connectome/data/denoise_strategy).
 
-2. Mount the path to the configuration file to the container and pass the **mounted path** to `--denoise-strategy`.
-
-An example using Apptainer (formerly known as Singularity):
+In the following section, we will use this customised denoising strategy (5 aCompCor components, 6 motion parameters, global signal).
+Run the following section in bash to create the denoising configuration file.
 
 ```bash
-FMRIPREP_DIR=/path/to/fmriprep_output
-OUTPUT_DIR=/path/to/connectom_output
-ATLASES_DIR=/path/to/atlases
-DENOISE_CONFIG=/path/to/denoise_config.json
+mkdir ${HOME}/customised_denoise
+DENOISE_CONFIG=${HOME}/customised_denoise/denoise_config.json
 
-GIGA_CONNECTOME=/path/to/giga-connectome.simg
+# create denoise file
+cat << EOF > ${DENOISE_CONFIG}
+{
+    "name": "custom_compcor",
+    "function": "load_confounds",
+    "parameters": {
+        "strategy": ["high_pass", "motion", "compcor"],
+        "motion": "basic",
+        "n_compcor": 5,
+        "compcor": "anat_combined",
+        "global_signal": "basic",
+        "demean": true
+    }
+}
+EOF
+```
+
+2. Mount the path to the configuration file to the container and pass the **mounted path** to `--denoise-strategy`.
+
+An example using Apptainer, with data downloaded as described in the [previous section](#download-the-example-dataset) :
+
+```bash
+# create denoising strategy
+mkdir ${HOME}/customised_denoise/outputs
+DATA=${HOME}/giga_connectome/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface
+OUTPUT_DIR=${HOME}/customised_denoise/outputs
+ATLASES_DIR=${HOME}/customised_denoise/outputs/atlas
+DENOISE_CONFIG=${HOME}/customised_denoise/denoise_config.json
+
+GIGA_CONNECTOME=${HOME}/giga-connectome.simg  # assuming the container is created in $HOME
 
 apptainer run \
-    --bind ${FMRIPREP_DIR}:/data/input \
+    --bind ${DATA}:/data/input \
     --bind ${OUTPUT_DIR}:/data/output \
     --bind ${ATLASES_DIR}:/data/atlases \
     --bind ${DENOISE_CONFIG}:/data/denoise_config.json \
     ${GIGA_CONNECTOME} \
     -a /data/atlases \
+    --atlas Schaefer2018 \
     --denoise-strategy /data/denoise_config.json \
+    --reindex-bids \
     /data/input \
     /data/output \
     participant
 ```
 
+For Docker:
+
+```bash
+# create denoising strategy
+mkdir ${HOME}/customised_denoise/outputs
+DATA=${HOME}/giga_connectome/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface
+OUTPUT_DIR=${HOME}/customised_denoise/outputs
+ATLASES_DIR=${HOME}/customised_denoise/outputs/atlas
+DENOISE_CONFIG=${HOME}/customised_denoise/denoise_config.json
+
+docker run --rm \
+    -v ${DATA}:/data/input \
+    -v ${OUTPUT_DIR}:/data/output \
+    -v ${ATLASES_DIR}:/data/atlases \
+    -v ${DENOISE_CONFIG}:/data/denoise_config.json \
+    bids/giga_connectome:unstable \
+    /data/input \
+    /data/output \
+    participant \
+    -a /data/atlases \
+    --reindex-bids \
+    --atlas Schaefer2018 \
+    --denoise-strategy /data/denoise_config.json
+```
+
 ### Atlas
 
 1. Organise the atlas according to the [TemplateFlow](https://www.templateflow.org/python-client/0.7.1/naming.html) convention.
+
+:::{warning}
+`giga-connectome` and its upstream project `nilear` did not explicitly test on non-standard templates, such as templates compiled from specific datasets or individual templates.
+:::
 
 A minimal set up should look like this:
 
@@ -163,17 +220,20 @@ A minimal set up should look like this:
 
 2. Update your TemplateFlow directory with network connection.
 
+We will store our customised atlas under `${HOME}/customised_atlas/templateflow`.
 This is an extremely important step in order to run the BIDS-app correctly without network connection.
 
 ```bash
-python3 -c "import os; from templateflow.api import get; os.environ['TEMPLATEFLOW_HOME'] = '/path/to/my_atlas'; get(['MNI152NLin2009cAsym', 'MNI152NLin6Asym'])"
+mkdir -p ${HOME}/customised_atlas/templateflow
+python3 -c "import os; from pathlib import Path; os.environ['TEMPLATEFLOW_HOME'] = f'{Path.home()}/customised_atlas/templateflow'; from templateflow.api import get; get(['MNI152NLin2009cAsym', 'MNI152NLin6Asym'])"
 ```
 
 If your `CustomisedTemplate` is an existing TemplateFlow template, it should be added to the above line for download.
 For example, you have a template in `MNI152NLin2009aAsym`:
 
 ```bash
-python3 -c "import os; from templateflow.api import get; os.environ['TEMPLATEFLOW_HOME'] = '/path/to/my_atlas'; get(['MNI152NLin2009cAsym', 'MNI152NLin6Asym', 'MNI152NLin2009aAsym'])"
+mkdir -p ${HOME}/customised_atlas/templateflow
+python3 -c "import os; from pathlib import Path; os.environ['TEMPLATEFLOW_HOME'] = f'{Path.home()}/customised_atlas/templateflow'; from templateflow.api import get; get(['MNI152NLin2009cAsym', 'MNI152NLin6Asym', 'MNI152NLin2009aAsym'])"
 ```
 
 3. Create your config file.
@@ -200,32 +260,115 @@ Example:
 }
 ```
 
-See examples in [`giga_connectome/data/atlas/`](../../giga_connectome/data/atlas/).
+See examples in [`giga_connectome/data/atlas/`](https://github.com/bids-apps/giga_connectome/tree/main/giga_connectome/data/atlas).
+
+In the following section, we will generate an atlas on the test data using `nilearn.regions.Parcellations` with ward clustering method.
+Run the following python code to generate the atlas and save to `mkdir ${HOME}/customised_atlas/templateflow` in templateflow convention.
+
+```python
+from pathlib import Path
+from nilearn.regions import Parcellations
+from nilearn.datasets import load_mni152_gm_mask
+
+data_paths = f"{Path.home()}/giga_connectome/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface/sub-*/ses-*/func/*space-MNI152NLin2009cAsym_res-2_desc-preproc_bold.nii.gz"
+gm = load_mni152_gm_mask(resolution=4, threshold=0.5)
+ward = Parcellations(
+    method="ward",
+    n_parcels=50,
+    mask=gm,
+    smoothing_fwhm=8.0,  # the example dataset is heavily downsampled
+    standardize=False,
+    memory="nilearn_cache",
+    memory_level=1,
+    verbose=1
+)
+ward.fit(data_paths)  # nilearn can comprehend wild card
+ward_labels_img = ward.labels_img_
+
+# Now, ward_labels_img are Nifti1Image object, it can be saved to file
+# with the following code:
+
+tpl_dir = Path.home() / "customised_atlas" / "templateflow" / "tpl-MNI152NLin2009cAsym"
+tpl_dir.mkdir(exist_ok=True, parents=True)
+print(f"Output will be saved to: {tpl_dir}")
+ward_labels_img.to_filename(tpl_dir / "tpl-MNI152NLin2009cAsym_res-02_atlas-wardclustering_desc-50_dseg.nii.gz")
+```
+
+Create the configuration file:
+
+```bash
+ATLAS_CONFIG=${HOME}/customised_atlas/ward_config.json
+
+# create denoise file
+cat << EOF > ${ATLAS_CONFIG}
+{
+    "name": "wardclustering",
+    "parameters": {
+        "atlas": "wardclustering",
+        "template": "MNI152NLin2009cAsym",
+        "resolution": "02",
+        "suffix": "dseg"
+    },
+    "desc": ["50"],
+    "templateflow_dir": "/data/atlas"
+}
+EOF
+```
 
 4. Mount the path to the configuration file to the container and pass the **mounted path** to `--atlas`.
 The path in your configuration file under `templateflow_dir` should be exported as an environment variable of the container.
 
-An example using Apptainer (formerly known as Singularity):
+An example using Apptainer:
 
 ```bash
-FMRIPREP_DIR=/path/to/fmriprep_output
-OUTPUT_DIR=/path/to/connectom_output
-ATLASES_DIR=/path/to/atlases
-ATLAS_CONFIG=/path/to/atlas_config.json
+mkdir ${HOME}/customised_atlas/outputs
+DATA=${HOME}/giga_connectome/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface
+OUTPUT_DIR=${HOME}/customised_atlas/outputs
+OUTPUT_ATLASES_DIR=${HOME}/customised_atlas/outputs/atlas
+ATLASES_DIR=${HOME}/customised_atlas/templateflow
+ATLAS_CONFIG=${HOME}/customised_atlas/ward_config.json
 
-GIGA_CONNECTOME=/path/to/giga-connectome.simg
+GIGA_CONNECTOME=${HOME}/giga-connectome.simg  # assuming the container is created in $HOME
 
 export APPTAINERENV_TEMPLATEFLOW_HOME=/data/atlas
 
 apptainer run \
     --bind ${FMRIPREP_DIR}:/data/input \
     --bind ${OUTPUT_DIR}:/data/output \
-    --bind ${ATLASES_DIR}:/data/atlases \
+    --bind ${ATLASES_DIR}:/data/atlas \
     --bind ${ATLAS_CONFIG}:/data/atlas_config.json \
     ${GIGA_CONNECTOME} \
-    -s /data/atlases \
+    -a /data/atlas \
     --atlas /data/atlas_config.json \
+    --denoise-strategy simple \
     /data/input \
     /data/output \
     participant
+```
+
+For Docker:
+
+```bash
+# create denoising strategy
+mkdir ${HOME}/customised_atlas/outputs
+DATA=${HOME}/giga_connectome/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface
+OUTPUT_DIR=${HOME}/customised_atlas/outputs
+OUTPUT_ATLASES_DIR=${HOME}/customised_atlas/outputs/atlas
+TFL_DIR=${HOME}/customised_atlas/templateflow
+ATLAS_CONFIG=${HOME}/customised_atlas/ward_config.json
+
+docker run --rm \
+    -e TEMPLATEFLOW_HOME=/data/atlas \
+    -v ${TFL_DIR}:/data/atlas \
+    -v ${DATA}:/data/input \
+    -v ${OUTPUT_DIR}:/data/output \
+    -v ${OUTPUT_ATLASES_DIR}:/data/output/atlas \
+    -v ${ATLAS_CONFIG}:/data/atlas_config.json \
+    bids/giga_connectome:unstable \
+    /data/input \
+    /data/output \
+    participant \
+    -a /data/output/atlas \
+    --atlas /data/atlas_config.json \
+    --denoise-strategy simple
 ```

@@ -4,7 +4,7 @@
 
 Pull the latest image from docker hub, available for version > `0.5.0`(Recommended)
 
-Apptainer (formerly known as Singularity; recommended):
+Apptainer (recommended):
 
 ```bash
 apptainer build giga_connectome.simg docker://bids/giga_connectome:latest

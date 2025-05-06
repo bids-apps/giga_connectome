@@ -21,6 +21,8 @@
 
 ### Enhancements
 
+- [DOCS] Improve advance usage example with test data and executable code. (@htwangtw) [#189](https://github.com/bids-apps/giga_connectome/pull/215)
+
 ### Changes
 
 - [EHN] Merge `atlas-` and the atlas description `desc-` into one filed `seg-` defined under 'Derivatives-Image data type' in BIDS. (@htwangtw) [#143](https://github.com/bids-apps/giga_connectome/issues/143)
