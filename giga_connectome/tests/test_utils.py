@@ -5,9 +5,30 @@ from bids.tests import get_test_data_path
 from pkg_resources import resource_filename
 
 from nilearn._utils.data_gen import create_fake_bids_dataset
+from giga_connectome.denoise import get_denoise_strategy
 
 
 from giga_connectome import utils
+
+
+def test_prepare_for_filter_template():
+    """Unit test for utils.uv."""
+    strategy = get_denoise_strategy("simple")
+    user_bids_filter = None
+    template, bids_filters = utils.prepare_for_filter_template(
+        strategy, user_bids_filter
+    )
+    assert template == "MNI152NLin2009cAsym"
+    assert bids_filters is None
+
+    strategy = get_denoise_strategy("icaaroma")
+    template, bids_filters = utils.prepare_for_filter_template(
+        strategy, user_bids_filter
+    )
+    assert template == "MNI152NLin6Asym"
+    assert bids_filters is not None
+    assert bids_filters["bold"]["desc"] == "smoothAROMAnonaggr"
+    assert bids_filters["mask"]["space"] == "MNI152NLin2009cAsym"
 
 
 def test_get_bids_images():

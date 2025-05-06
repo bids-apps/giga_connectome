@@ -20,8 +20,50 @@ from rich.progress import (
 
 from giga_connectome import __version__
 from giga_connectome.logger import gc_logger
+from giga_connectome.denoise import is_ica_aroma, STRATEGY_TYPE
+
 
 gc_log = gc_logger()
+
+
+def prepare_for_filter_template(
+    strategy: STRATEGY_TYPE,
+    user_bids_filter: None | dict[str, dict[str, str]],
+) -> tuple[str, None | dict[str, dict[str, str]]]:
+    """
+    Prepare the template and BIDS filters for ICA AROMA.
+    This solution only applies to fMRIPrep version < 23.1.0.
+    For later versions, we will wait for updates in the upstream library
+    nilearn to support the new layoput for ICA AROMA.
+
+    Parameters
+    ----------
+    strategy : str
+        The denoising strategy.
+    bids_filter_file : Path
+        The path to the BIDS filter file.
+
+    Returns
+    -------
+    tuple[str, None | dict[str, dict[str, str]]]
+        The template and BIDS filters.
+    """
+    if is_ica_aroma(strategy):
+        template = "MNI152NLin6Asym"
+        bids_filters = {  # this only applies to fMRIPrep version < 23.1.0
+            "bold": {
+                "desc": "smoothAROMAnonaggr",
+                "space": "MNI152NLin6Asym",
+            },
+            "mask": {  # no brain mask for MNI152NLin6Asym, use the closest
+                "space": "MNI152NLin2009cAsym",
+            },
+        }
+        if user_bids_filter:
+            bids_filters.update(user_bids_filter)
+        return template, bids_filters
+    else:
+        return "MNI152NLin2009cAsym", user_bids_filter
 
 
 def get_bids_images(
@@ -114,6 +156,18 @@ def _filter_pybids_none_any(
 
 
 def parse_bids_filter(value: Path) -> None | dict[str, dict[str, str]]:
+    """Parse a BIDS filter json file.
+    Parameters
+    ----------
+    value : Path
+        Path to the BIDS json file.
+
+    Returns
+    -------
+    dict
+        Dictionary of BIDS filters.
+    """
+
     from json import JSONDecodeError, loads
 
     if not value:
