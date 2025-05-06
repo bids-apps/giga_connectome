@@ -18,6 +18,7 @@
 - [MAINT] Remove recurrsive import. (@htwangtw) [#135](https://github.com/bids-apps/giga_connectome/issues/135)
 - [DOCS] Remove`meas` entity in timeseries outputs in the documentation. (@htwangtw) [#136](https://github.com/bids-apps/giga_connectome/issues/136)
 - [FIX] Incompatible types in assignment of variable `mask_array` in `giga_connectome/mask.py`. (@htwangtw) [#189](https://github.com/bids-apps/giga_connectome/pull/189)
+- [FIX] ICA-AROMA implementation. (@htwangtw) [#211](https://github.com/bids-apps/giga_connectome/issues/211)
 
 ### Enhancements
 
