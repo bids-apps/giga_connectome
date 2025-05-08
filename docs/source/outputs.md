@@ -1,9 +1,19 @@
 # Outputs
 
 The output of this app aims to follow the guideline
-of the [BIDS extension proposal 17 - Generic BIDS connectivity data schema](https://bids.neuroimaging.io/bep017).
+of the [BIDS extension proposal 17 - Generic BIDS connectivity data schema](https://bids.neuroimaging.io/bep017) and .
 
 Metadata files content is described in this BIDS extension proposal.
+
+:::{note}
+A Brain Imaging Data Structure (BIDS) Extension Proposal (BEP) is a community-driven process to add a new modality or set of data types to the BIDS Specification.
+
+Although BEPs are not official part of the main BIDS Specification, they still can be adopted by users for data organisation and development.
+
+`giga-connectome` aims to review the changes in a timely manner and update the outputs in accordance with the development of BEP017.
+
+To learn more about BIDS Extension [see this page](https://bids.neuroimaging.io/extensions/index.html).
+:::
 
 ## Participant level
 
