@@ -41,13 +41,13 @@ bibliography: paper.bib
 
 Researchers perform two steps before Functional magnetic resonance imaging (fMRI) data analysis:
 standardised preprocessing and customised denoising.
-`fMRIPrep` [@fmriprep; RRID:SCR_016216],
+`fMRIPrep` [@fmriprep\; RRID:SCR_016216],
 a popular software in the neuroimaging community, is a common choice for preprocessing.
 `fMRIPrep` performs minimal preprocessing, leaving a few steps for the end user: smoothing, denoising, and standardisation.
 The present software, `giga-connectome`,
-is a Brain Imaging Data Structure [BIDS; @bids; RRID:SCR_016124]
+is a Brain Imaging Data Structure [BIDS\; @bids\; RRID:SCR_016124]
 compliant container image that aims to perform these steps as well as extract time series signals and generate connectomes for machine learning applications.
-All these steps are implemented with functions from `nilearn` [@Nilearn; RRID:SCR_001362],
+All these steps are implemented with functions from `nilearn` [@Nilearn\; RRID:SCR_001362],
 a python library for machine learning in neuroimaging.
 
 The tool performs smoothing, denoising, and standardisation on voxel level data.
@@ -60,13 +60,13 @@ Users can implement their own strategy using configuration files to directly int
 The details of the process can be found in the [user documentation](https://giga-connectome.readthedocs.io/en/latest/workflow.html).
 Finally the data is standardised as z-scores.
 
-The atlas for time series extraction was retrieved through `templateflow` [@templateflow; RRID:SCR_021876],
+The atlas for time series extraction was retrieved through `templateflow` [@templateflow\; RRID:SCR_021876],
 a brain template and atlas naming system with a Python API.
-The container image provides some default atlases
-(Harvard-Oxford [@makris_decreased_2006; @goldstein_hypothalamic_2007; @frazier_structural_2005; @desikan_automated_2006],
+The container image provides some default atlases that are already available in the `templateflow` repository, including
+Harvard-Oxford [@makris_decreased_2006; @goldstein_hypothalamic_2007; @frazier_structural_2005; @desikan_automated_2006],
 Schaefer [@schaefer_local-global_2018],
 MIST [@urchs_mist_2019],
-and DiFuMo [@dadi_fine-grain_2020]) that are already available in the `templateflow` repository.
+and DiFuMo [@dadi_fine-grain_2020].
 Customised atlases will have to be formatted in `templateflow` convention and supplied using a configuration file.
 We aim to include more default atlases when they are included in the `templateflow` repository.
 
@@ -94,7 +94,7 @@ We used configuration files to structure the choice of denoising strategies and 
 We aim to provide a lightweight alternative to other existing post-fMRIPrep processing software such as XCP-D [@xcp-d]
 and HALFPipe [@HALFpipe],
 or preprocessing software with fMRIPrep support such as C-PAC [@cpac]
-and CONN [@conn; RRID:SCR_009550].
+and CONN [@conn\; RRID:SCR_009550].
 These tools  provide more flexibility and options for denoising and more types of downstream feature extraction for a wider range of fMRI analysis.
 `giga-connectome` was intentionally designed with a narrow scope for quick deployment and the ease for machine learning researchers to adopt.
 We hope this modular implementation can eventually be included as part of these existing workflows so all `fMRIPrep` outputs can share a time series and connectome extraction tool that's minimal and streamlined.
