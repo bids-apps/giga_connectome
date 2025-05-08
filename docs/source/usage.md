@@ -205,7 +205,7 @@ docker run --rm \
 1. Organise the atlas according to the [TemplateFlow](https://www.templateflow.org/python-client/0.7.1/naming.html) convention.
 
 :::{warning}
-`giga-connectome` and its upstream project `nilear` did not explicitly test on non-standard templates, such as templates compiled from specific datasets or individual templates.
+`giga-connectome` and its upstream project `nilearn` did not explicitly test on non-standard templates, such as templates compiled from specific datasets or individual templates.
 :::
 
 A minimal set up should look like this:
@@ -263,7 +263,7 @@ Example:
 See examples in [`giga_connectome/data/atlas/`](https://github.com/bids-apps/giga_connectome/tree/main/giga_connectome/data/atlas).
 
 In the following section, we will generate an atlas on the test data using `nilearn.regions.Parcellations` with ward clustering method.
-Run the following python code to generate the atlas and save to `mkdir ${HOME}/customised_atlas/templateflow` in templateflow convention.
+Run the following python code to generate the atlas and save to `${HOME}/customised_atlas/templateflow` in templateflow convention.
 
 ```python
 from pathlib import Path
@@ -349,7 +349,6 @@ apptainer run \
 For Docker:
 
 ```bash
-# create denoising strategy
 mkdir ${HOME}/customised_atlas/outputs
 DATA=${HOME}/giga_connectome/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface
 OUTPUT_DIR=${HOME}/customised_atlas/outputs

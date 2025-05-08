@@ -149,7 +149,6 @@ python ./tools/download_templates.py
 giga_connectome \
     --atlas Schaefer20187Networks \
     --denoise-strategy simple \
-    --standardize zscore \
     --bids-filter giga_connectome/data/test_data/bids_filter.json  \
     --reindex-bids \
     --calculate-intranetwork-average-correlation \
