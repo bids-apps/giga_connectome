@@ -1,7 +1,7 @@
 # Outputs
 
 The output of this app aims to follow the guideline
-of the [BIDS extension proposal 17 - Generic BIDS connectivity data schema](https://bids.neuroimaging.io/bep017) and .
+of the [BIDS extension proposal 17 - Generic BIDS connectivity data schema](https://bids.neuroimaging.io/bep017).
 
 Metadata files content is described in this BIDS extension proposal.
 
