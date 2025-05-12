@@ -28,7 +28,7 @@ affiliations:
 - name: Département de psychologie, Université de Montréal, Montréal, Canada
   index: 2
 - name: MIND team, INRIA, CEA, Université Paris-Saclay, Paris, France
-- index: 3
+  index: 3
 - name: Neuro Data Science ORIGAMI Laboratory, McConnell Brain Imaging Centre, Faculty of Medicine, McGill University, Montréal, Canada.
   index: 4
 - name: Institute of Information and Communication Technologies, Electronics and Applied Mathematics (ICTEAM), Université catholique de Louvain, Louvain-la-Neuve, Belgium
