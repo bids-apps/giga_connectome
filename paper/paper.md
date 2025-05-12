@@ -12,27 +12,29 @@ authors:
     affiliation: "1,2" # (Multiple affiliations must be quoted)
   - name: Rémi Gau
     orcid: 0000-0002-1535-9767
-    affiliation: 3
+    affiliation: 4
   - name: Natasha Clarke
     orcid: 0000-0003-2455-3614
     affiliation: 1
   - name: Quentin Dessain
     orcid: 0000-0002-7314-0413
-    affiliation: 4
-  - name: Pierre Bellec
+    affiliation: 5
+  - name: Lune Bellec
     orcid: 0000-0002-9111-0699
-    affiliation: "1,2,5"
+    affiliation: "1,2,6"
 affiliations:
 - name: Centre de Recherche de l'Institut Universitaire de Gériatrie de Montréal, Université de Montréal, Montréal, QC, Canada
   index: 1
-- name: Psychology Department, University of Montreal, Montreal, Canada
+- name: Département de psychologie, Université de Montréal, Montréal, Canada
   index: 2
-- name: Neuro Data Science ORIGAMI Laboratory, McConnell Brain Imaging Centre, Faculty of Medicine, McGill University, Montréal, Canada.
+- name: MIND team, INRIA, CEA, Université Paris-Saclay, Paris, France
   index: 3
-- name: Institute of Information and Communication Technologies, Electronics and Applied Mathematics (ICTEAM), UCLouvain, Louvain-la-Neuve, Belgium
+- name: Neuro Data Science ORIGAMI Laboratory, McConnell Brain Imaging Centre, Faculty of Medicine, McGill University, Montréal, Canada.
   index: 4
-- name: Mila, University of Montreal, Montreal, Canada
+- name: Institute of Information and Communication Technologies, Electronics and Applied Mathematics (ICTEAM), Université catholique de Louvain, Louvain-la-Neuve, Belgium
   index: 5
+- name: Mila, Université de Montréal, Montréal, Montréal, Canada
+  index: 6
 date: 12 April 2024
 bibliography: paper.bib
 ---
