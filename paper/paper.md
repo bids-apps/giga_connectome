@@ -12,7 +12,7 @@ authors:
     affiliation: "1,2" # (Multiple affiliations must be quoted)
   - name: Rémi Gau
     orcid: 0000-0002-1535-9767
-    affiliation: 4
+    affiliation: "3,4"
   - name: Natasha Clarke
     orcid: 0000-0003-2455-3614
     affiliation: 1
