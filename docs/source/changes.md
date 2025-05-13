@@ -1,8 +1,8 @@
 # What’s new
 
-## 0.6.0.dev
+## 0.6.0
 
-**Released MONTH YEAR**
+**Released May 2025**
 
 ### New
 

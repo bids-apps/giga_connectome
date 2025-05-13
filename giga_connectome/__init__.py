@@ -1,5 +1,5 @@
 __packagename__ = "giga_connectome"
-__copyright__ = "2021, SIMEXP"
+__copyright__ = "2025, BIDS-Apps"
 
 try:
     from ._version import __version__

@@ -2,7 +2,7 @@ cff-version: 1.2.0
 
 title: "giga_connectome"
 
-version: 0.4.1dev
+version: 0.6.0
 
 abstract:
   "generate connectome from fMRIPrep outputs."
