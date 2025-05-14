@@ -7,7 +7,7 @@
 ![https://github.com/psf/black](https://img.shields.io/badge/code%20style-black-000000.svg)
 ![](https://img.shields.io/docker/pulls/bids/giga_connectome)
 
-# giga_connectome
+# giga-connectome
 
 This is a BIDS-App to extract signal from a parcellation with nilearn,
 typically useful in a context of resting-state data processing.
@@ -63,7 +63,7 @@ If you have any question related how to create a pull request, you can check our
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Hyedryn"><img src="https://avatars.githubusercontent.com/u/5383293?v=4?s=100" width="100px;" alt="Quentin Dessain"/><br /><sub><b>Quentin Dessain</b></sub></a><br /><a href="#userTesting-Hyedryn" title="User Testing">📓</a> <a href="#platform-Hyedryn" title="Packaging/porting to new platform">📦</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/clarkenj"><img src="https://avatars.githubusercontent.com/u/57987005?v=4?s=100" width="100px;" alt="Natasha Clarke"/><br /><sub><b>Natasha Clarke</b></sub></a><br /><a href="#userTesting-clarkenj" title="User Testing">📓</a> <a href="#example-clarkenj" title="Examples">💡</a> <a href="#bug-clarkenj" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://remi-gau.github.io/"><img src="https://avatars.githubusercontent.com/u/6961185?v=4?s=100" width="100px;" alt="Remi Gau"/><br /><sub><b>Remi Gau</b></sub></a><br /><a href="#infra-Remi-Gau" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="#maintenance-Remi-Gau" title="Maintenance">🚧</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="http://simexp.github.io"><img src="https://avatars.githubusercontent.com/u/1670887?v=4?s=100" width="100px;" alt="Pierre Lune Bellec"/><br /><sub><b>Pierre Lune Bellec</b></sub></a><br /><a href="#ideas-pbellec" title="Ideas, Planning, & Feedback">🤔</a> <a href="#financial-pbellec" title="Financial">💵</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://simexp.github.io"><img src="https://avatars.githubusercontent.com/u/1670887?v=4?s=100" width="100px;" alt="Lune Bellec"/><br /><sub><b>Lune Bellec</b></sub></a><br /><a href="#ideas-pbellec" title="Ideas, Planning, & Feedback">🤔</a> <a href="#financial-pbellec" title="Financial">💵</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/shnizzedy"><img src="https://avatars.githubusercontent.com/u/5974438?v=4?s=100" width="100px;" alt="Jon Cluce"/><br /><sub><b>Jon Cluce</b></sub></a><br /><a href="#bug-shnizzedy" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/emullier"><img src="https://avatars.githubusercontent.com/u/43587002?v=4?s=100" width="100px;" alt="Emeline Mullier"/><br /><sub><b>Emeline Mullier</b></sub></a><br /><a href="#bug-emullier" title="Bug reports">🐛</a></td>
     </tr>
