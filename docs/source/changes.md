@@ -1,5 +1,18 @@
 # What’s new
 
+## 0.6.1.dev
+
+**Released MONTH YEAR**
+
+### New
+
+### Fixes
+
+### Enhancements
+
+### Changes
+
+
 ## 0.6.0
 
 **Released May 2025**
