@@ -22,7 +22,8 @@
 
 ### Enhancements
 
-- [DOCS] Improve advance usage example with test data and executable code. (@htwangtw) [#189](https://github.com/bids-apps/giga_connectome/pull/215)
+- [DOCS] Improve advance usage example with test data and executable code. (@htwangtw) [#215](https://github.com/bids-apps/giga_connectome/pull/215)
+- [DOCS] Clarify fMRIPrep versions supports. (@htwangtw) [#227](https://github.com/bids-apps/giga_connectome/pull/227)
 
 ### Changes
 
