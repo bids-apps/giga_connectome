@@ -2,10 +2,8 @@ cff-version: 1.2.0
 
 title: "giga_connectome"
 
-version: 0.6.0
-
 abstract:
-  "generate connectome from fMRIPrep outputs."
+  "Generate time series and connectomes from fMRIPrep outputs."
 
 message: "If you use this software, please cite it as below."
 
@@ -15,6 +13,8 @@ contact:
   - email: htwangtw@gmail.com
     family-names: Wang
     given-names: Hao-Ting
+
+license: MIT
 
 authors:
   - family-names: Wang
@@ -28,5 +28,3 @@ authors:
     given-names: Natasha
   - family-names: Bellec
     given-names: Pierre
-
-license: MIT
