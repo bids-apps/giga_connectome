@@ -2,14 +2,14 @@ cff-version: 1.2.0
 
 title: "giga_connectome"
 
-version: 0.4.1dev
-
 abstract:
-  "generate connectome from fMRIPrep outputs."
+  "Generate time series and connectomes from fMRIPrep outputs."
 
 message: "If you use this software, please cite it as below."
 
 repository-code: "https://github.com/bids-apps/giga_connectome"
+
+license: MIT
 
 contact:
   - email: htwangtw@gmail.com
@@ -27,6 +27,4 @@ authors:
   - family-names: Clarke
     given-names: Natasha
   - family-names: Bellec
-    given-names: Pierre
-
-license: MIT
+    given-names: Lune

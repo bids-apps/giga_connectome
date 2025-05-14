@@ -1,8 +1,8 @@
 # What’s new
 
-## 0.6.0.dev
+## 0.6.0
 
-**Released MONTH YEAR**
+**Released May 2025**
 
 ### New
 
@@ -16,7 +16,7 @@
 
 - [FIX] Make sure version docker images matches version of package in the image (@Remi-Gau) [#169](https://github.com/bids-apps/giga_connectome/issues/169)
 - [MAINT] Remove recurrsive import. (@htwangtw) [#135](https://github.com/bids-apps/giga_connectome/issues/135)
-- [DOCS] Remove`meas` entity in timeseries outputs in the documentation. (@htwangtw) [#136](https://github.com/bids-apps/giga_connectome/issues/136)
+- [DOCS] Remove `meas` entity in timeseries outputs in the documentation. (@htwangtw) [#136](https://github.com/bids-apps/giga_connectome/issues/136)
 - [FIX] Incompatible types in assignment of variable `mask_array` in `giga_connectome/mask.py`. (@htwangtw) [#189](https://github.com/bids-apps/giga_connectome/pull/189)
 - [FIX] ICA-AROMA implementation. (@htwangtw) [#211](https://github.com/bids-apps/giga_connectome/issues/211)
 
