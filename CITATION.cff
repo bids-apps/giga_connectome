@@ -20,11 +20,16 @@ authors:
   - family-names: Wang
     given-names: Hao-Ting
     email: htwangtw@gmail.com
+    orcid: https://orcid.org/0000-0003-4078-2038
   - family-names: Gau
     given-names: Rémi
-  - family-names: Dessain
-    given-names: Quentin
+    orcid: https://orcid.org/0000-0002-1535-9767
   - family-names: Clarke
     given-names: Natasha
+    orcid: https://orcid.org/0000-0003-2455-3614
+  - family-names: Dessain
+    given-names: Quentin
+    orcid: https://orcid.org/0000-0002-7314-0413
   - family-names: Bellec
     given-names: Lune
+    orcid: https://orcid.org/0000-0002-9111-0699
