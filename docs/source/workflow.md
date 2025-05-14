@@ -3,7 +3,9 @@
 The current workflow is implemented with the following principles in mind:
 
 - Using existing open source projects as key infrastructures.
-- Implement the denoising steps as close as the fMRIPrep documentation and the benchmark literature suggested.
+    - Implement the denoising steps as close as the fMRIPrep documentation and the benchmark literature suggested, hence,
+    denoising strategies would be limited to implementations of upstream function `nilearn.fmriprep.interfaces.load_confounds`.
+    - Feature extraction methods (such as connectome and details of preprocessing) would be limited to implementations through nilearn.
 - Perform any potential image resampling before extraction before signal processing to make the process transparent and reduce redundant computation.
 
 ## Details of the workflow
