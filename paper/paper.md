@@ -117,18 +117,18 @@ and [this repository](https://github.com/SIMEXP/giga_preprocess2) for the other 
 
 # Acknowledgement
 
-The project was supported by the following fundings:
-Digital Alliance Canada Resource Allocation Competition (RAC 1827 and RAC 4455) to PB,
+The project was supported by the following funding:
+Digital Alliance Canada Resource Allocation Competition (RAC 1827 and RAC 4455) to LB,
 Institut de Valorisation des Données projets de recherche stratégiques
-(IVADO PFR3) to PB,
+(IVADO PFR3) to LB,
 and Canadian Consortium on Neurodegeneration in Aging
-(CCNA; team 9 "discovering new biomarkers") to PB,
-the Courtois Foundation to PB,
+(CCNA; team 9 "discovering new biomarkers") to LB,
+the Courtois Foundation to LB,
 and Institut national de recherche en sciences et technologies du numérique
-(INRIA; Programme Équipes Associées - NeuroMind Team DRI-012229) to PB.
+(INRIA; Programme Équipes Associées - NeuroMind Team DRI-012229) to LB.
 HTW and NC are supported by IVADO postdoc fellowships.
 QD is a research fellow of the Fonds de la Recherche Scientifique - FNRS of Belgium.
 RG is supported by funding from the Chan Zuckerberg Initiative.
-PB was funded by Fonds de Recherche du Québec - Santé.
+LB was funded by Fonds de Recherche du Québec - Santé.
 
 # Reference
