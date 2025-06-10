@@ -9,6 +9,10 @@ message: "If you use this software, please cite it as below."
 
 repository-code: "https://github.com/bids-apps/giga_connectome"
 
+identifiers:
+  - type: doi
+    value: 10.21105/joss.07061
+
 license: MIT
 
 contact:

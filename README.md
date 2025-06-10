@@ -6,7 +6,7 @@
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/bids-apps/giga_connectome/main.svg)](https://results.pre-commit.ci/latest/github/bids-apps/giga_connectome/main)
 [![Documentation Status](https://readthedocs.org/projects/giga-connectome/badge/?version=stable)](https://giga-connectome.readthedocs.io/en/latest/?badge=stable)
 ![https://github.com/psf/black](https://img.shields.io/badge/code%20style-black-000000.svg)
-![](https://img.shields.io/docker/pulls/bids/giga_connectome)
+[![Docker pulls](https://img.shields.io/docker/pulls/bids/giga_connectome)](https://hub.docker.com/r/bids/giga_connectome/tags)
 
 # giga-connectome
 

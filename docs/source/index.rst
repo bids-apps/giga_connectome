@@ -6,6 +6,41 @@
 Welcome to `giga-connectome`'s documentation!
 ===========================================
 
+.. image:: https://joss.theoj.org/papers/10.21105/joss.07061/status.svg
+   :target: https://doi.org/10.21105/joss.07061
+   :alt: DOI
+
+.. image:: https://img.shields.io/github/all-contributors/bids-apps/giga_connectome?color=ee8449&style=flat
+   :target: #contributors
+   :alt: All Contributors
+
+.. image:: https://img.shields.io/badge/License-MIT-yellow.svg
+   :target: https://opensource.org/licenses/MIT
+   :alt: License: MIT
+
+.. image:: https://codecov.io/gh/bids-apps/giga_connectome/branch/main/graph/badge.svg?token=P4EGV7NKZ8
+   :target: https://codecov.io/gh/bids-apps/giga_connectome
+   :alt: codecov
+
+.. image:: https://github.com/bids-apps/giga_connectome/actions/workflows/test.yml/badge.svg
+   :target: https://github.com/bids-apps/giga_connectome/actions/workflows/test.yml
+   :alt: .github/workflows/test.yml
+
+.. image:: https://results.pre-commit.ci/badge/github/bids-apps/giga_connectome/main.svg
+   :target: https://results.pre-commit.ci/latest/github/bids-apps/giga_connectome/main
+   :alt: pre-commit.ci status
+
+.. image:: https://readthedocs.org/projects/giga-connectome/badge/?version=stable
+   :target: https://giga-connectome.readthedocs.io/en/latest/?badge=stable
+   :alt: Documentation Status
+
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :alt: https://github.com/psf/black
+
+.. image:: https://img.shields.io/docker/pulls/bids/giga_connectome
+   :target: https://hub.docker.com/r/bids/giga_connectome/tags
+   :alt: Docker pulls
+
 Functional connectivity is a common approach in analysing resting state fMRI data.
 The Python tool Nilearn provides utilities to extract and denoise time-series on a parcellation.
 Nilearn also has methods to compute functional connectivity.
