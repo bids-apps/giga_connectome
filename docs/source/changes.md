@@ -10,7 +10,7 @@
 
 ### Enhancements
 
-- [DOCS] Add JOSS reference to the citations. (@htwangtw)[#232](https://github.com/bids-apps/giga_connectome/pull/232)
+- [DOCS] Add JOSS reference to the citations and use the `README.md` as the documentation landing page. (@htwangtw)[#232](https://github.com/bids-apps/giga_connectome/pull/232)
 
 ### Changes
 
