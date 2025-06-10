@@ -56,7 +56,6 @@ Acknowledgements
 Please cite the following paper if you are using `giga-connectome` in your work:
 
 .. code-block:: bibtex
-
 @article{Wang2025,
     doi = {10.21105/joss.07061},
     url = {https://doi.org/10.21105/joss.07061},
@@ -74,7 +73,6 @@ Please cite the following paper if you are using `giga-connectome` in your work:
 hence please consider cite `nilearn` using the Zenodo DOI:
 
 .. code-block:: bibtex
-
 @software{Nilearn,
     author = {Nilearn contributors},
     license = {BSD-4-Clause},
