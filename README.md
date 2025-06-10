@@ -1,3 +1,4 @@
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.07061/status.svg)](https://doi.org/10.21105/joss.07061)
 [![All Contributors](https://img.shields.io/github/all-contributors/bids-apps/giga_connectome?color=ee8449&style=flat)](#contributors)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![codecov](https://codecov.io/gh/bids-apps/giga_connectome/branch/main/graph/badge.svg?token=P4EGV7NKZ8)](https://codecov.io/gh/bids-apps/giga_connectome)
@@ -11,6 +12,8 @@
 
 This is a BIDS-App to extract signal from a parcellation with nilearn,
 typically useful in a context of resting-state data processing.
+
+You can read our [JOSS paper](https://doi.org/10.21105/joss.07061) for the background of the project and the details of implementations.
 
 ## Description
 
@@ -81,10 +84,25 @@ If you have any question related how to create a pull request, you can check our
 
 ## Acknowledgements
 
-Giga-connectome uses `nilearn` under the hood,
-hence please consider cite nilearn using the Zenodo DOI:
-
+Please cite the following paper if you are using `giga-connectome` in your work:
+```bibtex
+@article{Wang2025,
+    doi = {10.21105/joss.07061},
+    url = {https://doi.org/10.21105/joss.07061},
+    year = {2025}, publisher = {The Open Journal},
+    volume = {10},
+    number = {110},
+    pages = {7061},
+    author = {Hao-Ting Wang and Rémi Gau and Natasha Clarke and Quentin Dessain and Lune Bellec},
+    title = {Giga Connectome: a BIDS-app for time series and functional connectome extraction},
+    journal = {Journal of Open Source Software}
+} 
 ```
+
+`giga-connectome` uses `nilearn` under the hood,
+hence please consider cite `nilearn` using the Zenodo DOI:
+
+```bibtex
 @software{Nilearn,
     author = {Nilearn contributors},
     license = {BSD-4-Clause},
@@ -93,14 +111,14 @@ hence please consider cite nilearn using the Zenodo DOI:
     doi = {https://doi.org/10.5281/zenodo.8397156}
 }
 ```
-Nilearn’s Research Resource Identifier (RRID) is:
-[RRID:SCR_001362](https://rrid.site/data/record/nlx_144509-1/SCR_001362/resolver?q=nilearn&l=nilearn&i=rrid:scr_001362)
+Nilearn’s Research Resource Identifier (RRID) is: [RRID:SCR_001362][]
 
-We acknowledge all the nilearn developers
-(https://github.com/nilearn/nilearn/graphs/contributors)
-as well as the BIDS-Apps team
-https://github.com/orgs/BIDS-Apps/people
+We acknowledge all the [nilearn developers][]
+as well as the [BIDS-Apps team][]
 
 This is a Python project packaged according to [Contemporary Python Packaging - 2023][].
 
 [Contemporary Python Packaging - 2023]: https://effigies.gitlab.io/posts/python-packaging-2023/
+[RRID:SCR_001362]: https://rrid.site/data/record/nlx_144509-1/SCR_001362/resolver?q=nilearn&l=nilearn&i=rrid:scr_001362
+[nilearn developers]: https://github.com/nilearn/nilearn/graphs/contributors
+[BIDS-Apps team]:https://github.com/orgs/BIDS-Apps/people
