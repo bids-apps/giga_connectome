@@ -49,6 +49,44 @@ Currently, `giga-connectome` fully supports outputs of fMRIPrep LTS.
 For fMRIPrep 23.1.0 and later, `giga-connectome` does not support ICA-AROMA denoising,
 as the strategy is removed from the fMRIPrep workflow.
 
+
+Acknowledgements
+==================
+
+Please cite the following paper if you are using `giga-connectome` in your work:
+
+.. code-block:: bibtex
+
+@article{Wang2025,
+    doi = {10.21105/joss.07061},
+    url = {https://doi.org/10.21105/joss.07061},
+    year = {2025}, publisher = {The Open Journal},
+    volume = {10},
+    number = {110},
+    pages = {7061},
+    author = {Hao-Ting Wang and Rémi Gau and Natasha Clarke and Quentin Dessain and Lune Bellec},
+    title = {Giga Connectome: a BIDS-app for time series and functional connectome extraction},
+    journal = {Journal of Open Source Software}
+}
+
+
+`giga-connectome` uses `nilearn` under the hood,
+hence please consider cite `nilearn` using the Zenodo DOI:
+
+.. code-block:: bibtex
+
+@software{Nilearn,
+    author = {Nilearn contributors},
+    license = {BSD-4-Clause},
+    title = {{nilearn}},
+    url = {https://github.com/nilearn/nilearn},
+    doi = {https://doi.org/10.5281/zenodo.8397156}
+}
+
+Nilearn's Research Resource Identifier (RRID) is: RRID:SCR_001362 <https://rrid.site/data/record/nlx_144509-1/SCR_001362/resolver?q=nilearn&l=nilearn&i=rrid:scr_001362>_
+
+
+
 .. toctree::
    :maxdepth: 1
    :caption: Contents
