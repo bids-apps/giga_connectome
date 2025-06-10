@@ -81,8 +81,7 @@ hence please consider cite `nilearn` using the Zenodo DOI:
     doi = {https://doi.org/10.5281/zenodo.8397156}
 }
 
-Nilearn's Research Resource Identifier (RRID) is: RRID:SCR_001362 <https://rrid.site/data/record/nlx_144509-1/SCR_001362/resolver?q=nilearn&l=nilearn&i=rrid:scr_001362>_
-
+Nilearn's Research Resource Identifier (RRID) is: `RRID:SCR_001362 <https://rrid.site/data/record/nlx_144509-1/SCR_001362/resolver?q=nilearn&l=nilearn&i=rrid:scr_001362>`_
 
 
 .. toctree::
