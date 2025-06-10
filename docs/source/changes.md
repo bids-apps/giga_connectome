@@ -10,6 +10,8 @@
 
 ### Enhancements
 
+- [DOCS] Add JOSS reference to the citations and use the `README.md` as the documentation landing page. (@htwangtw)[#232](https://github.com/bids-apps/giga_connectome/pull/232)
+
 ### Changes
 
 
@@ -20,7 +22,7 @@
 ### New
 
 - [EHN] Default atlas `Schaefer20187Networks` is renamed to `Schaefer2018`. `Schaefer20187Networks` will be deprecated ub 0.7.0. (@htwangtw)
-- [EHN] `--work-dir` is now renamed to `--atlases-dir`. `--work-dir` will be deprecated ub 0.7.0. (@htwangtw)
+- [EHN] `--work-dir` is now renamed to `--atlases-dir`. `--work-dir` will be deprecated in 0.7.0. (@htwangtw)
 - [EHN] Add details of denoising strategy to the meta data of the time series extraction. (@htwangtw) [#144](https://github.com/bids-apps/giga_connectome/issues/144)
 - [DOCS] Add instructions to download atlases packaged in the container for contributors. (@htwangtw)
 - [DOCS] Add All Contributors bot. (@htwangtw)
