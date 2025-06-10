@@ -96,7 +96,7 @@ Please cite the following paper if you are using `giga-connectome` in your work:
     author = {Hao-Ting Wang and Rémi Gau and Natasha Clarke and Quentin Dessain and Lune Bellec},
     title = {Giga Connectome: a BIDS-app for time series and functional connectome extraction},
     journal = {Journal of Open Source Software}
-} 
+}
 ```
 
 `giga-connectome` uses `nilearn` under the hood,
