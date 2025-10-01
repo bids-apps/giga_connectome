@@ -95,13 +95,13 @@ jobs:
     steps:
     - name: Download sdist and wheel artifacts
       if: matrix.package != 'archive'
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         name: dist
         path: dist/
     - name: Download git archive artifact
       if: matrix.package == 'archive'
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         name: archive
         path: archive/
