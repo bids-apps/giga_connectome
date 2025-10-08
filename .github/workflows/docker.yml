@@ -41,7 +41,7 @@ jobs:
         path: ${{ env.DATA }}
         key: data
     - if: ${{ steps.cache.outputs.cache-hit != 'true' }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
     - if: ${{ steps.cache.outputs.cache-hit != 'true' }}
       name: Download fmriprep derivative of ds000017
       run: |
