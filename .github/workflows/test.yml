@@ -74,14 +74,14 @@ jobs:
       run: python -m build
     - run: twine check dist/*
     - name: Upload sdist and wheel artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: dist
         path: dist/
     - name: Build git archive
       run: mkdir archive && git archive -v -o archive/archive.tgz HEAD
     - name: Upload git archive artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: archive
         path: archive/
