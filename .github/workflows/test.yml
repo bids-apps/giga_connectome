@@ -47,7 +47,7 @@ jobs:
     - uses: actions/setup-python@v6
     - name: install tox
       run: pip install tox
-    - uses: actions/cache@v4
+    - uses: actions/cache@v5
       id: cache
       env:
         cache-name: ds000017
@@ -139,7 +139,7 @@ jobs:
 
     - name: Restore cached data ds000017
       id: cache
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data
         key: ds000017
