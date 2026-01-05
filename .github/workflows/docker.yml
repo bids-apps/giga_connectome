@@ -64,7 +64,7 @@ jobs:
           docker images
           docker run --rm ${{env.USER_NAME}}/${{env.REPO_NAME}} --version
       - name: Upload docker artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: docker
           path: ${{ env.IMAGE }}
@@ -106,7 +106,7 @@ jobs:
             --reindex-bids
 
       - name: Upload output artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: connectome_${{ matrix.atlas }}
           path: ./outputs/
