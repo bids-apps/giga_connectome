@@ -166,7 +166,7 @@ def run_postprocessing_dataset(
                     continue
 
                 # extract timeseries and connectomes
-                (correlation_matrix, time_series_atlas, masker) = (
+                correlation_matrix, time_series_atlas, masker = (
                     generate_timeseries_connectomes(
                         masker,
                         denoised_img,
