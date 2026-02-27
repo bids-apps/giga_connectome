@@ -22,7 +22,6 @@ from giga_connectome import __version__
 from giga_connectome.logger import gc_logger
 from giga_connectome.denoise import is_ica_aroma, STRATEGY_TYPE
 
-
 gc_log = gc_logger()
 
 
