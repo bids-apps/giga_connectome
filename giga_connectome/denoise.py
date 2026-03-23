@@ -10,7 +10,8 @@ from nibabel import Nifti1Image
 from nilearn.interfaces import fmriprep
 from nilearn.interfaces.fmriprep import load_confounds_utils as lc_utils
 from nilearn.maskers import NiftiMasker
-from pkg_resources import resource_filename
+
+from giga_connectome.data import DATA_DIR
 
 PRESET_STRATEGIES = [
     "simple",
@@ -73,9 +74,7 @@ def get_denoise_strategy(
         Denosing strategy parameter to pass to load_confounds_strategy.
     """
     if strategy in PRESET_STRATEGIES:
-        config_path: str | Path = resource_filename(
-            "giga_connectome", f"data/denoise_strategy/{strategy}.json"
-        )
+        config_path: Path = DATA_DIR / "denoise_strategy"/ f"{strategy}.json"
     elif Path(strategy).exists():
         config_path = Path(strategy)
     else:
