@@ -1,10 +1,10 @@
+import contextlib
+
 __packagename__ = "giga_connectome"
 __copyright__ = "2025, BIDS-Apps"
 
-try:
+with contextlib.suppress(ImportError):
     from ._version import __version__
-except ImportError:
-    pass
 
 
 __all__ = [

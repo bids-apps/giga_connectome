@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import os
 import re
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any
 
 import nibabel as nib
 import numpy as np
@@ -19,9 +20,9 @@ from nilearn.image import (
 from nilearn.masking import compute_multi_epi_mask
 from scipy.ndimage import binary_closing
 
+from giga_connectome import utils
 from giga_connectome.atlas import ATLAS_SETTING_TYPE, resample_atlas_collection
 from giga_connectome.logger import gc_logger
-from giga_connectome import utils
 
 gc_log = gc_logger()
 
@@ -32,7 +33,6 @@ def generate_gm_mask_atlas(
     template: str,
     masks: list[BIDSImageFile],
 ) -> tuple[Path, list[Path]]:
-    """ """
     # check masks; isolate this part and make sure to make it a validate
     # templateflow template with a config file
     subject, _, _ = utils.parse_bids_name(masks[0].path)
@@ -135,7 +135,7 @@ def generate_subject_gm_mask(
     """
     gc_log.debug(f"Found {len(imgs)} masks")
     if exclude := _check_mask_affine(imgs):
-        imgs, __annotations__ = _get_consistent_masks(imgs, exclude)
+        imgs, _ = _get_consistent_masks(imgs, exclude)
         gc_log.debug(f"Remaining: {len(imgs)} masks")
 
     # templateflow environment setting to get around network issue
@@ -206,7 +206,6 @@ def _get_consistent_masks(
 
     Parameters
     ----------
-
     mask_imgs :
         The original list of functional masks
 
@@ -245,7 +244,6 @@ def _check_mask_affine(
 
     Returns
     -------
-
     list or None
         Index of masks with odd affine matrix. Return None when all masks have
         the same affine matrix.
@@ -321,7 +319,7 @@ def _check_pregenerated_masks(
     if target_subject_seg := all(all_exist):
         gc_log.info(
             "Found resampled atlases:\n"
-            f"{[filepath for filepath in subject_seg_file_names]} "
+            f"{list(subject_seg_file_names)} "
             f"in {subject_mask_dir}."
             "\nSkipping individual segmentation generation step."
         )

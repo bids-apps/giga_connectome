@@ -35,7 +35,6 @@ def build_size_roi(
     np.ndarray
         An array containing the sizes of the ROIs.
     """
-
     nb_roi = len(labels_roi)
     size_roi = np.zeros([nb_roi, 1])
 

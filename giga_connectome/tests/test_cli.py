@@ -1,33 +1,27 @@
-"""
-Simple code to smoke test the functionality.
-"""
+"""Simple code to smoke test the functionality."""
 
+import contextlib
+import json
 from pathlib import Path
 
-import json
+import pandas as pd
 import pytest
 from pkg_resources import resource_filename
-
-import pandas as pd
 
 from giga_connectome import __version__
 from giga_connectome.run import main
 
 
 def test_version(capsys):
-    try:
+    with contextlib.suppress(SystemExit):
         main(["-v"])
-    except SystemExit:
-        pass
     captured = capsys.readouterr()
     assert __version__ == captured.out.split()[0]
 
 
 def test_help(capsys):
-    try:
+    with contextlib.suppress(SystemExit):
         main(["-h"])
-    except SystemExit:
-        pass
     captured = capsys.readouterr()
     assert "Generate denoised timeseries" in captured.out
 
@@ -87,7 +81,7 @@ def test_smoke(tmp_path, caplog):
     assert len(relmat) == 100
     json_file = relmat_file = output_folder / (ts_base + "_timeseries.json")
     assert json_file.exists()
-    with open(json_file, "r") as f:
+    with open(json_file) as f:
         content = json.load(f)
         assert content.get("SamplingFrequency") == 0.5
 

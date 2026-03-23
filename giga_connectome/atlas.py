@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
-from typing import Any, Dict, List, TypedDict
+from typing import Any, TypedDict
 
 import nibabel as nib
 from nibabel import Nifti1Image
@@ -15,20 +15,19 @@ from giga_connectome.utils import progress_bar
 
 gc_log = gc_logger()
 
-ATLAS_CONFIG_TYPE = TypedDict(
-    "ATLAS_CONFIG_TYPE",
-    {
-        "name": str,
-        "parameters": Dict[str, str],
-        "desc": List[str],
-        "templateflow_dir": Any,
-    },
-)
 
-ATLAS_SETTING_TYPE = TypedDict(
-    "ATLAS_SETTING_TYPE",
-    {"name": str, "file_paths": Dict[str, List[Path]], "type": str},
-)
+class ATLAS_CONFIG_TYPE(TypedDict):
+    name: str
+    parameters: dict[str, str]
+    desc: list[str]
+    templateflow_dir: Any
+
+
+class ATLAS_SETTING_TYPE(TypedDict):
+    name: str
+    file_paths: dict[str, list[Path]]
+    type: str
+
 
 deprecations = {
     # parser attribute name:
@@ -151,7 +150,7 @@ def resample_atlas_collection(
     return subject_seg
 
 
-def get_atlas_labels() -> List[str]:
+def get_atlas_labels() -> list[str]:
     """Get the list of available atlas labels."""
     atlas_dir = resource_filename("giga_connectome", "data/atlas")
     return [p.stem for p in Path(atlas_dir).glob("*.json")]
@@ -203,7 +202,7 @@ def _check_altas_config(
                 f"Atlas configuration file {atlas} not found."
             )
 
-        with open(config_path, "r") as file:
+        with open(config_path) as file:
             atlas_config = json.load(file)
     else:
         atlas_config = atlas

@@ -10,6 +10,17 @@ repos:
   - id: check-added-large-files
     args:
     - --maxkb=1000
+
+    # Lint and format Python code
+-   repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.4
+    hooks:
+    -   id: ruff-check
+        # args: [--statistics]
+        args: [--fix, --show-fixes, --unsafe-fixes]
+    -   id: ruff-format
+        # args: [--diff]
+
 - repo: https://github.com/pre-commit/mirrors-mypy
   rev: v1.19.1
   hooks:
@@ -21,10 +32,7 @@ repos:
     - types-Jinja2
     args:
     - --config-file=pyproject.toml
-- repo: https://github.com/psf/black-pre-commit-mirror
-  rev: 26.1.0
-  hooks:
-  - id: black
+
 - repo: https://github.com/codespell-project/codespell
   rev: v2.4.1
   hooks:
@@ -34,10 +42,7 @@ repos:
     args:
     - --skip=*.svg
     exclude: paper/.*
-- repo: https://github.com/PyCQA/flake8
-  rev: 7.3.0
-  hooks:
-  - id: flake8
+
 - repo: https://github.com/hadolint/hadolint
   rev: v2.14.0
   hooks:
@@ -48,6 +53,7 @@ repos:
     types:
     - dockerfile
     entry: ghcr.io/hadolint/hadolint hadolint
+
 ci:
   autoupdate_commit_msg: 'chore: update pre-commit hooks'
   autoupdate_schedule: quarterly

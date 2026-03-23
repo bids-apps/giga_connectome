@@ -15,7 +15,7 @@ def _extract_time_series_voxel(img, mask, confounds=None, smoothing_fwhm=None):
 
 
 def _simulate_img():
-    """Simulate data with one 'spot'"""
+    """Simulate data with one 'spot'."""
     data = np.zeros([8, 8, 8, 100])
     time_series = np.random.randn(1, 1, 3, data.shape[3])
     # parcel 1 with intra correlation

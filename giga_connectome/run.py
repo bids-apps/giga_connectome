@@ -1,8 +1,9 @@
 from __future__ import annotations
-from typing import Any
+
 import argparse
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
+from typing import Any
 
 from giga_connectome import __version__
 from giga_connectome.atlas import get_atlas_labels
