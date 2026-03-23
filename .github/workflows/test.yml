@@ -3,13 +3,11 @@ on:
   push:
     branches:
     - main
-    - maint/*
     tags:
     - '*'
   pull_request:
     branches:
     - main
-    - maint/*
     paths: ['giga_connectome/*', 'pyproject.toml', 'requirements.txt', 'Dockerfile']
 
 defaults:
