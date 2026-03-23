@@ -1,11 +1,22 @@
 from numpy import testing
 
-from giga_connectome.denoise import denoise_meta_data, get_denoise_strategy
 from giga_connectome.data import DATA_DIR
+from giga_connectome.denoise import denoise_meta_data, get_denoise_strategy
 
 
 def test_denoise_nifti_voxel():
-    img_file = DATA_DIR /"test_data"/"ds000017-fmriprep22.0.1-downsampled-nosurface"/"sub-1"/"ses-timepoint1"/"func"/"sub-1_ses-timepoint1_task-probabilisticclassification_run-01_space-MNI152NLin2009cAsym_res-2_desc-preproc_bold.nii.gz"
+    img_file = (
+        DATA_DIR
+        / "test_data"
+        / "ds000017-fmriprep22.0.1-downsampled-nosurface"
+        / "sub-1"
+        / "ses-timepoint1"
+        / "func"
+        / (
+            "sub-1_ses-timepoint1_task-probabilisticclassification_"
+            "run-01_space-MNI152NLin2009cAsym_res-2_desc-preproc_bold.nii.gz"
+        )
+    )
     strategy = get_denoise_strategy("scrubbing.2")
     meta_data = denoise_meta_data(
         strategy=strategy,
@@ -30,8 +41,19 @@ def test_denoise_nifti_voxel():
         meta_data["MeanFramewiseDisplacement"], 0.107, decimal=3
     )
 
-    img_file =DATA_DIR/"test_data"/"ds000017-fmriprep22.0.1-downsampled-nosurface"/"sub-1"/"ses-timepoint1"/"func"/"sub-1_ses-timepoint1_task-probabilisticclassification_run-01_space-MNI152NLin6Asym_desc-smoothAROMAnonaggr_bold.nii.gz"
-    
+    img_file = (
+        DATA_DIR
+        / "test_data"
+        / "ds000017-fmriprep22.0.1-downsampled-nosurface"
+        / "sub-1"
+        / "ses-timepoint1"
+        / "func"
+        / (
+            "sub-1_ses-timepoint1_task-probabilisticclassification_"
+            "run-01_space-MNI152NLin6Asym_desc-smoothAROMAnonaggr_bold.nii.gz"
+        )
+    )
+
     strategy = get_denoise_strategy("icaaroma")
     meta_data = denoise_meta_data(
         strategy=strategy,

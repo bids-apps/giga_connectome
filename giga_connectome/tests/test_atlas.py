@@ -14,6 +14,6 @@ def test_load_atlas_setting():
     assert atlas_config["name"] == "HarvardOxfordCortical"
     with pytest.raises(FileNotFoundError):
         load_atlas_setting("blah")
-    json_path = DATA_DIR /"atlas"/"DiFuMo.json"
+    json_path = DATA_DIR / "atlas" / "DiFuMo.json"
     atlas_config = load_atlas_setting(json_path)
     assert atlas_config["name"] == "DiFuMo"

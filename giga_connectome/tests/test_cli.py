@@ -8,8 +8,8 @@ import pandas as pd
 import pytest
 
 from giga_connectome import __version__
-from giga_connectome.run import main
 from giga_connectome.data import DATA_DIR
+from giga_connectome.run import main
 
 
 def test_version(capsys):
@@ -28,7 +28,11 @@ def test_help(capsys):
 
 @pytest.mark.smoke
 def test_smoke(tmp_path, caplog):
-    bids_dir = DATA_DIR / "test_data"/ "ds000017-fmriprep22.0.1-downsampled-nosurface"
+    bids_dir = (
+        DATA_DIR
+        / "test_data"
+        / "ds000017-fmriprep22.0.1-downsampled-nosurface"
+    )
     output_dir = tmp_path / "output"
     atlases_dir = tmp_path / "atlases"
     work_dir = tmp_path / "work"

@@ -5,8 +5,9 @@ from bids.tests import get_test_data_path
 from nilearn._utils.data_gen import create_fake_bids_dataset
 
 from giga_connectome import utils
-from giga_connectome.denoise import get_denoise_strategy
 from giga_connectome.data import DATA_DIR
+from giga_connectome.denoise import get_denoise_strategy
+
 
 def test_prepare_bidsfilter_and_template():
     # regular strategy and no user bids filter
@@ -45,8 +46,12 @@ def test_prepare_bidsfilter_and_template():
 def test_get_bids_images():
     subjects = ["1"]
     template = "MNI152NLin2009cAsym"
-    bids_dir = DATA_DIR /"test_data"/"ds000017-fmriprep22.0.1-downsampled-nosurface"
-    
+    bids_dir = (
+        DATA_DIR
+        / "test_data"
+        / "ds000017-fmriprep22.0.1-downsampled-nosurface"
+    )
+
     reindex_bids = True
     user_bids_filters = {
         "bold": {"task": "probabilisticclassification", "run": "1"},

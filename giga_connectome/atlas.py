@@ -9,9 +9,9 @@ import nibabel as nib
 from nibabel import Nifti1Image
 from nilearn.image import resample_to_img
 
+from giga_connectome.data import DATA_DIR
 from giga_connectome.logger import gc_logger
 from giga_connectome.utils import progress_bar
-from giga_connectome.data import DATA_DIR
 
 gc_log = gc_logger()
 
@@ -135,7 +135,7 @@ def resample_atlas_collection(
         )
 
         for seg_file, desc in zip(
-            subject_seg_file_names, atlas_config["file_paths"]
+            subject_seg_file_names, atlas_config["file_paths"], strict=False
         ):
             parcellation = atlas_config["file_paths"][desc]
             parcellation_resampled = resample_to_img(
@@ -190,7 +190,7 @@ def _check_altas_config(
 
     if isinstance(atlas, (str, Path)):
         if atlas in preset_atlas:
-            config_path = DATA_DIR / "atlas"/ f"{atlas}.json"
+            config_path = DATA_DIR / "atlas" / f"{atlas}.json"
         elif Path(atlas).exists():
             config_path = Path(atlas)
         else:
