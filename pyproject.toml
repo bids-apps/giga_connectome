@@ -134,7 +134,7 @@ include = [
     "giga_connectome",
     "tools/**/*.py",
     "docs/**/*.py",
-    "tests"
+    "tests/**/*.py"
 ]
 indent-width = 4
 line-length = 79
