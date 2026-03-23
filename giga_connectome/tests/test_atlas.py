@@ -1,6 +1,7 @@
-from giga_connectome.atlas import load_atlas_setting
 import pytest
 from pkg_resources import resource_filename
+
+from giga_connectome.atlas import load_atlas_setting
 
 
 def test_load_atlas_setting():
@@ -11,7 +12,8 @@ def test_load_atlas_setting():
     assert atlas_config["name"] == "Schaefer2018"
     atlas_config = load_atlas_setting("HarvardOxfordCortical")
     assert atlas_config["name"] == "HarvardOxfordCortical"
-    pytest.raises(FileNotFoundError, load_atlas_setting, "blah")
+    with pytest.raises(FileNotFoundError):
+        load_atlas_setting("blah")
     json_path = resource_filename("giga_connectome", "data/atlas/DiFuMo.json")
     atlas_config = load_atlas_setting(json_path)
     assert atlas_config["name"] == "DiFuMo"

@@ -34,15 +34,9 @@ giga_connectome = "giga_connectome.run:main"
 
 [project.optional-dependencies]
 dev = [
-  "black",
-  "flake8",
   "pre-commit",
   "giga_connectome[test]",
   'tox',
-  'mypy',
-  'types-setuptools',
-  'pandas-stubs',
-  'types-tqdm'
 ]
 test = [
   "pytest",
@@ -131,3 +125,109 @@ markers = [
     "smoke: smoke tests that will run on a downsampled real dataset (deselect with '-m \"not smoke\"')",
 ]
 # filterwarnings = ["error"]
+
+
+
+[tool.ruff]
+extend-exclude = ["giga_connectome/_version.py"]
+include = [
+    "giga_connectome",
+    "tools/**/*.py",
+    "docs/**/*.py"
+]
+indent-width = 4
+line-length = 79
+
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
+indent-style = "space"
+line-ending = "auto"
+quote-style = "double"
+skip-magic-trailing-comma = false
+
+[tool.ruff.lint]
+fixable = ["ALL"]
+ignore = [
+    "ARG001", #TODO
+    "ARG002", #TODO?
+    "ARG005",
+    "D100", #TODO
+    "D101", #TODO
+    "D102", #TODO
+    "D103", #TODO
+    "D105", #TODO
+    "D205",
+    "D301",
+    "D401", #TODO
+    "E741",
+    "ERA001",
+    "N801", #TODO
+    "N806",
+    "N806",
+    "NPY002", #TODO
+    "PERF203",
+    "PLR2004",
+    "PTH100", #TODO
+    "PTH123", #TODO
+    "PTH207",
+    # Avoid linter rules conflicting with the formatter
+    # https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+    "COM812",
+    "COM819",
+    "E111",
+    "E114",
+    "E117",
+    "Q000",
+    "Q001",
+    "Q002",
+    "Q003",
+    "W191"
+]
+# List of all the ruff rules (includes why the rule matters)
+# https://docs.astral.sh/ruff/rules/
+select = [
+    "ARG",
+    "B",
+    "C4",
+    "C90",
+    "D",
+    "E",
+    "ERA",
+    "F",
+    "FLY",
+    "FURB",
+    "I",
+    "N",
+    "NPY",
+    "PERF",
+    "PIE",
+    "PTH",
+    "PD",
+    "PGH",
+    "PLR",
+    "RUF",
+    "SIM",
+    "UP",
+    "W"
+]
+unfixable = []
+
+[tool.ruff.lint.mccabe]
+max-complexity = 23
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["D104", "E402"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.pylint]
+# https://docs.astral.sh/ruff/settings/#lint_pylint_max-args
+max-args = 27
+# https://docs.astral.sh/ruff/settings/#lint_pylint_max-branches
+max-branches = 22
+# https://docs.astral.sh/ruff/settings/#lint_pylint_max-returns
+max-returns = 8
+# https://docs.astral.sh/ruff/settings/#lint_pylint_max-statements
+max-statements = 96

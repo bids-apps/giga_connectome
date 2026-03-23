@@ -2,13 +2,11 @@ from pathlib import Path
 
 import pytest
 from bids.tests import get_test_data_path
+from nilearn._utils.data_gen import create_fake_bids_dataset
 from pkg_resources import resource_filename
 
-from nilearn._utils.data_gen import create_fake_bids_dataset
-from giga_connectome.denoise import get_denoise_strategy
-
-
 from giga_connectome import utils
+from giga_connectome.denoise import get_denoise_strategy
 
 
 def test_prepare_bidsfilter_and_template():
@@ -72,12 +70,9 @@ def test_get_bids_images():
     )
     print(subj_data)
     assert len(subj_data["bold"]) == len(subj_data["mask"])
-    assert (
-        all(
-            "desc-smoothAROMAnonaggr_bold.nii.gz" in img.path
-            for img in subj_data["bold"]
-        )
-        == True
+    assert all(
+        "desc-smoothAROMAnonaggr_bold.nii.gz" in img.path
+        for img in subj_data["bold"]
     )
 
 
@@ -143,7 +138,10 @@ def test_get_subject_lists():
     ],
 )
 def test_output_filename(suffix, extension, target):
-    source_file = "sub-01_ses-ah_task-rest_run-1_space-MNIfake_res-2_desc-preproc_bold.nii.gz"
+    source_file = (
+        "sub-01_ses-ah_task-rest_run-1_space-MNIfake_"
+        "res-2_desc-preproc_bold.nii.gz"
+    )
 
     generated_target = utils.output_filename(
         source_file=source_file,

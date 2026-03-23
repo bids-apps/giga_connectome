@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Callable, Dict, List, TypedDict, Union
+from typing import Any, Callable, TypedDict
 
 import numpy as np
 import pandas as pd
@@ -23,6 +23,7 @@ PRESET_STRATEGIES = [
     "icaaroma",
 ]
 
+
 # More refined type not possible with python <= 3.9?
 # STRATEGY_TYPE = TypedDict(
 #     "STRATEGY_TYPE",
@@ -34,26 +35,19 @@ PRESET_STRATEGIES = [
 #         "parameters": dict[str, str | list[str]],
 #     },
 # )
-STRATEGY_TYPE = TypedDict(
-    "STRATEGY_TYPE",
-    {
-        "name": str,
-        "function": Callable[..., Any],
-        "parameters": Dict[str, Union[str, List[str]]],
-    },
-)
+class STRATEGY_TYPE(TypedDict):
+    name: str
+    function: Callable[..., Any]
+    parameters: dict[str, str | list[str]]
 
-METADATA_TYPE = TypedDict(
-    "METADATA_TYPE",
-    {
-        "ConfoundRegressors": List[str],
-        "ICAAROMANoiseComponents": List[str],
-        "NumberOfVolumesDiscardedByMotionScrubbing": int,
-        "NumberOfVolumesDiscardedByNonsteadyStatesDetector": int,
-        "MeanFramewiseDisplacement": float,
-        "SamplingFrequency": float,
-    },
-)
+
+class METADATA_TYPE(TypedDict):
+    ConfoundRegressors: list[str]
+    ICAAROMANoiseComponents: list[str]
+    NumberOfVolumesDiscardedByMotionScrubbing: int
+    NumberOfVolumesDiscardedByNonsteadyStatesDetector: int
+    MeanFramewiseDisplacement: float
+    SamplingFrequency: float
 
 
 def get_denoise_strategy(
@@ -87,7 +81,7 @@ def get_denoise_strategy(
     else:
         raise ValueError(f"Invalid input: {strategy}")
 
-    with open(config_path, "r") as file:
+    with open(config_path) as file:
         benchmark_strategy = json.load(file)
 
     lc_function = getattr(fmriprep, benchmark_strategy["function"])

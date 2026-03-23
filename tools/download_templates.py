@@ -6,7 +6,6 @@ Download atlases that are relevant.
 import importlib.util
 import shutil
 import sys
-
 from pathlib import Path
 
 import templateflow as tf

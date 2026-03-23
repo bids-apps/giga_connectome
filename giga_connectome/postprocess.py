@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -15,8 +16,8 @@ from giga_connectome.atlas import ATLAS_SETTING_TYPE
 from giga_connectome.connectome import generate_timeseries_connectomes
 from giga_connectome.denoise import (
     STRATEGY_TYPE,
-    denoise_nifti_voxel,
     denoise_meta_data,
+    denoise_nifti_voxel,
 )
 from giga_connectome.logger import gc_logger
 from giga_connectome.utils import progress_bar
@@ -65,7 +66,6 @@ def run_postprocessing_dataset(
 
     Parameters
     ----------
-
     strategy : dict
         Parameters for `load_confounds_strategy` or `load_confounds`.
 
@@ -157,10 +157,9 @@ def run_postprocessing_dataset(
                     json.dump(meta_data, f, indent=4)
 
             for seg, masker in atlas_maskers.items():
-
                 if not denoised_img:
                     time_series_atlas, correlation_matrix = None, None
-                    attribute_name = f"{subject}_{specifier}" f"_seg-{seg}"
+                    attribute_name = f"{subject}_{specifier}_seg-{seg}"
                     gc_log.info(f"{attribute_name}: no volume after scrubbing")
                     progress.update(task, advance=1)
                     continue

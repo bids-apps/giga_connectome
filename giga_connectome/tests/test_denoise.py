@@ -1,6 +1,7 @@
-from giga_connectome.denoise import denoise_meta_data, get_denoise_strategy
-from pkg_resources import resource_filename
 from numpy import testing
+from pkg_resources import resource_filename
+
+from giga_connectome.denoise import denoise_meta_data, get_denoise_strategy
 
 
 def test_denoise_nifti_voxel():

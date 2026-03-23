@@ -29,7 +29,6 @@ def test_generate_subject_gm_mask():
 
 def test_check_mask_affine():
     """Check odd affine detection."""
-
     img_base = np.zeros([5, 5, 6])
     processed_vol = img_base.copy()
     processed_vol[2:4, 2:4, 2:4] += 1

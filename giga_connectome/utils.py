@@ -19,8 +19,8 @@ from rich.progress import (
 )
 
 from giga_connectome import __version__
+from giga_connectome.denoise import STRATEGY_TYPE, is_ica_aroma
 from giga_connectome.logger import gc_logger
-from giga_connectome.denoise import is_ica_aroma, STRATEGY_TYPE
 
 gc_log = gc_logger()
 
@@ -76,9 +76,8 @@ def get_bids_images(
 ) -> tuple[dict[str, list[BIDSFile]], BIDSLayout]:
     """
     Apply BIDS filter to the base filter we are using.
-    Modified from fmripprep
+    Modified from fmripprep.
     """
-
     bids_filters = check_filter(bids_filters)
 
     layout = BIDSLayout(
@@ -160,7 +159,8 @@ def _filter_pybids_none_any(
 
 def parse_bids_filter(value: Path) -> None | dict[str, dict[str, str]]:
     """Parse a BIDS filter json file.
-    Parameters
+
+    Parameters.
     ----------
     value : Path
         Path to the BIDS json file.
@@ -170,7 +170,6 @@ def parse_bids_filter(value: Path) -> None | dict[str, dict[str, str]]:
     dict
         Dictionary of BIDS filters.
     """
-
     from json import JSONDecodeError, loads
 
     if not value:
@@ -215,7 +214,6 @@ def get_subject_lists(
 
     Parameters
     ----------
-
     participant_label :
 
         A list of BIDS competible subject identifiers.
@@ -316,7 +314,7 @@ def output_filename(
     atlas_desc: str | None = None,
 ) -> str:
     """Generate output filneme."""
-    subject, session, specifier = parse_bids_name(source_file)
+    subject, _session, specifier = parse_bids_name(source_file)
     seg = f"seg-{atlas}{atlas_desc}"
     if extension != "nii.gz":
         root: str = f"{subject}_{specifier}"
