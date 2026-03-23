@@ -5,7 +5,7 @@ from giga_connectome.denoise import denoise_meta_data, get_denoise_strategy
 
 
 def test_denoise_nifti_voxel():
-    img_file = (
+    img_file = str(
         DATA_DIR
         / "test_data"
         / "ds000017-fmriprep22.0.1-downsampled-nosurface"
