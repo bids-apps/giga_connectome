@@ -20,7 +20,7 @@ classifiers = [
   "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-  "nilearn[plotting] >=0.10.3,~0.13.0,~0.13.1",
+  "nilearn[plotting] >=0.10.3, ~=0.13.0, ~=0.13.1",
   "pybids >=0.15.0, <0.16.0",
   "templateflow < 23.0.0",
   "setuptools",
