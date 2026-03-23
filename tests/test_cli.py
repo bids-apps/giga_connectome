@@ -12,14 +12,14 @@ from giga_connectome.data import DATA_DIR
 from giga_connectome.run import main
 
 
-def test_version(capsys):
+def test_version(capsys) -> None:
     with contextlib.suppress(SystemExit):
         main(["-v"])
     captured = capsys.readouterr()
     assert __version__ == captured.out.split()[0]
 
 
-def test_help(capsys):
+def test_help(capsys) -> None:
     with contextlib.suppress(SystemExit):
         main(["-h"])
     captured = capsys.readouterr()
@@ -27,7 +27,7 @@ def test_help(capsys):
 
 
 @pytest.mark.smoke
-def test_smoke(tmp_path, caplog):
+def test_smoke(tmp_path, caplog) -> None:
     bids_dir = (
         DATA_DIR
         / "test_data"

@@ -54,7 +54,7 @@ jobs:
       env:
         cache-name: ds000017
       with:
-        path: /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data
+        path: /home/runner/work/giga_connectome/giga_connectome/tests/data/test_data
         key: ${{ env.cache-name }}
 
     - if: ${{ steps.cache.outputs.cache-hit != 'true' }}
@@ -143,7 +143,7 @@ jobs:
       id: cache
       uses: actions/cache/restore@v5
       with:
-        path: /home/runner/work/giga_connectome/giga_connectome/giga_connectome/data/test_data
+        path: /home/runner/work/giga_connectome/giga_connectome/tests/data/test_data
         key: ds000017
 
     - name: Install build dependencies
@@ -152,11 +152,11 @@ jobs:
     - name: Test with pytest - ignore smoke test.
       if: ${{ !contains(needs.check_skip_flags.outputs.head-commit-message, 'full_test') }}
       run: |
-        tox run -e test_no_smoke --list-dependencies -- giga_connectome
+        tox run -e test_no_smoke --list-dependencies -- tests
 
     - name: Full test - run all the test to generate accurate coverage report.
       if: ${{ contains(needs.check_skip_flags.outputs.head-commit-message, 'full_test') }} || ${{ github.event.pull_request.merged }}
-      run: tox run -e test --list-dependencies -- giga_connectome
+      run: tox run -e test --list-dependencies -- tests
 
     - uses: codecov/codecov-action@v5
       if: ${{ always() }}

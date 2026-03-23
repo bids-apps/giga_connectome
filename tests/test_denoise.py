@@ -1,12 +1,11 @@
 from numpy import testing
 
-from giga_connectome.data import DATA_DIR
 from giga_connectome.denoise import denoise_meta_data, get_denoise_strategy
 
 
-def test_denoise_nifti_voxel():
+def test_denoise_nifti_voxel(data_dir):
     img_file = str(
-        DATA_DIR
+        data_dir
         / "test_data"
         / "ds000017-fmriprep22.0.1-downsampled-nosurface"
         / "sub-1"
@@ -42,7 +41,7 @@ def test_denoise_nifti_voxel():
     )
 
     img_file = (
-        DATA_DIR
+        data_dir
         / "test_data"
         / "ds000017-fmriprep22.0.1-downsampled-nosurface"
         / "sub-1"

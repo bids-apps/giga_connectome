@@ -6,7 +6,7 @@ from nilearn import datasets
 from giga_connectome import mask
 
 
-def test_generate_subject_gm_mask():
+def test_generate_subject_gm_mask() -> None:
     """Generate group epi grey matter mask and resample atlas."""
     # use different subject in the test, should work the same
     data = datasets.fetch_development_fmri(n_subjects=3)
@@ -27,7 +27,7 @@ def test_generate_subject_gm_mask():
         mask.generate_subject_gm_mask(imgs, template="blah")
 
 
-def test_check_mask_affine():
+def test_check_mask_affine() -> None:
     """Check odd affine detection."""
     img_base = np.zeros([5, 5, 6])
     processed_vol = img_base.copy()
@@ -42,7 +42,7 @@ def test_check_mask_affine():
     assert exclude == [4, 5, 6]
 
 
-def test_get_consistent_masks():
+def test_get_consistent_masks() -> None:
     """Check odd affine detection."""
     mask_imgs = [
         f"sub-{i + 1:2d}_task-rest_space-MNI_desc-brain_mask.nii.gz"

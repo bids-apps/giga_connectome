@@ -38,7 +38,7 @@ def _simulate_img():
     return img, mask, atlas, (corr[1, 0], corr[2, 3])
 
 
-def test_calculate_intranetwork_correlation():
+def test_calculate_intranetwork_correlation() -> None:
     img, mask, atlas, corr = _simulate_img()
     # brute force version of intranetwork_correlation
     time_series_voxel, masker_voxel = _extract_time_series_voxel(img, mask)
