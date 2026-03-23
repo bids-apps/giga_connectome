@@ -7,7 +7,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from giga_connectome import __version__
+from giga_connectome._version import __version__
 from giga_connectome.data import DATA_DIR
 from giga_connectome.run import main
 
