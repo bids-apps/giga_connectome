@@ -22,7 +22,7 @@ classifiers = [
   "Operating System :: MacOS",
 ]
 dependencies = [
-  "nilearn[plotting] >=0.10.3",
+  "nilearn[plotting] >=0.13.0",
   "pybids >=0.15.0",
   "templateflow",
   "jinja2 >= 2.0",
@@ -120,7 +120,7 @@ minversion = "7"
 log_cli_level = "INFO"
 xfail_strict = true
 testpaths = ["giga_connectome/tests"]
-addopts = ["-ra", "--strict-config", "--strict-markers", "--doctest-modules", "-v"]
+addopts = ["-ra", "--strict-config", "--strict-markers", "--doctest-modules", "-v" , "--showlocals"]
 markers = [
     "smoke: smoke tests that will run on a downsampled real dataset (deselect with '-m \"not smoke\"')",
 ]
