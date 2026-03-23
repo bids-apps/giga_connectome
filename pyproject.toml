@@ -69,7 +69,6 @@ exclude = [".git_archival.txt"]
 packages = ["giga_connectome"]
 exclude = [
   ".github",
-  "giga_connectome/data/test_data"
 ]
 
 [tool.black]
@@ -134,7 +133,8 @@ extend-exclude = ["giga_connectome/_version.py"]
 include = [
     "giga_connectome",
     "tools/**/*.py",
-    "docs/**/*.py"
+    "docs/**/*.py",
+    "tests"
 ]
 indent-width = 4
 line-length = 79

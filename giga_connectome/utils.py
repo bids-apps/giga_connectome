@@ -18,7 +18,7 @@ from rich.progress import (
     TimeRemainingColumn,
 )
 
-from giga_connectome import __version__
+from giga_connectome._version import __version__
 from giga_connectome.denoise import STRATEGY_TYPE, is_ica_aroma
 from giga_connectome.logger import gc_logger
 
