@@ -6,21 +6,21 @@ build-backend = "hatchling.build"
 name = "giga_connectome"
 description = "Generate connectome from fMRIPrep outputs"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { file="LICENSE" }
 authors = [
   { name="Hao-Ting Wang", email="htwangtw@gmail.com" },
 ]
 classifiers = [
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-  "nilearn[plotting] >=0.10.3",
+  "nilearn[plotting] >=0.10.3,~0.13.0,~0.13.1",
   "pybids >=0.15.0, <0.16.0",
   "templateflow < 23.0.0",
   "setuptools",
