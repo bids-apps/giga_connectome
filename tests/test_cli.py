@@ -6,9 +6,8 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
-from giga_connectome._version import __version__
 
-from giga_connectome.data import DATA_DIR
+from giga_connectome._version import __version__
 from giga_connectome.run import main
 
 
@@ -27,9 +26,9 @@ def test_help(capsys) -> None:
 
 
 @pytest.mark.smoke
-def test_smoke(tmp_path, caplog) -> None:
+def test_smoke(data_dir, tmp_path, caplog) -> None:
     bids_dir = (
-        DATA_DIR
+        data_dir
         / "test_data"
         / "ds000017-fmriprep22.0.1-downsampled-nosurface"
     )
@@ -55,7 +54,7 @@ def test_smoke(tmp_path, caplog) -> None:
             "--reindex-bids",
             "--calculate-intranetwork-average-correlation",
             "--bids-filter-file",
-            str(Path(bids_dir).parent / "bids_filter.json"),
+            str(data_dir / "bids_filter.json"),
             str(bids_dir),
             str(output_dir),
             "participant",
@@ -106,7 +105,7 @@ def test_smoke(tmp_path, caplog) -> None:
             "simple",
             "--calculate-intranetwork-average-correlation",
             "--bids-filter-file",
-            str(Path(bids_dir).parent / "bids_filter.json"),
+            str(data_dir / "bids_filter.json"),
             str(bids_dir),
             str(output_dir),
             "participant",
@@ -136,7 +135,7 @@ def test_smoke(tmp_path, caplog) -> None:
             "simple",
             "--calculate-intranetwork-average-correlation",
             "--bids-filter-file",
-            str(Path(bids_dir).parent / "bids_filter.json"),
+            str(data_dir / "bids_filter.json"),
             str(bids_dir),
             str(output_dir),
             "participant",
@@ -156,7 +155,7 @@ def test_smoke(tmp_path, caplog) -> None:
             "icaaroma",
             "--calculate-intranetwork-average-correlation",
             "--bids-filter-file",
-            str(Path(bids_dir).parent / "bids_filter.json"),
+            str(data_dir / "bids_filter.json"),
             str(bids_dir),
             str(output_dir),
             "participant",
