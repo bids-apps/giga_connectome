@@ -12,7 +12,6 @@ fonttools==4.62.1
 formulaic==1.2.1
 frozendict==2.4.7
 fsspec==2026.2.0
-giga-connectome @ file:///home/remi-gau/github/bids_apps/giga_connectome
 greenlet==3.3.2
 idna==3.11
 iniconfig==2.3.0
