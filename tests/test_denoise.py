@@ -40,7 +40,7 @@ def test_denoise_nifti_voxel(data_dir):
         meta_data["MeanFramewiseDisplacement"], 0.107, decimal=3
     )
 
-    img_file = (
+    img_file = str(
         data_dir
         / "test_data"
         / "ds000017-fmriprep22.0.1-downsampled-nosurface"
