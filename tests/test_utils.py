@@ -1,7 +1,4 @@
-from pathlib import Path
-
 import pytest
-from bids.tests import get_test_data_path
 from nilearn._utils.data_gen import create_fake_bids_dataset
 
 from giga_connectome import utils
@@ -100,17 +97,19 @@ def test_parse_bids_name(source_file) -> None:
     assert specifier == "ses-ah_task-rest_run-1"
 
 
-def test_get_subject_lists() -> None:
-    bids_test = Path(get_test_data_path())
+def test_get_subject_lists(data_dir) -> None:
     # strip the sub- prefix
     subjects = utils.get_subject_lists(participant_label=["sub-01"])
     assert len(subjects) == 1
     assert subjects[0] == "01"
+
     subjects = utils.get_subject_lists(
-        participant_label=None, bids_dir=bids_test / "ds005_derivs/dummy"
+        bids_dir=data_dir
+        / "test_data"
+        / "ds000017-fmriprep22.0.1-downsampled-nosurface"
     )
-    assert len(subjects) == 1
-    assert subjects[0] == "01"
+    assert len(subjects) == 2
+    assert subjects[0] == "1"
 
 
 @pytest.mark.parametrize(
