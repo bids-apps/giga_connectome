@@ -135,7 +135,10 @@ def denoise_meta_data(strategy: STRATEGY_TYPE, img: str) -> METADATA_TYPE:
     """
     cf, sm = strategy["function"](img, **strategy["parameters"])
     cf_file = lc_utils.get_confounds_file(
-        img, flag_full_aroma=is_ica_aroma(strategy)
+        img,
+        flag_full_aroma=is_ica_aroma(strategy),
+        # TODO adapt for tedana?
+        flag_tedana=False,
     )
     cf_full = pd.read_csv(cf_file, sep="\t")
     framewise_displacement = cf_full["framewise_displacement"]
