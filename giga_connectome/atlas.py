@@ -135,7 +135,7 @@ def resample_atlas_collection(
         )
 
         for seg_file, desc in zip(
-            subject_seg_file_names, atlas_config["file_paths"]
+            subject_seg_file_names, atlas_config["file_paths"], strict=False
         ):
             parcellation = atlas_config["file_paths"][desc]
             parcellation_resampled = resample_to_img(
