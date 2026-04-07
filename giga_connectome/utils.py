@@ -18,7 +18,7 @@ from rich.progress import (
     TimeRemainingColumn,
 )
 
-from giga_connectome import __version__
+from giga_connectome._version import __version__
 from giga_connectome.denoise import STRATEGY_TYPE, is_ica_aroma
 from giga_connectome.logger import gc_logger
 
@@ -191,14 +191,14 @@ def parse_bids_name(img: str) -> tuple[str, str | None, str]:
     """Get subject, session, and specifier for a fMRIPrep output."""
     reference = parse_bids_filename(img)
 
-    subject = f"sub-{reference['sub']}"
+    subject = f"sub-{reference['entities']['sub']}"
 
-    specifier = f"task-{reference['task']}"
-    run = reference.get("run", None)
+    specifier = f"task-{reference['entities']['task']}"
+    run = reference["entities"].get("run", None)
     if isinstance(run, str):
         specifier = f"{specifier}_run-{run}"
 
-    session = reference.get("ses", None)
+    session = reference["entities"].get("ses", None)
     if isinstance(session, str):
         session = f"ses-{session}"
         specifier = f"{session}_{specifier}"
@@ -334,8 +334,12 @@ def output_filename(
 
     elif suffix == "mask":
         reference = parse_bids_filename(source_file)
-        tpl: str = f"space-{reference['space']}"
-        tpl += f"_res-{reference['res']}" if "res" in reference else ""
+        tpl: str = f"space-{reference['entities']['space']}"
+        tpl += (
+            f"_res-{reference['entities']['res']}"
+            if "res" in reference["entities"]
+            else ""
+        )
         return f"{subject}_{tpl}_label-GM_{suffix}.{extension}"
     else:
         return f"{subject}_{seg}_{suffix}.{extension}"

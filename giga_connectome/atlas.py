@@ -8,8 +8,8 @@ from typing import Any, TypedDict
 import nibabel as nib
 from nibabel import Nifti1Image
 from nilearn.image import resample_to_img
-from pkg_resources import resource_filename
 
+from giga_connectome.data import DATA_DIR
 from giga_connectome.logger import gc_logger
 from giga_connectome.utils import progress_bar
 
@@ -152,7 +152,7 @@ def resample_atlas_collection(
 
 def get_atlas_labels() -> list[str]:
     """Get the list of available atlas labels."""
-    atlas_dir = resource_filename("giga_connectome", "data/atlas")
+    atlas_dir = DATA_DIR / "atlas"
     return [p.stem for p in Path(atlas_dir).glob("*.json")]
 
 
@@ -185,16 +185,12 @@ def _check_altas_config(
         atlas = new_name
 
     # load the file first if the input is not already a dictionary
-    atlas_dir = resource_filename("giga_connectome", "data/atlas")
+    atlas_dir = DATA_DIR / "atlas"
     preset_atlas = [p.stem for p in Path(atlas_dir).glob("*.json")]
 
     if isinstance(atlas, (str, Path)):
         if atlas in preset_atlas:
-            config_path = Path(
-                resource_filename(
-                    "giga_connectome", f"data/atlas/{atlas}.json"
-                )
-            )
+            config_path = DATA_DIR / "atlas" / f"{atlas}.json"
         elif Path(atlas).exists():
             config_path = Path(atlas)
         else:

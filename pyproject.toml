@@ -18,14 +18,15 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
+  "Operating System :: POSIX",
+  "Operating System :: MacOS",
 ]
 dependencies = [
-  "nilearn[plotting] >=0.10.3",
-  "pybids >=0.15.0, <0.16.0",
-  "templateflow < 23.0.0",
-  "setuptools",
-  "jinja2 >= 2.0",
-  "rich",
+  "nilearn[plotting] >= 0.13.1",
+  "pybids >= 0.22.0",
+  "templateflow >= 25.1.2",
+  "jinja2 >= 3.1.6",
+  "rich >= 14.3.3",
 ]
 dynamic = ["version"]
 
@@ -68,7 +69,6 @@ exclude = [".git_archival.txt"]
 packages = ["giga_connectome"]
 exclude = [
   ".github",
-  "giga_connectome/data/test_data"
 ]
 
 [tool.black]
@@ -105,12 +105,12 @@ module = [
     "rich.*",
     "scipy.ndimage.*",
     "templateflow.*",
+    "pytest.*",
 ]
 
 [[tool.mypy.overrides]]
 ignore_errors = true
 module = [
-    'giga_connectome.tests.*',
     'download_templates',
     'conf',
 ]
@@ -120,7 +120,7 @@ minversion = "7"
 log_cli_level = "INFO"
 xfail_strict = true
 testpaths = ["giga_connectome/tests"]
-addopts = ["-ra", "--strict-config", "--strict-markers", "--doctest-modules", "-v"]
+addopts = ["-ra", "--strict-config", "--strict-markers", "--doctest-modules", "-v" , "--showlocals"]
 markers = [
     "smoke: smoke tests that will run on a downsampled real dataset (deselect with '-m \"not smoke\"')",
 ]
@@ -133,7 +133,8 @@ extend-exclude = ["giga_connectome/_version.py"]
 include = [
     "giga_connectome",
     "tools/**/*.py",
-    "docs/**/*.py"
+    "docs/**/*.py",
+    "tests/**/*.py"
 ]
 indent-width = 4
 line-length = 79
