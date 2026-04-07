@@ -1,5 +1,6 @@
 */_version.py
-*/data/test_data/
+tests/data/test_data/
+tests/ds000017.tar.gz
 output/
 work/
 

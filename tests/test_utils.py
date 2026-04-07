@@ -1,15 +1,11 @@
-from pathlib import Path
-
 import pytest
-from bids.tests import get_test_data_path
 from nilearn._utils.data_gen import create_fake_bids_dataset
-from pkg_resources import resource_filename
 
 from giga_connectome import utils
 from giga_connectome.denoise import get_denoise_strategy
 
 
-def test_prepare_bidsfilter_and_template():
+def test_prepare_bidsfilter_and_template() -> None:
     # regular strategy and no user bids filter
     strategy = get_denoise_strategy("simple")
     user_bids_filter = None
@@ -43,13 +39,15 @@ def test_prepare_bidsfilter_and_template():
     assert bids_filters["mask"]["space"] == "MNI152NLin2009cAsym"
 
 
-def test_get_bids_images():
+def test_get_bids_images(data_dir) -> None:
     subjects = ["1"]
     template = "MNI152NLin2009cAsym"
-    bids_dir = resource_filename(
-        "giga_connectome",
-        "data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface",
+    bids_dir = (
+        data_dir
+        / "test_data"
+        / "ds000017-fmriprep22.0.1-downsampled-nosurface"
     )
+
     reindex_bids = True
     user_bids_filters = {
         "bold": {"task": "probabilisticclassification", "run": "1"},
@@ -76,7 +74,7 @@ def test_get_bids_images():
     )
 
 
-def test_check_check_filter():
+def test_check_check_filter() -> None:
     """Unit test for utils.check_filter."""
     correct_filter = {"bold": {"suffix": "bold"}}
     assert utils.check_filter(correct_filter) == correct_filter
@@ -92,24 +90,26 @@ def test_check_check_filter():
         "sub-01_ses-ah_task-rest_run-1_space-MNIfake_res-2_desc-brain_mask.nii.gz",
     ],
 )
-def test_parse_bids_name(source_file):
+def test_parse_bids_name(source_file) -> None:
     subject, session, specifier = utils.parse_bids_name(source_file)
     assert subject == "sub-01"
     assert session == "ses-ah"
     assert specifier == "ses-ah_task-rest_run-1"
 
 
-def test_get_subject_lists():
-    bids_test = Path(get_test_data_path())
+def test_get_subject_lists(data_dir) -> None:
     # strip the sub- prefix
     subjects = utils.get_subject_lists(participant_label=["sub-01"])
     assert len(subjects) == 1
     assert subjects[0] == "01"
+
     subjects = utils.get_subject_lists(
-        participant_label=None, bids_dir=bids_test / "ds005_derivs/dummy"
+        bids_dir=data_dir
+        / "test_data"
+        / "ds000017-fmriprep22.0.1-downsampled-nosurface"
     )
-    assert len(subjects) == 1
-    assert subjects[0] == "01"
+    assert len(subjects) == 2
+    assert subjects[0] == "1"
 
 
 @pytest.mark.parametrize(
@@ -137,7 +137,7 @@ def test_get_subject_lists():
         ),
     ],
 )
-def test_output_filename(suffix, extension, target):
+def test_output_filename(suffix, extension, target) -> None:
     source_file = (
         "sub-01_ses-ah_task-rest_run-1_space-MNIfake_"
         "res-2_desc-preproc_bold.nii.gz"
@@ -180,7 +180,9 @@ def test_output_filename(suffix, extension, target):
         ),
     ],
 )
-def test_output_filename_seg(source_file, atlas, atlas_desc, suffix, target):
+def test_output_filename_seg(
+    source_file, atlas, atlas_desc, suffix, target
+) -> None:
     generated_target = utils.output_filename(
         source_file=source_file,
         atlas=atlas,
@@ -192,7 +194,7 @@ def test_output_filename_seg(source_file, atlas, atlas_desc, suffix, target):
     assert target == generated_target
 
 
-def test_desc_entity_recognised(tmp_path):
+def test_desc_entity_recognised(tmp_path) -> None:
 
     create_fake_bids_dataset(tmp_path, n_sub=1, n_ses=1, n_runs=[1, 1])
 

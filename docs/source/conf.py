@@ -5,14 +5,14 @@
 import os
 import sys
 
-from giga_connectome import __copyright__, __packagename__, __version__
+from giga_connectome._version import __version__
 
 sys.path.insert(0, os.path.abspath(".."))
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = __packagename__
-copyright = __copyright__
+project = "giga_connectome"
+copyright = "BIDS-Apps"
 author = "Hao-Ting Wang"
 release = __version__
 

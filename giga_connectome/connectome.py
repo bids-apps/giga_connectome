@@ -7,11 +7,11 @@ import numpy as np
 from nibabel import Nifti1Image
 from nilearn.connectome import ConnectivityMeasure
 from nilearn.image import load_img
-from nilearn.maskers import NiftiMasker
+from nilearn.maskers import NiftiLabelsMasker, NiftiMasker
 
 
 def build_size_roi(
-    mask: np.ndarray[Any, Any], labels_roi: np.ndarray[Any, Any]
+    mask: np.ndarray[Any, Any], region_ids: dict[str | int, int | float]
 ) -> np.ndarray[Any, np.dtype[Any]]:
     """Extract labels and sizes of ROIs given an atlas.
     The atlas parcels must be discrete segmentations.
@@ -27,7 +27,7 @@ def build_size_roi(
         those belonging to region `I` are coded with `I` (`I` being a
         positive integer).
 
-    labels_roi : np.ndarray
+    region_ids : dict[str | int, int | float]
         Labels of region I.
 
     Returns
@@ -35,18 +35,18 @@ def build_size_roi(
     np.ndarray
         An array containing the sizes of the ROIs.
     """
-    nb_roi = len(labels_roi)
+    nb_roi = len(region_ids)
     size_roi = np.zeros([nb_roi, 1])
 
-    for num_r in range(nb_roi):
-        size_roi[num_r] = np.count_nonzero(mask == labels_roi[num_r])
+    for num_r in region_ids:
+        size_roi[int(num_r)] = np.count_nonzero(mask == int(region_ids[num_r]))
 
     return size_roi
 
 
 def calculate_intranetwork_correlation(
     correlation_matrix: np.ndarray[Any, Any],
-    masker_labels: np.ndarray[Any, Any],
+    region_ids: dict[str | int, int | float],
     time_series_atlas: np.ndarray[Any, Any],
     group_mask: str | Path | Nifti1Image,
     atlas_image: str | Path | Nifti1Image,
@@ -59,7 +59,7 @@ def calculate_intranetwork_correlation(
     correlation_matrix : np.array
         N by N Pearson's correlation matrix.
 
-    masker_labels : np.array
+    region_ids : dict[str | int, int | float]
         Labels for each parcel in the atlas.
 
     time_series_atlas : np.array
@@ -84,11 +84,12 @@ def calculate_intranetwork_correlation(
 
     if len(atlas_image.shape) > 3:
         raise NotImplementedError("Only support 3D discrete segmentations.")
-    # flatten the atlas label image to a vector
+
+    # flatten the atlas label image to a vertical vector
     atlas_voxel_flatten = NiftiMasker(
-        standardize=False, mask_img=group_mask
+        standardize=None, mask_img=group_mask
     ).fit_transform(atlas_image)
-    size_parcels = build_size_roi(atlas_voxel_flatten, masker_labels)
+    size_parcels = build_size_roi(atlas_voxel_flatten, region_ids)
     # calculate the standard deviation of time series in each parcel
     var_parcels = time_series_atlas.var(axis=0)
     var_parcels = np.reshape(var_parcels, (var_parcels.shape[0], 1))
@@ -108,12 +109,12 @@ def calculate_intranetwork_correlation(
 
 
 def generate_timeseries_connectomes(
-    masker: NiftiMasker,
+    masker: NiftiLabelsMasker,
     denoised_img: Nifti1Image,
     group_mask: str | Path,
     correlation_measure: ConnectivityMeasure,
     calculate_average_correlation: bool,
-) -> tuple[np.ndarray[Any, Any], np.ndarray[Any, Any], NiftiMasker]:
+) -> tuple[np.ndarray[Any, Any], np.ndarray[Any, Any], NiftiLabelsMasker]:
     """Generate timeseries-based connectomes from functional data.
 
     Parameters
@@ -142,7 +143,9 @@ def generate_timeseries_connectomes(
     correlation_matrix = correlation_measure.fit_transform(
         [time_series_atlas]
     )[0]
-    masker_labels = masker.labels_
+    region_ids = masker.region_ids_
+    if "background" in region_ids:
+        region_ids.pop("background")
     # average correlation within each parcel
     if calculate_average_correlation:
         (
@@ -150,7 +153,7 @@ def generate_timeseries_connectomes(
             _,
         ) = calculate_intranetwork_correlation(
             correlation_matrix,
-            masker_labels,
+            region_ids,
             time_series_atlas,
             group_mask,
             masker.labels_img_,

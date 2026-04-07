@@ -13,7 +13,7 @@ repos:
 
     # Lint and format Python code
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.4
+    rev: v0.15.7
     hooks:
     -   id: ruff-check
         # args: [--statistics]
@@ -28,13 +28,17 @@ repos:
     additional_dependencies:
     - pandas-stubs
     - types-tqdm
-    - types-setuptools
     - types-Jinja2
     args:
     - --config-file=pyproject.toml
+    exclude: |
+            (?x)^(
+                tests/.*
+            )$
+
 
 - repo: https://github.com/codespell-project/codespell
-  rev: v2.4.1
+  rev: v2.4.2
   hooks:
   - id: codespell
     additional_dependencies:

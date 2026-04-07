@@ -6,7 +6,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from nilearn import __version__ as nilearn_version
 from templateflow import __version__ as templateflow_version
 
-from giga_connectome import __version__
+from giga_connectome._version import __version__
 
 
 def generate_method_section(

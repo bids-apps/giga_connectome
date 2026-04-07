@@ -6,20 +6,19 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
-from pkg_resources import resource_filename
+from giga_connectome._version import __version__
 
-from giga_connectome import __version__
 from giga_connectome.run import main
 
 
-def test_version(capsys):
+def test_version(capsys) -> None:
     with contextlib.suppress(SystemExit):
         main(["-v"])
     captured = capsys.readouterr()
     assert __version__ == captured.out.split()[0]
 
 
-def test_help(capsys):
+def test_help(capsys) -> None:
     with contextlib.suppress(SystemExit):
         main(["-h"])
     captured = capsys.readouterr()
@@ -27,10 +26,11 @@ def test_help(capsys):
 
 
 @pytest.mark.smoke
-def test_smoke(tmp_path, caplog):
-    bids_dir = resource_filename(
-        "giga_connectome",
-        "data/test_data/ds000017-fmriprep22.0.1-downsampled-nosurface",
+def test_smoke(data_dir, tmp_path, caplog) -> None:
+    bids_dir = (
+        data_dir
+        / "test_data"
+        / "ds000017-fmriprep22.0.1-downsampled-nosurface"
     )
     output_dir = tmp_path / "output"
     atlases_dir = tmp_path / "atlases"
@@ -54,7 +54,7 @@ def test_smoke(tmp_path, caplog):
             "--reindex-bids",
             "--calculate-intranetwork-average-correlation",
             "--bids-filter-file",
-            str(Path(bids_dir).parent / "bids_filter.json"),
+            str(data_dir / "bids_filter.json"),
             str(bids_dir),
             str(output_dir),
             "participant",
@@ -105,7 +105,7 @@ def test_smoke(tmp_path, caplog):
             "simple",
             "--calculate-intranetwork-average-correlation",
             "--bids-filter-file",
-            str(Path(bids_dir).parent / "bids_filter.json"),
+            str(data_dir / "bids_filter.json"),
             str(bids_dir),
             str(output_dir),
             "participant",
@@ -135,7 +135,7 @@ def test_smoke(tmp_path, caplog):
             "simple",
             "--calculate-intranetwork-average-correlation",
             "--bids-filter-file",
-            str(Path(bids_dir).parent / "bids_filter.json"),
+            str(data_dir / "bids_filter.json"),
             str(bids_dir),
             str(output_dir),
             "participant",
@@ -155,7 +155,7 @@ def test_smoke(tmp_path, caplog):
             "icaaroma",
             "--calculate-intranetwork-average-correlation",
             "--bids-filter-file",
-            str(Path(bids_dir).parent / "bids_filter.json"),
+            str(data_dir / "bids_filter.json"),
             str(bids_dir),
             str(output_dir),
             "participant",

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable, TypedDict
+from typing import Any, TypedDict
 
 import numpy as np
 import pandas as pd
@@ -10,7 +11,8 @@ from nibabel import Nifti1Image
 from nilearn.interfaces import fmriprep
 from nilearn.interfaces.fmriprep import load_confounds_utils as lc_utils
 from nilearn.maskers import NiftiMasker
-from pkg_resources import resource_filename
+
+from giga_connectome.data import DATA_DIR
 
 PRESET_STRATEGIES = [
     "simple",
@@ -73,9 +75,7 @@ def get_denoise_strategy(
         Denosing strategy parameter to pass to load_confounds_strategy.
     """
     if strategy in PRESET_STRATEGIES:
-        config_path: str | Path = resource_filename(
-            "giga_connectome", f"data/denoise_strategy/{strategy}.json"
-        )
+        config_path: Path = DATA_DIR / "denoise_strategy" / f"{strategy}.json"
     elif Path(strategy).exists():
         config_path = Path(strategy)
     else:
@@ -135,7 +135,10 @@ def denoise_meta_data(strategy: STRATEGY_TYPE, img: str) -> METADATA_TYPE:
     """
     cf, sm = strategy["function"](img, **strategy["parameters"])
     cf_file = lc_utils.get_confounds_file(
-        img, flag_full_aroma=is_ica_aroma(strategy)
+        img,
+        flag_full_aroma=is_ica_aroma(strategy),
+        # TODO adapt for tedana?
+        flag_tedana=False,
     )
     cf_full = pd.read_csv(cf_file, sep="\t")
     framewise_displacement = cf_full["framewise_displacement"]
