@@ -1,0 +1,35 @@
+---
+name: Add/update Boutiques descriptor
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+
+  create-descriptor:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v6
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+
+    - name: Install package
+      run: |
+        pip install -U pip
+        pip install .
+
+    - name: Create descriptor
+      uses: michellewang/python-cli-to-boutiques@v1
+      with:
+        parser-type: argparse
+        parser-location: giga_connectome.run:global_parser
+        output-path: descriptor.json
+        open-pr: true
+        token: ${{ secrets.PR_ACCESS }}
