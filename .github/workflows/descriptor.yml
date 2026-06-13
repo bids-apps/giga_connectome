@@ -32,4 +32,4 @@ jobs:
         parser-location: giga_connectome.run:global_parser
         output-path: descriptor.json
         open-pr: true
-        token: ${{ secrets.PAT }}
+        token: ${{ secrets.PR_ACCESS }}
