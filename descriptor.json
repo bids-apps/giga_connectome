@@ -2,7 +2,7 @@
   "schema-version": "0.5+styx",
   "name": "run_argdump.py",
   "description": "Generate denoised timeseries and Pearson's correlation based connectomes from fmriprep processed dataset.",
-  "tool-version": "0.1.dev1+g5dc332399",
+  "tool-version": "0.1.dev1+g78d15b0e7",
   "command-line": "run_argdump.py [BIDS_DIR] [OUTPUT_DIR] [ANALYSIS_LEVEL] [PARTICIPANT_LABEL] [ATLASES_DIR] [WORK_DIR] [ATLAS] [DENOISE_STRATEGY] [SMOOTHING_FWHM] [REINDEX_BIDS] [BIDS_FILTER_FILE] [CALCULATE_INTRANETWORK_AVERAGE_CORRELATION] [VERBOSITY]",
   "inputs": [
     {
