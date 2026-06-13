@@ -1,0 +1,131 @@
+{
+  "schema-version": "0.5+styx",
+  "name": "run_argdump.py",
+  "description": "Generate denoised timeseries and Pearson's correlation based connectomes from fmriprep processed dataset.",
+  "tool-version": "0.1.dev1+g5dc332399",
+  "command-line": "run_argdump.py [BIDS_DIR] [OUTPUT_DIR] [ANALYSIS_LEVEL] [PARTICIPANT_LABEL] [ATLASES_DIR] [WORK_DIR] [ATLAS] [DENOISE_STRATEGY] [SMOOTHING_FWHM] [REINDEX_BIDS] [BIDS_FILTER_FILE] [CALCULATE_INTRANETWORK_AVERAGE_CORRELATION] [VERBOSITY]",
+  "inputs": [
+    {
+      "id": "bids_dir",
+      "type": "File",
+      "value-key": "[BIDS_DIR]",
+      "description": "The directory with the input dataset formatted according to the BIDS standard  (i.e. unaltered fMRIPrep derivative directory).",
+      "name": "bids_dir"
+    },
+    {
+      "id": "output_dir",
+      "type": "File",
+      "value-key": "[OUTPUT_DIR]",
+      "description": "The directory where the output files should be stored.",
+      "name": "output_dir"
+    },
+    {
+      "id": "analysis_level",
+      "type": "String",
+      "value-key": "[ANALYSIS_LEVEL]",
+      "description": "Level of the analysis that will be performed. Only participantlevel is available.",
+      "value-choices": [
+        "participant"
+      ],
+      "name": "analysis_level"
+    },
+    {
+      "id": "participant_label",
+      "type": "String",
+      "value-key": "[PARTICIPANT_LABEL]",
+      "description": "The label(s) of the participant(s) that should be analyzed. The label corresponds to sub-<participant-label> from the BIDS spec (so it does not include 'sub-'). If this parameter is not provided all subjects should be analyzed. Multiple participants can be specified with a space separated list.",
+      "optional": true,
+      "list": true,
+      "min-list-entries": 1,
+      "command-line-flag": "--participant-label",
+      "name": "participant_label"
+    },
+    {
+      "id": "atlases_dir",
+      "type": "File",
+      "value-key": "[ATLASES_DIR]",
+      "description": "Path where subject specific segmentations are stored.",
+      "optional": true,
+      "command-line-flag": "--atlases-dir",
+      "name": "atlases_dir"
+    },
+    {
+      "id": "work_dir",
+      "type": "String",
+      "value-key": "[WORK_DIR]",
+      "description": "This argument is deprecated. Please use --atlases-dir instead.",
+      "optional": true,
+      "command-line-flag": "--work-dir",
+      "name": "work_dir"
+    },
+    {
+      "id": "atlas",
+      "type": "String",
+      "value-key": "[ATLAS]",
+      "description": "The choice of atlas for time series extraction. Default atlas choices are: ['HarvardOxfordCorticalSymmetricSplit', 'Schaefer2018', 'DiFuMo', 'HarvardOxfordSubcortical', 'HarvardOxfordCortical', 'MIST']. User can pass a path to a json file containing configuration for their own choice of atlas. The default is 'Schaefer2018'. (Default: \"Schaefer2018\")",
+      "optional": true,
+      "command-line-flag": "--atlas",
+      "name": "atlas"
+    },
+    {
+      "id": "denoise_strategy",
+      "type": "String",
+      "value-key": "[DENOISE_STRATEGY]",
+      "description": "The choice of post-processing for denoising. The default choices are: 'simple', 'simple+gsr', 'scrubbing.2', 'scrubbing.2+gsr', 'scrubbing.5', 'scrubbing.5+gsr', 'acompcor50', 'icaaroma'. User can pass a path to a json file containing configuration for their own choice of denoising strategy. The defaultis 'simple'. (Default: \"simple\")",
+      "optional": true,
+      "command-line-flag": "--denoise-strategy",
+      "name": "denoise_strategy"
+    },
+    {
+      "id": "smoothing_fwhm",
+      "type": "Number",
+      "value-key": "[SMOOTHING_FWHM]",
+      "description": "Size of the full-width at half maximum in millimeters of the spatial smoothing to apply to the signal. The default is 5.0. (Default: 5)",
+      "optional": true,
+      "command-line-flag": "--smoothing_fwhm",
+      "name": "smoothing_fwhm"
+    },
+    {
+      "id": "reindex_bids",
+      "type": "Flag",
+      "value-key": "[REINDEX_BIDS]",
+      "description": "Reindex BIDS data set, even if layout has already been created.",
+      "optional": true,
+      "command-line-flag": "--reindex-bids",
+      "name": "reindex_bids"
+    },
+    {
+      "id": "bids_filter_file",
+      "type": "File",
+      "value-key": "[BIDS_FILTER_FILE]",
+      "description": "A JSON file describing custom BIDS input filters using PyBIDS. We use the same format as described in fMRIPrep documentation: https://fmriprep.org/en/latest/faq.html#how-do-i-select-only-certain-files-to-be-input-to-fmriprep \nHowever, the query filed should always be 'bold'",
+      "optional": true,
+      "command-line-flag": "--bids-filter-file",
+      "name": "bids_filter_file"
+    },
+    {
+      "id": "calculate_intranetwork_average_correlation",
+      "type": "Flag",
+      "value-key": "[CALCULATE_INTRANETWORK_AVERAGE_CORRELATION]",
+      "description": "Calculate average correlation within each network. This is a python implementation of the matlab code from the NIAK connectome pipeline (option A). The default is False.",
+      "optional": true,
+      "command-line-flag": "--calculate-intranetwork-average-correlation",
+      "name": "calculate_intranetwork_average_correlation"
+    },
+    {
+      "id": "verbosity",
+      "type": "String",
+      "value-key": "[VERBOSITY]",
+      "description": "\n        Verbosity level. (Default: \"2\")",
+      "optional": true,
+      "command-line-flag": "--verbosity",
+      "value-choices": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "name": "verbosity"
+    }
+  ]
+}
