@@ -153,7 +153,7 @@ def global_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: None | Sequence[str] = None) -> None:
+def main(argv: Sequence[str] | None = None) -> None:
     """Entry point."""
     parser = global_parser()
 
