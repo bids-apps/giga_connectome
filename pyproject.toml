@@ -70,10 +70,6 @@ exclude = [
   ".github",
 ]
 
-[tool.black]
-target-version = ['py38']
-exclude = "giga_connectome/_version.py"
-line-length = 79
 
 [tool.mypy]
 check_untyped_defs = true
