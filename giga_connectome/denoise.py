@@ -171,7 +171,7 @@ def denoise_meta_data(strategy: STRATEGY_TYPE, img: str) -> METADATA_TYPE:
 def denoise_nifti_voxel(
     strategy: STRATEGY_TYPE,
     group_mask: str | Path,
-    standardize: bool,
+    standardize: str | None,
     smoothing_fwhm: float,
     img: str,
 ) -> Nifti1Image | None:
@@ -183,9 +183,9 @@ def denoise_nifti_voxel(
         Denoising strategy parameter to pass to load_confounds_strategy.
     group_mask : str | Path
         Path to the group mask.
-    standardize : bool
-        Standardize the data. If True, zscore the data. If False, do \
-            not standardize.
+    standardize : str
+        Standardization strategy passed to the nilearn masker, e.g. \
+            "zscore_sample".
     smoothing_fwhm : float
         Smoothing kernel size in mm.
     img : str

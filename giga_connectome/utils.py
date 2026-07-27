@@ -27,7 +27,7 @@ gc_log = gc_logger()
 
 def prepare_bidsfilter_and_template(
     strategy: STRATEGY_TYPE,
-    user_bids_filter: None | dict[str, dict[str, str]],
+    user_bids_filter: dict[str, dict[str, str]] | None,
 ) -> tuple[str, dict[str, dict[str, str]]]:
     """
     Prepare the template and BIDS filters for ICA AROMA.
@@ -72,7 +72,7 @@ def get_bids_images(
     template: str,
     bids_dir: Path,
     reindex_bids: bool,
-    bids_filters: None | dict[str, dict[str, str]],
+    bids_filters: dict[str, dict[str, str]] | None,
 ) -> tuple[dict[str, list[BIDSFile]], BIDSLayout]:
     """
     Apply BIDS filter to the base filter we are using.
@@ -131,7 +131,7 @@ def get_bids_images(
 
 
 def check_filter(
-    bids_filters: None | dict[str, dict[str, str]],
+    bids_filters: dict[str, dict[str, str]] | None,
 ) -> dict[str, dict[str, str]]:
     """Should only have bold and mask."""
     if not bids_filters:
@@ -149,7 +149,7 @@ def check_filter(
 
 
 def _filter_pybids_none_any(
-    dct: dict[str, None | str],
+    dct: dict[str, str | None],
 ) -> dict[str, Query.NONE | Query.ANY]:
     return {
         k: Query.NONE if v is None else (Query.ANY if v == "*" else v)
@@ -157,7 +157,7 @@ def _filter_pybids_none_any(
     }
 
 
-def parse_bids_filter(value: Path) -> None | dict[str, dict[str, str]]:
+def parse_bids_filter(value: Path) -> dict[str, dict[str, str]] | None:
     """Parse a BIDS filter json file.
 
     Parameters.
@@ -207,7 +207,7 @@ def parse_bids_name(img: str) -> tuple[str, str | None, str]:
 
 
 def get_subject_lists(
-    participant_label: None | list[str] = None, bids_dir: None | Path = None
+    participant_label: list[str] | None = None, bids_dir: Path | None = None
 ) -> list[str]:
     """
     Parse subject list from user options.
@@ -239,7 +239,7 @@ def get_subject_lists(
         return checked_labels
     # get all subjects, this is quicker than bids...
     if bids_dir:
-        subject_dirs = bids_dir.glob("sub-*/")
+        subject_dirs = sorted(bids_dir.glob("sub-*/"))
         return [
             subject_dir.name.split("-")[-1]
             for subject_dir in subject_dirs

@@ -14,7 +14,7 @@ def generate_method_section(
     atlas: str,
     smoothing_fwhm: float,
     strategy: str,
-    standardize: str,
+    standardize: str | None,
     mni_space: str,
     average_correlation: bool,
 ) -> None:

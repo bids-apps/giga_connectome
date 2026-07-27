@@ -31,7 +31,7 @@ def run_postprocessing_dataset(
     resampled_atlases: Sequence[str | Path],
     images: Sequence[BIDSImageFile],
     group_mask: str | Path,
-    standardize: bool,
+    standardize: str | None,
     smoothing_fwhm: float,
     output_path: Path,
     calculate_average_correlation: bool = False,
@@ -81,9 +81,8 @@ def run_postprocessing_dataset(
     group_mask : str or pathlib.Path
         Group level grey matter mask.
 
-    standardize : bool
-        Standardization to zscore or not used in nilearn, passed to nilearn \
-            masker.
+    standardize : str
+        Standardization strategy used in nilearn, passed to nilearn masker.
 
     smoothing_fwhm : float
         Smoothing kernel size, passed to nilearn masker.
@@ -105,10 +104,6 @@ def run_postprocessing_dataset(
         seg = atlas_path.name.split("seg-")[-1].split("_")[0]
         atlas_maskers[seg] = _get_masker(atlas_path)
         connectomes[seg] = []
-
-    correlation_measure = ConnectivityMeasure(
-        kind="correlation", vectorize=False, discard_diagonal=False
-    )
 
     # transform data
     gc_log.info("Processing subject")
@@ -164,7 +159,15 @@ def run_postprocessing_dataset(
                     progress.update(task, advance=1)
                     continue
 
-                # extract timeseries and connectomes
+                # extract timeseries and connectomes.
+                # A fresh ConnectivityMeasure is required per atlas: once
+                # fit, it validates subsequent inputs against the feature
+                # count (number of parcels) it was first fit on, so it
+                # cannot be reused across atlases with different parcel
+                # counts (e.g. Schaefer2018's 100/200/300/... variants).
+                correlation_measure = ConnectivityMeasure(
+                    kind="correlation", vectorize=False, discard_diagonal=False
+                )
                 correlation_matrix, time_series_atlas, masker = (
                     generate_timeseries_connectomes(
                         masker,
@@ -225,13 +228,13 @@ def _get_masker(atlas_path: Path) -> NiftiLabelsMasker | NiftiMapsMasker:
     if atlas_type == "dseg":
         atlas_masker = NiftiLabelsMasker(
             labels_img=atlas_path,
-            standardize=False,
+            standardize=None,
             cmap="gray",
         )
     elif atlas_type == "probseg":
         atlas_masker = NiftiMapsMasker(
             maps_img=atlas_path,
-            standardize=False,
+            standardize=None,
             cmap="gray",
         )
     return atlas_masker
