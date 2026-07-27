@@ -105,10 +105,6 @@ def run_postprocessing_dataset(
         atlas_maskers[seg] = _get_masker(atlas_path)
         connectomes[seg] = []
 
-    correlation_measure = ConnectivityMeasure(
-        kind="correlation", vectorize=False, discard_diagonal=False
-    )
-
     # transform data
     gc_log.info("Processing subject")
 
@@ -163,7 +159,15 @@ def run_postprocessing_dataset(
                     progress.update(task, advance=1)
                     continue
 
-                # extract timeseries and connectomes
+                # extract timeseries and connectomes.
+                # A fresh ConnectivityMeasure is required per atlas: once
+                # fit, it validates subsequent inputs against the feature
+                # count (number of parcels) it was first fit on, so it
+                # cannot be reused across atlases with different parcel
+                # counts (e.g. Schaefer2018's 100/200/300/... variants).
+                correlation_measure = ConnectivityMeasure(
+                    kind="correlation", vectorize=False, discard_diagonal=False
+                )
                 correlation_matrix, time_series_atlas, masker = (
                     generate_timeseries_connectomes(
                         masker,
