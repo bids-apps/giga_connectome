@@ -34,7 +34,6 @@ def workflow(args: argparse.Namespace) -> None:
     bids_dir = args.bids_dir
     output_dir = args.output_dir
     atlases_dir = args.atlases_dir
-    standardize = True  # always standardising the time series
     smoothing_fwhm = args.smoothing_fwhm
     calculate_average_correlation = (
         args.calculate_intranetwork_average_correlation
@@ -58,13 +57,16 @@ def workflow(args: argparse.Namespace) -> None:
 
     gc_log.info(f"Indexing BIDS directory:\n\t{bids_dir}")
 
+    # always standardising the time series
+    standardize = "zscore_sample"
+
     utils.create_ds_description(output_dir)
     utils.create_sidecar(output_dir / "meas-PearsonCorrelation_relmat.json")
     methods.generate_method_section(
         output_dir=output_dir,
         atlas=atlas["name"],
         smoothing_fwhm=smoothing_fwhm,
-        standardize="zscore",
+        standardize=standardize,
         strategy=args.denoise_strategy,
         mni_space=template,
         average_correlation=calculate_average_correlation,

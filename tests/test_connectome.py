@@ -8,7 +8,9 @@ from giga_connectome.connectome import generate_timeseries_connectomes
 
 def _extract_time_series_voxel(img, mask, confounds=None, smoothing_fwhm=None):
     masker = NiftiMasker(
-        standardize=True, mask_img=mask, smoothing_fwhm=smoothing_fwhm
+        standardize="zscore_sample",
+        mask_img=mask,
+        smoothing_fwhm=smoothing_fwhm,
     )
     time_series_voxel = masker.fit_transform(img, confounds=confounds)
     return time_series_voxel, masker
@@ -16,8 +18,10 @@ def _extract_time_series_voxel(img, mask, confounds=None, smoothing_fwhm=None):
 
 def _simulate_img():
     """Simulate data with one 'spot'."""
+    rng = np.random.default_rng(42)
+
     data = np.zeros([8, 8, 8, 100])
-    time_series = np.random.randn(1, 1, 3, data.shape[3])
+    time_series = rng.normal(size=(1, 1, 3, data.shape[3]))
     # parcel 1 with intra correlation
     data[4, 4, 3, :] = time_series[0, 0, 0, :]
     data[4, 4, 4, :] = time_series[0, 0, 0, :] + time_series[0, 0, 1, :]

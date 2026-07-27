@@ -31,7 +31,7 @@ def run_postprocessing_dataset(
     resampled_atlases: Sequence[str | Path],
     images: Sequence[BIDSImageFile],
     group_mask: str | Path,
-    standardize: bool,
+    standardize: str,
     smoothing_fwhm: float,
     output_path: Path,
     calculate_average_correlation: bool = False,
@@ -81,9 +81,8 @@ def run_postprocessing_dataset(
     group_mask : str or pathlib.Path
         Group level grey matter mask.
 
-    standardize : bool
-        Standardization to zscore or not used in nilearn, passed to nilearn \
-            masker.
+    standardize : str
+        Standardization strategy used in nilearn, passed to nilearn masker.
 
     smoothing_fwhm : float
         Smoothing kernel size, passed to nilearn masker.
@@ -225,13 +224,13 @@ def _get_masker(atlas_path: Path) -> NiftiLabelsMasker | NiftiMapsMasker:
     if atlas_type == "dseg":
         atlas_masker = NiftiLabelsMasker(
             labels_img=atlas_path,
-            standardize=False,
+            standardize=None,
             cmap="gray",
         )
     elif atlas_type == "probseg":
         atlas_masker = NiftiMapsMasker(
             maps_img=atlas_path,
-            standardize=False,
+            standardize=None,
             cmap="gray",
         )
     return atlas_masker

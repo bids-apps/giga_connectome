@@ -90,8 +90,12 @@ def calculate_intranetwork_correlation(
         standardize=None, mask_img=group_mask
     ).fit_transform(atlas_image)
     size_parcels = build_size_roi(atlas_voxel_flatten, region_ids)
-    # calculate the standard deviation of time series in each parcel
-    var_parcels = time_series_atlas.var(axis=0)
+    # calculate the variance of the parcel-average time series.
+    # ddof=1 (sample variance) matches the voxel-level time series being
+    # standardized to unit *sample* variance (nilearn's "zscore_sample"
+    # strategy) before being averaged into parcels; the formula below
+    # assumes this convention.
+    var_parcels = time_series_atlas.var(axis=0, ddof=1)
     var_parcels = np.reshape(var_parcels, (var_parcels.shape[0], 1))
     # detect invalid parcels
     mask_empty = (size_parcels == 0) | (size_parcels == 1)
