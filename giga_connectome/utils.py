@@ -239,7 +239,7 @@ def get_subject_lists(
         return checked_labels
     # get all subjects, this is quicker than bids...
     if bids_dir:
-        subject_dirs = bids_dir.glob("sub-*/")
+        subject_dirs = sorted(bids_dir.glob("sub-*/"))
         return [
             subject_dir.name.split("-")[-1]
             for subject_dir in subject_dirs

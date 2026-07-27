@@ -112,6 +112,18 @@ def test_get_subject_lists(data_dir) -> None:
     assert subjects[0] == "1"
 
 
+def test_get_subject_lists_sorted_order(tmp_path) -> None:
+    """Subject directories are created out of order on disk; the returned
+    list must not depend on filesystem enumeration order.
+    """
+    for sub_id in ["sub-10", "sub-02", "sub-01"]:
+        (tmp_path / sub_id).mkdir()
+
+    subjects = utils.get_subject_lists(bids_dir=tmp_path)
+
+    assert subjects == ["01", "02", "10"]
+
+
 @pytest.mark.parametrize(
     "suffix,extension,target",
     [
