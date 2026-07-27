@@ -31,7 +31,7 @@ def run_postprocessing_dataset(
     resampled_atlases: Sequence[str | Path],
     images: Sequence[BIDSImageFile],
     group_mask: str | Path,
-    standardize: str,
+    standardize: str | None,
     smoothing_fwhm: float,
     output_path: Path,
     calculate_average_correlation: bool = False,

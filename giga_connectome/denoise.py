@@ -171,7 +171,7 @@ def denoise_meta_data(strategy: STRATEGY_TYPE, img: str) -> METADATA_TYPE:
 def denoise_nifti_voxel(
     strategy: STRATEGY_TYPE,
     group_mask: str | Path,
-    standardize: str,
+    standardize: str | None,
     smoothing_fwhm: float,
     img: str,
 ) -> Nifti1Image | None:
