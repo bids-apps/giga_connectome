@@ -13,7 +13,7 @@ repos:
 
     # Lint and format Python code
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.16.0
+    rev: v0.16.10
     hooks:
     -   id: ruff-check
         # args: [--statistics]
@@ -22,7 +22,7 @@ repos:
         # args: [--diff]
 
 - repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v2.3.0
+  rev: v2.4.0
   hooks:
   - id: mypy
     additional_dependencies:
@@ -48,7 +48,7 @@ repos:
     exclude: paper/.*
 
 - repo: https://github.com/hadolint/hadolint
-  rev: v2.14.0
+  rev: v2.15.1
   hooks:
   - id: hadolint-docker
     name: Lint Dockerfiles
