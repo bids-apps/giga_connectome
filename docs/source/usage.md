@@ -280,7 +280,7 @@ ward = Parcellations(
     standardize=None,
     memory="nilearn_cache",
     memory_level=1,
-    verbose=1
+    verbose=1,
 )
 ward.fit(data_paths)  # nilearn can comprehend wild card
 ward_labels_img = ward.labels_img_
@@ -288,10 +288,18 @@ ward_labels_img = ward.labels_img_
 # Now, ward_labels_img are Nifti1Image object, it can be saved to file
 # with the following code:
 
-tpl_dir = Path.home() / "customised_atlas" / "templateflow" / "tpl-MNI152NLin2009cAsym"
+tpl_dir = (
+    Path.home()
+    / "customised_atlas"
+    / "templateflow"
+    / "tpl-MNI152NLin2009cAsym"
+)
 tpl_dir.mkdir(exist_ok=True, parents=True)
 print(f"Output will be saved to: {tpl_dir}")
-ward_labels_img.to_filename(tpl_dir / "tpl-MNI152NLin2009cAsym_res-02_atlas-wardclustering_desc-50_dseg.nii.gz")
+ward_labels_img.to_filename(
+    tpl_dir
+    / "tpl-MNI152NLin2009cAsym_res-02_atlas-wardclustering_desc-50_dseg.nii.gz"
+)
 ```
 
 Create the configuration file:
