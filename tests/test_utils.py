@@ -221,3 +221,21 @@ def test_desc_entity_recognised(tmp_path) -> None:
         reindex_bids,
         bids_filters=None,
     )
+
+
+def test_bids_database_dir(tmp_path) -> None:
+    """The PyBIDS index is written to database_path, not to bids_dir."""
+    create_fake_bids_dataset(tmp_path, n_sub=1, n_ses=1, n_runs=[1, 1])
+    bids_dir = tmp_path / "bids_dataset" / "derivatives"
+    database_dir = tmp_path / "pybids_db"
+
+    utils.get_bids_images(
+        ["01"],
+        "MNI",
+        bids_dir,
+        reindex_bids=True,
+        bids_filters=None,
+        database_path=database_dir,
+    )
+    assert (database_dir / "layout_index.sqlite").exists()
+    assert not (bids_dir / "layout_index.sqlite").exists()

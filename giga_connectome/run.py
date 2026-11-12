@@ -124,6 +124,15 @@ def global_parser() -> argparse.ArgumentParser:
         action="store_true",
     )
     parser.add_argument(
+        "--bids-database-dir",
+        action="store",
+        type=Path,
+        default=None,
+        help="Path to a directory where the PyBIDS database (SQLite index of "
+        "bids_dir) is stored, so bids_dir can be read-only. "
+        "The default is <output_dir>/.pybids_db.",
+    )
+    parser.add_argument(
         "--bids-filter-file",
         type=Path,
         help="A JSON file describing custom BIDS input filters using PyBIDS. "
