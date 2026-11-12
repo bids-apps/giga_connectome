@@ -1,6 +1,6 @@
 # What’s new
 
-## 0.6.1.dev
+## 0.7.0.dev
 
 **Released MONTH YEAR**
 
@@ -8,11 +8,17 @@
 
 ### Fixes
 
+- [FIX] Fix `AttributeError: 'NiftiMapsMasker' object has no attribute 'region_ids_'` for probabilistic atlases (DiFuMo). With `--calculate-intranetwork-average-correlation`, probabilistic atlases now skip the average correlation with a warning instead of stopping the run. (@htwangtw)
+
 ### Enhancements
 
 - [DOCS] Add JOSS reference to the citations and use the `README.md` as the documentation landing page. (@htwangtw)[#232](https://github.com/bids-apps/giga_connectome/pull/232)
 
 ### Changes
+
+- [MAINT] Update the container base image from Python 3.12.3 on Debian 11 (bullseye, end of life) to Python 3.14.10 on Debian 13 (trixie). (@htwangtw)
+- [MAINT] Run the container test in CI with a reduced set of DiFuMo (64 and 128 dimensions) and Schaefer2018 (100 and 200 parcels) atlases, so the job fits in the memory of a GitHub runner. The full DiFuMo preset needs about 16 GB of memory for the 1024-dimension atlas. (@htwangtw)
+- [MAINT] Update the pinned dependencies of the container, including nilearn 0.10.3 → 0.13.1, numpy 1.26.4 → 2.4.3, scipy 1.12.0 → 1.17.1, pandas 2.2.1 → 3.0.1, scikit-learn 1.4.1 → 1.8.0, pybids 0.15.6 → 0.22.0 and templateflow 0.8.1 → 25.1.2. Time series and connectomes may differ slightly from 0.6.0. (@Remi-Gau) [#263](https://github.com/bids-apps/giga_connectome/pull/263)
 
 
 ## 0.6.0
