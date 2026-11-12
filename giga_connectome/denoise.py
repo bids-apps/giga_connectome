@@ -208,7 +208,7 @@ def denoise_nifti_voxel(
         mask_img=group_mask,
         detrend=detrend,
         standardize=standardize,
-        standardize_confounds=True,  # Exposing this to test the deprication warning
+        standardize_confounds=True,
         smoothing_fwhm=smoothing_fwhm,
     )
     time_series_voxel = group_masker.fit_transform(
