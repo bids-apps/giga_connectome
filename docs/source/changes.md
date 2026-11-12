@@ -8,6 +8,8 @@
 
 ### Fixes
 
+- [FIX] Fix `AttributeError: 'NiftiMapsMasker' object has no attribute 'region_ids_'` for probabilistic atlases (DiFuMo). With `--calculate-intranetwork-average-correlation`, probabilistic atlases now skip the average correlation with a warning instead of stopping the run. (@htwangtw)
+
 ### Enhancements
 
 - [DOCS] Add JOSS reference to the citations and use the `README.md` as the documentation landing page. (@htwangtw)[#232](https://github.com/bids-apps/giga_connectome/pull/232)
