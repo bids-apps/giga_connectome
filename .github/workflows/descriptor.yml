@@ -12,6 +12,13 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    # GITHUB_TOKEN needs these to push the branch and open the PR.
+    # Also requires "Allow GitHub Actions to create and approve pull requests"
+    # in the repository (or organisation) Actions settings.
+    permissions:
+      contents: write
+      pull-requests: write
+
     steps:
 
     - name: Checkout repository
@@ -26,10 +33,11 @@ jobs:
         pip install .
 
     - name: Create descriptor
-      uses: michellewang/python-cli-to-boutiques@v1
+      uses: styx-api/python-cli-to-boutiques@v1
       with:
         parser-type: argparse
         parser-location: giga_connectome.run:global_parser
         output-path: descriptor.json
         open-pr: true
-        token: ${{ secrets.PR_ACCESS }}
+        # PRs opened with GITHUB_TOKEN do not trigger other workflows.
+        token: ${{ secrets.GITHUB_TOKEN }}
