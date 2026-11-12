@@ -1,5 +1,5 @@
-# https://hub.docker.com/layers/library/python/3.12.3-slim-bullseye/images/sha256-11ee4eb9e164c0ff4aeb4eef37163aedc358f57045f394f719b8c130190a440d
-FROM python@sha256:6fa552fb879325884b0c1b6792d14ae9500d246c8b19cc27876d84c7c41117ff
+# https://hub.docker.com/_/python/tags?name=3.14.9-slim-trixie
+FROM python:3.14.9-slim-trixie@sha256:35caba83af2fe6da9a5d922f9b0156f21d1246a48278c58a08bd253303ba42e8
 
 ARG DEBIAN_FRONTEND="noninteractive"
 

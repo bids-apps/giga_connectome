@@ -14,6 +14,8 @@
 
 ### Changes
 
+- [MAINT] Update the container base image from Python 3.12.3 on Debian 11 (bullseye, end of life) to Python 3.14.9 on Debian 13 (trixie). (@htwangtw)
+
 
 ## 0.6.0
 
