@@ -4,7 +4,14 @@ name: Add/update Boutiques descriptor
 on:
   push:
     branches: [main]
+  release:
+    types: [published]
   workflow_dispatch:
+    inputs:
+      tag:
+        description: Docker image tag to reference (a release, or unstable)
+        required: false
+        default: unstable
 
 jobs:
 
@@ -12,13 +19,33 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    # GITHUB_TOKEN needs these to push the branch and open the PR.
+    # Also requires "Allow GitHub Actions to create and approve pull requests"
+    # in the repository (or organisation) Actions settings.
+    permissions:
+      contents: write
+      pull-requests: write
+
+    # Releases reference their own image; pushes to main reference :unstable,
+    # which docker.yml publishes from main. Released tags stay on Docker Hub.
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag || 'unstable' }}
+
     steps:
 
+    # Check out main, not the tag: the PR needs a branch to target, and
+    # releases are tagged from main.
     - name: Checkout repository
       uses: actions/checkout@v7
+      with:
+        ref: main
 
+    # The action imports giga_connectome.run to read the CLI, so the package
+    # must be installed. Use the same Python as the container.
     - name: Set up Python
       uses: actions/setup-python@v7
+      with:
+        python-version: "3.14"
 
     - name: Install package
       run: |
@@ -26,10 +53,14 @@ jobs:
         pip install .
 
     - name: Create descriptor
-      uses: michellewang/python-cli-to-boutiques@v1
+      uses: styx-api/python-cli-to-boutiques@v1
       with:
         parser-type: argparse
         parser-location: giga_connectome.run:global_parser
+        prog-name: giga_connectome
         output-path: descriptor.json
+        # Image tag is set in env.TAG above.
+        updates-str: '{"container-image.type": "docker", "container-image.image": "bids/giga_connectome:${{ env.TAG }}"}'
         open-pr: true
-        token: ${{ secrets.PR_ACCESS }}
+        # PRs opened with GITHUB_TOKEN do not trigger other workflows.
+        token: ${{ secrets.GITHUB_TOKEN }}
