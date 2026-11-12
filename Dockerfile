@@ -1,5 +1,5 @@
-# https://hub.docker.com/_/python/tags?name=3.14.9-slim-trixie
-FROM python:3.14.9-slim-trixie@sha256:35caba83af2fe6da9a5d922f9b0156f21d1246a48278c58a08bd253303ba42e8
+# https://hub.docker.com/_/python/tags?name=3.12.15-slim-trixie
+FROM python:3.12.15-slim-trixie@sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704
 
 ARG DEBIAN_FRONTEND="noninteractive"
 
