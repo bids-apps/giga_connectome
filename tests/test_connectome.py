@@ -1,7 +1,8 @@
 import numpy as np
 from nibabel import Nifti1Image
 from nilearn.connectome import ConnectivityMeasure
-from nilearn.maskers import NiftiLabelsMasker, NiftiMasker
+from nilearn.image import new_img_like
+from nilearn.maskers import NiftiLabelsMasker, NiftiMapsMasker, NiftiMasker
 
 from giga_connectome.connectome import generate_timeseries_connectomes
 
@@ -67,3 +68,41 @@ def test_calculate_intranetwork_correlation() -> None:
     )  # output of the function is in float32
     assert np.abs(corr[0] - conn[0, 0]) < 1e-6
     assert np.abs(corr[1] - conn[1, 1]) < 1e-6
+
+
+def _maps_from_labels(atlas):
+    """Turn a 3D label atlas into a 4D (one map per parcel) atlas."""
+    data = atlas.get_fdata()
+    maps = np.stack([(data == i).astype(float) for i in (1, 2)], axis=-1)
+    return new_img_like(atlas, maps)
+
+
+def test_generate_timeseries_connectomes_maps_masker(caplog) -> None:
+    """Probabilistic atlases (NiftiMapsMasker) have no region_ids_."""
+    img, mask, atlas, _ = _simulate_img()
+    correlation_measure = ConnectivityMeasure(
+        kind="correlation", vectorize=False, discard_diagonal=False
+    )
+    masker = NiftiMapsMasker(maps_img=_maps_from_labels(atlas))
+    conn, time_series, _ = generate_timeseries_connectomes(
+        masker=masker,
+        denoised_img=img,
+        group_mask=mask,
+        correlation_measure=correlation_measure,
+        calculate_average_correlation=False,
+    )
+    assert conn.shape == (2, 2)
+    assert time_series.shape == (100, 2)
+
+    # average correlation is skipped with a warning, the diagonal stays 1
+    conn_avg, _, _ = generate_timeseries_connectomes(
+        masker=NiftiMapsMasker(maps_img=_maps_from_labels(atlas)),
+        denoised_img=img,
+        group_mask=mask,
+        correlation_measure=ConnectivityMeasure(
+            kind="correlation", vectorize=False, discard_diagonal=False
+        ),
+        calculate_average_correlation=True,
+    )
+    assert "Skipping it for this atlas" in caplog.text
+    np.testing.assert_allclose(conn_avg, conn)

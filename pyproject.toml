@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "giga_connectome"
 description = "Generate connectome from fMRIPrep outputs"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 license = { file="LICENSE" }
 authors = [
   { name="Hao-Ting Wang", email="htwangtw@gmail.com" },
@@ -208,6 +208,12 @@ select = [
     "W"
 ]
 unfixable = []
+
+[tool.ruff.lint.isort]
+# giga_connectome/_version.py is generated at build time and gitignored.
+# Without this, ruff sorts `giga_connectome._version` as third-party when the
+# file is missing (e.g. pre-commit.ci) and first-party when it exists locally.
+known-first-party = ["giga_connectome"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 23
