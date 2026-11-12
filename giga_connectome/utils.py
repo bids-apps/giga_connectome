@@ -73,16 +73,30 @@ def get_bids_images(
     bids_dir: Path,
     reindex_bids: bool,
     bids_filters: dict[str, dict[str, str]] | None,
+    database_path: Path | None = None,
 ) -> tuple[dict[str, list[BIDSFile]], BIDSLayout]:
     """
     Apply BIDS filter to the base filter we are using.
     Modified from fmripprep.
+
+    Parameters
+    ----------
+    database_path : Path or None
+        Directory where the PyBIDS SQLite index is stored.
+        If None, the index is stored in ``bids_dir``.
+        Set this to a writable location when ``bids_dir`` is read-only.
     """
     bids_filters = check_filter(bids_filters)
 
+    if database_path is None:
+        database_path = bids_dir
+    else:
+        database_path = Path(database_path)
+        database_path.mkdir(parents=True, exist_ok=True)
+
     layout = BIDSLayout(
         root=bids_dir,
-        database_path=bids_dir,
+        database_path=database_path,
         validate=False,
         derivatives=False,
         reset_database=reindex_bids,

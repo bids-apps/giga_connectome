@@ -34,6 +34,8 @@ def workflow(args: argparse.Namespace) -> None:
     bids_dir = args.bids_dir
     output_dir = args.output_dir
     atlases_dir = args.atlases_dir
+    # store the PyBIDS index outside of bids_dir so the input can be read-only
+    bids_database_dir = args.bids_database_dir or output_dir / ".pybids_db"
     smoothing_fwhm = args.smoothing_fwhm
     calculate_average_correlation = (
         args.calculate_intranetwork_average_correlation
@@ -74,7 +76,12 @@ def workflow(args: argparse.Namespace) -> None:
 
     for subject in subjects:
         subj_data, _ = utils.get_bids_images(
-            [subject], template, bids_dir, args.reindex_bids, bids_filters
+            [subject],
+            template,
+            bids_dir,
+            args.reindex_bids,
+            bids_filters,
+            database_path=bids_database_dir,
         )
         subject_mask_nii, subject_seg_niis = generate_gm_mask_atlas(
             atlases_dir, atlas, template, subj_data["mask"]

@@ -6,6 +6,8 @@
 
 ### New
 
+- [EHN] Add `--bids-database-dir` to set where the PyBIDS database is stored, so the input dataset can be read-only. (@htwangtw) [#181](https://github.com/bids-apps/giga_connectome/issues/181)
+
 ### Fixes
 
 ### Enhancements
@@ -13,6 +15,8 @@
 - [DOCS] Add JOSS reference to the citations and use the `README.md` as the documentation landing page. (@htwangtw)[#232](https://github.com/bids-apps/giga_connectome/pull/232)
 
 ### Changes
+
+- [ENH] The PyBIDS database is now stored in `<output_dir>/.pybids_db` by default instead of inside `bids_dir`. Existing datasets will be reindexed once on the first run after upgrading. (@htwangtw) [#181](https://github.com/bids-apps/giga_connectome/issues/181)
 
 
 ## 0.6.0
