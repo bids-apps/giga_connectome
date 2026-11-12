@@ -2,13 +2,16 @@
 name: Add/update Boutiques descriptor
 
 on:
+  push:
+    branches: [main]
   release:
     types: [published]
   workflow_dispatch:
     inputs:
       tag:
-        description: Release tag of the Docker image to reference
-        required: true
+        description: Docker image tag to reference (a release, or unstable)
+        required: false
+        default: unstable
 
 jobs:
 
@@ -23,8 +26,10 @@ jobs:
       contents: write
       pull-requests: write
 
+    # Releases reference their own image; pushes to main reference :unstable,
+    # which docker.yml publishes from main. Released tags stay on Docker Hub.
     env:
-      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+      TAG: ${{ github.event.release.tag_name || inputs.tag || 'unstable' }}
 
     steps:
 
@@ -54,7 +59,7 @@ jobs:
         parser-location: giga_connectome.run:global_parser
         prog-name: giga_connectome
         output-path: descriptor.json
-        # docker.yml publishes each release as bids/giga_connectome:<tag>.
+        # Image tag is set in env.TAG above.
         updates-str: '{"container-image.type": "docker", "container-image.image": "bids/giga_connectome:${{ env.TAG }}"}'
         open-pr: true
         # PRs opened with GITHUB_TOKEN do not trigger other workflows.
