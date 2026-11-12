@@ -7,7 +7,11 @@ import numpy as np
 from nibabel import Nifti1Image
 from nilearn.connectome import ConnectivityMeasure
 from nilearn.image import load_img
-from nilearn.maskers import NiftiLabelsMasker, NiftiMasker
+from nilearn.maskers import NiftiLabelsMasker, NiftiMapsMasker, NiftiMasker
+
+from giga_connectome.logger import gc_logger
+
+gc_log = gc_logger()
 
 
 def build_size_roi(
@@ -113,18 +117,22 @@ def calculate_intranetwork_correlation(
 
 
 def generate_timeseries_connectomes(
-    masker: NiftiLabelsMasker,
+    masker: NiftiLabelsMasker | NiftiMapsMasker,
     denoised_img: Nifti1Image,
     group_mask: str | Path,
     correlation_measure: ConnectivityMeasure,
     calculate_average_correlation: bool,
-) -> tuple[np.ndarray[Any, Any], np.ndarray[Any, Any], NiftiLabelsMasker]:
+) -> tuple[
+    np.ndarray[Any, Any],
+    np.ndarray[Any, Any],
+    NiftiLabelsMasker | NiftiMapsMasker,
+]:
     """Generate timeseries-based connectomes from functional data.
 
     Parameters
     ----------
-    masker : NiftiMasker
-        NiftiMasker instance for extracting time series.
+    masker : NiftiLabelsMasker | NiftiMapsMasker
+        Masker instance for extracting time series.
 
     denoised_img : Nifti1Image
         Denoised functional image.
@@ -137,6 +145,8 @@ def generate_timeseries_connectomes(
 
     calculate_average_correlation : bool
         Flag indicating whether to calculate average parcel correlations.
+        Only supported for discrete segmentations (NiftiLabelsMasker);
+        skipped with a warning for probabilistic atlases (NiftiMapsMasker).
 
     Returns
     -------
@@ -147,11 +157,22 @@ def generate_timeseries_connectomes(
     correlation_matrix = correlation_measure.fit_transform(
         [time_series_atlas]
     )[0]
-    region_ids = masker.region_ids_
-    if "background" in region_ids:
-        region_ids.pop("background")
     # average correlation within each parcel
-    if calculate_average_correlation:
+    if calculate_average_correlation and not isinstance(
+        masker, NiftiLabelsMasker
+    ):
+        gc_log.warning(
+            "Average intranetwork correlation is only supported for discrete "
+            "segmentations (e.g. Schaefer2018, MIST), not for probabilistic "
+            "atlases (e.g. DiFuMo). Skipping it for this atlas."
+        )
+    elif calculate_average_correlation:
+        # parcel ids only; drop the background entry
+        region_ids = {
+            key: value
+            for key, value in masker.region_ids_.items()
+            if key != "background"
+        }
         (
             correlation_matrix,
             _,

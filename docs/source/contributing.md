@@ -157,6 +157,30 @@ giga_connectome \
     participant
 ```
 
+### Memory requirements
+
+Resampling the atlases to the grey matter mask is the most memory-intensive step.
+The full DiFuMo preset peaks at about 16 GB of memory, almost all of it from the 1024-dimension atlas.
+This is the same amount of memory as a standard GitHub Actions runner, so the full preset gets killed in CI (exit code 137).
+
+For this reason, the container test in `.github/workflows/docker.yml` runs a reduced set of some atlases:
+
+- DiFuMo: 64 and 128 dimensions
+- Schaefer2018: 100 and 400 parcels
+
+The reduced configurations are in `.github/ci_atlas/`.
+If an atlas has a configuration file there, the workflow uses it instead of the preset.
+To reduce another atlas in CI, add a `<atlas name>.json` to that folder.
+The format is the same as the presets in `giga_connectome/data/atlas/`.
+
+You can also pass these files to `--atlas` when running the demo on a machine with limited memory:
+
+```bash
+giga_connectome \
+    --atlas .github/ci_atlas/DiFuMo.json \
+    ...
+```
+
 ## Prepare a release
 
 Currently this project is not pushed to PyPi.

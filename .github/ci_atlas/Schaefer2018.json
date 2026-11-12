@@ -1,0 +1,13 @@
+{
+    "name": "Schaefer2018",
+    "parameters": {
+        "atlas": "Schaefer2018",
+        "template": "MNI152NLin2009cAsym",
+        "resolution": "02",
+        "suffix": "dseg"
+    },
+    "desc": [
+        "100Parcels7Networks",
+        "400Parcels7Networks"],
+    "templateflow_dir" : null
+}
