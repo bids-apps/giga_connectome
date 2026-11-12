@@ -91,17 +91,24 @@ jobs:
           key: data
       - name: Test the Docker image
         run: |
+          # Atlases with a config in .github/ci_atlas run a reduced set of
+          # resolutions/dimensions so they fit in the runner's memory.
+          atlas="${{ matrix.atlas }}"
+          if [ -f ".github/ci_atlas/${atlas}.json" ]; then
+            atlas="/ci_atlas/${atlas}.json"
+          fi
           docker load -i ${{ env.IMAGE }}/image.tar
           docker run --rm \
             -v ${{ env.DATA }}:/test_data \
             -v ./outputs:/outputs \
             -v ./outputs/atlases:/atlases \
+            -v ./.github/ci_atlas:/ci_atlas:ro \
             ${{env.USER_NAME}}/${{env.REPO_NAME}} \
             /test_data/ds000017-fmriprep22.0.1-downsampled-nosurface \
             /outputs \
             participant \
             -a /atlases \
-            --atlas ${{ matrix.atlas }} \
+            --atlas "${atlas}" \
             --participant_label 1 \
             --reindex-bids
 
