@@ -19,6 +19,8 @@ RUN pip3 install --no-cache-dir pip==24.0 && \
     pip3 --no-cache-dir install .
 
 ENV TEMPLATEFLOW_HOME=${TEMPLATEFLOW_HOME}
+# Ignore packages in the user site directory (e.g. ~/.local/lib/pythonX.Y/site-packages).
+ENV PYTHONNOUSERSITE=1
 
 RUN git submodule update --init --recursive && python3 /code/tools/download_templates.py
 

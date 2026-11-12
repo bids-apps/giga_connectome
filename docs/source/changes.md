@@ -8,6 +8,8 @@
 
 ### Fixes
 
+- [FIX] Set `PYTHONNOUSERSITE=1` in the container so Python packages from the user site directory (`~/.local`) no longer shadow the container environment when running with Apptainer. (@htwangtw) [#278](https://github.com/bids-apps/giga_connectome/issues/278)
+
 ### Enhancements
 
 - [DOCS] Add JOSS reference to the citations and use the `README.md` as the documentation landing page. (@htwangtw)[#232](https://github.com/bids-apps/giga_connectome/pull/232)
