@@ -69,6 +69,14 @@ apptainer run \
     --reindex-bids
 ```
 
+```{note}
+Apptainer mounts your home directory and passes your host environment variables into the container by default.
+The container sets `PYTHONNOUSERSITE=1` so packages installed in `~/.local` are ignored.
+If you still run into import errors from packages outside the container
+(for example, because `PYTHONPATH` is set on the host),
+add `--cleanenv` (and optionally `--no-home`) to the `apptainer run` command.
+```
+
 For Docker:
 
 ```bash

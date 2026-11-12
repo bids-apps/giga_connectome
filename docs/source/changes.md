@@ -8,6 +8,7 @@
 
 ### Fixes
 
+- [FIX] Set `PYTHONNOUSERSITE=1` in the container so Python packages from the user site directory (`~/.local`) no longer shadow the container environment when running with Apptainer. (@htwangtw) [#278](https://github.com/bids-apps/giga_connectome/issues/278)
 - [FIX] Fix `AttributeError: 'NiftiMapsMasker' object has no attribute 'region_ids_'` for probabilistic atlases (DiFuMo). With `--calculate-intranetwork-average-correlation`, probabilistic atlases now skip the average correlation with a warning instead of stopping the run. (@htwangtw)
 
 ### Enhancements
