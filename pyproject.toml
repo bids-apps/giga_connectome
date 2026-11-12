@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "giga_connectome"
 description = "Generate connectome from fMRIPrep outputs"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 license = { file="LICENSE" }
 authors = [
   { name="Hao-Ting Wang", email="htwangtw@gmail.com" },
