@@ -1,6 +1,6 @@
 # What’s new
 
-## 0.6.1.dev
+## 0.7.0.dev
 
 **Released MONTH YEAR**
 
@@ -17,6 +17,7 @@
 ### Changes
 
 - [MAINT] Update the container base image from Python 3.12.3 on Debian 11 (bullseye, end of life) to Python 3.12.15 on Debian 13 (trixie). (@htwangtw)
+- [MAINT] Update the pinned dependencies of the container, including nilearn 0.10.3 → 0.13.1, numpy 1.26.4 → 2.4.3, scipy 1.12.0 → 1.17.1, pandas 2.2.1 → 3.0.1, scikit-learn 1.4.1 → 1.8.0, pybids 0.15.6 → 0.22.0 and templateflow 0.8.1 → 25.1.2. Time series and connectomes may differ slightly from 0.6.0. (@Remi-Gau) [#263](https://github.com/bids-apps/giga_connectome/pull/263)
 
 
 ## 0.6.0
