@@ -2,9 +2,13 @@
 name: Add/update Boutiques descriptor
 
 on:
-  push:
-    branches: [main]
+  release:
+    types: [published]
   workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag of the Docker image to reference
+        required: true
 
 jobs:
 
@@ -19,13 +23,24 @@ jobs:
       contents: write
       pull-requests: write
 
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+
     steps:
 
+    # Check out main, not the tag: the PR needs a branch to target, and
+    # releases are tagged from main.
     - name: Checkout repository
       uses: actions/checkout@v7
+      with:
+        ref: main
 
+    # The action imports giga_connectome.run to read the CLI, so the package
+    # must be installed. Use the same Python as the container.
     - name: Set up Python
       uses: actions/setup-python@v7
+      with:
+        python-version: "3.14"
 
     - name: Install package
       run: |
@@ -37,7 +52,10 @@ jobs:
       with:
         parser-type: argparse
         parser-location: giga_connectome.run:global_parser
+        prog-name: giga_connectome
         output-path: descriptor.json
+        # docker.yml publishes each release as bids/giga_connectome:<tag>.
+        updates-str: '{"container-image.type": "docker", "container-image.image": "bids/giga_connectome:${{ env.TAG }}"}'
         open-pr: true
         # PRs opened with GITHUB_TOKEN do not trigger other workflows.
         token: ${{ secrets.GITHUB_TOKEN }}
