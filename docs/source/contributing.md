@@ -147,7 +147,7 @@ python ./tools/download_templates.py
 
 ```bash
 giga_connectome \
-    --atlas Schaefer20187Networks \
+    --atlas Schaefer2018 \
     --denoise-strategy simple \
     --bids-filter giga_connectome/data/test_data/bids_filter.json  \
     --reindex-bids \
@@ -192,7 +192,7 @@ Switch to a new branch locally:
 ```bash
 git checkout -b REL-x.y.z
 ```
-First we need to prepare the release by updating the file `giga_connectome/docs/changes.md` to make sure all the new features, enhancements, and bug fixes are included in their respective sections.
+First we need to prepare the release by updating the file `docs/source/changes.md` to make sure all the new features, enhancements, and bug fixes are included in their respective sections.
 
 Finally, we need to change the title from x.y.z.dev to x.y.z
 
@@ -212,7 +212,7 @@ git commit -m "REL x.y.z"
 git push upstream REL-x.y.z
 ```
 
-Once the PR has been reviewed and merged, pull from master and tag the merge commit:
+Once the PR has been reviewed and merged, pull from main and tag the merge commit:
 
 ```bash
 git checkout main
@@ -225,7 +225,7 @@ git push upstream --tags
 
 At this point, the release has been made.
 
-We also need to create a new section in `giga_connectome/docs/changes.md` with a title and the usual New, Enhancements, Bug Fixes, and Changes sections for the version currently under development:
+We also need to create a new section in `docs/source/changes.md` with a title and the usual New, Enhancements, Bug Fixes, and Changes sections for the version currently under development:
 
 ```markdown
 

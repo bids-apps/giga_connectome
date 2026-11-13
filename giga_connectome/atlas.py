@@ -29,10 +29,10 @@ class ATLAS_SETTING_TYPE(TypedDict):
     type: str
 
 
-deprecations = {
+deprecations: dict[str, tuple[str, str]] = {
     # parser attribute name:
     # (replacement, version slated to be removed in)
-    "Schaefer20187Networks": ("Schaefer2018", "0.7.0"),
+    # "Schaefer20187Networks": ("Schaefer2018", "0.7.0"),
 }
 
 
@@ -112,7 +112,7 @@ def resample_atlas_collection(
         File names of subject atlas segmentations.
 
     atlas_config: dict
-        Atlas name. Currently support Schaefer20187Networks, MIST, DiFuMo.
+        Atlas name. Currently support Schaefer2018, MIST, DiFuMo.
 
     subject_mask_dir: pathlib.Path
         Path to where the outputs are saved.

@@ -16,14 +16,14 @@ identifiers:
 license: MIT
 
 contact:
-  - email: htwangtw@gmail.com
+  - email: haoting.wang@ubc.ca
     family-names: Wang
     given-names: Hao-Ting
 
 authors:
   - family-names: Wang
     given-names: Hao-Ting
-    email: htwangtw@gmail.com
+    email: haoting.wang@ubc.ca
     orcid: https://orcid.org/0000-0003-4078-2038
   - family-names: Gau
     given-names: Rémi

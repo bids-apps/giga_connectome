@@ -12,10 +12,10 @@ from giga_connectome.logger import gc_logger
 gc_log = gc_logger()
 
 preset_atlas = get_atlas_labels()
-deprecations = {
+deprecations: dict[str, tuple[str, str]] = {
     # parser attribute name:
     # (replacement flag, version slated to be removed in)
-    "work-dir": ("--atlases-dir", "0.7.0"),
+    # "work-dir": ("--atlases-dir", "0.7.0"),
 }
 
 
@@ -85,12 +85,6 @@ def global_parser() -> argparse.ArgumentParser:
         type=Path,
         default=Path("./atlases"),
         help="Path where subject specific segmentations are stored.",
-    )
-    parser.add_argument(
-        "-w",
-        "--work-dir",
-        action=DeprecatedAction,
-        help="This argument is deprecated. Please use --atlases-dir instead.",
     )
     parser.add_argument(
         "--atlas",

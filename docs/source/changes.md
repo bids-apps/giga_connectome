@@ -1,28 +1,37 @@
 # What’s new
 
-## 0.7.0.dev
+## 0.7.0
 
-**Released MONTH YEAR**
+**Released November 2026**
 
 ### New
 
-- [EHN] Add `--bids-database-path` to set where the PyBIDS database is stored, so the input dataset can be read-only. An existing `layout_index.sqlite` built for `bids_dir` is reused and never modified; if it cannot be reused, or with `--reindex-bids`, a new database is generated in the output directory. (@htwangtw) [#181](https://github.com/bids-apps/giga_connectome/issues/181)
+- [EHN] Add `--bids-database-path` to set where the PyBIDS database is stored, so the input dataset can be read-only. The path must point to a file named `layout_index.sqlite`. An existing database built for `bids_dir` is reused and never modified; if it cannot be reused, or with `--reindex-bids`, a new database is generated in the output directory. (@htwangtw) [#181](https://github.com/bids-apps/giga_connectome/issues/181)
 
 ### Fixes
 
 - [FIX] Set `PYTHONNOUSERSITE=1` in the container so Python packages from the user site directory (`~/.local`) no longer shadow the container environment when running with Apptainer. (@htwangtw) [#278](https://github.com/bids-apps/giga_connectome/issues/278)
 - [FIX] Fix `AttributeError: 'NiftiMapsMasker' object has no attribute 'region_ids_'` for probabilistic atlases (DiFuMo). With `--calculate-intranetwork-average-correlation`, probabilistic atlases now skip the average correlation with a warning instead of stopping the run. (@htwangtw)
+- [FIX] `--reindex-bids` now rebuilds the PyBIDS database once per run instead of once per participant. (@htwangtw) [#291](https://github.com/bids-apps/giga_connectome/pull/291)
+- [FIX] Sort the preset atlas names, so the `--atlas` help text and the Boutiques descriptor no longer change order between runs. (@htwangtw)
 
 ### Enhancements
 
 - [DOCS] Add JOSS reference to the citations and use the `README.md` as the documentation landing page. (@htwangtw)[#232](https://github.com/bids-apps/giga_connectome/pull/232)
+- [DOCS] Add instructions to run participants in parallel with a shared PyBIDS database. (@htwangtw)
 
 ### Changes
 
+- [MAINT] Drop support for Python 3.9 to 3.11. `giga_connectome` now requires Python 3.12 or later, and is tested with Python 3.12 to 3.15. (@Remi-Gau) [#261](https://github.com/bids-apps/giga_connectome/pull/261)
+- [MAINT] Remove `--work-dir` (`-w`), deprecated in 0.6.0. Use `--atlases-dir` instead. (@htwangtw)
+- [MAINT] Remove the atlas name `Schaefer20187Networks`, deprecated in 0.6.0. Use `Schaefer2018` instead. (@htwangtw)
 - [ENH] The PyBIDS database is now stored in `<output_dir>/fmriprep_pybids_db/layout_index.sqlite` by default instead of inside `bids_dir`. Existing datasets will be reindexed once on the first run after upgrading. (@htwangtw) [#181](https://github.com/bids-apps/giga_connectome/issues/181)
 - [MAINT] Update the container base image from Python 3.12.3 on Debian 11 (bullseye, end of life) to Python 3.14.10 on Debian 13 (trixie). (@htwangtw)
 - [MAINT] Run the container test in CI with a reduced set of DiFuMo (64 and 128 dimensions) and Schaefer2018 (100 and 200 parcels) atlases, so the job fits in the memory of a GitHub runner. The full DiFuMo preset needs about 16 GB of memory for the 1024-dimension atlas. (@htwangtw)
 - [MAINT] Update the pinned dependencies of the container, including nilearn 0.10.3 → 0.13.1, numpy 1.26.4 → 2.4.3, scipy 1.12.0 → 1.17.1, pandas 2.2.1 → 3.0.1, scikit-learn 1.4.1 → 1.8.0, pybids 0.15.6 → 0.22.0 and templateflow 0.8.1 → 25.1.2. Time series and connectomes may differ slightly from 0.6.0. (@Remi-Gau) [#263](https://github.com/bids-apps/giga_connectome/pull/263)
+- [MAINT] Switch from black and flake8 to ruff for linting and formatting. (@Remi-Gau) [#262](https://github.com/bids-apps/giga_connectome/pull/262)
+- [MAINT] Fix the coverage report, which showed 0% since the tests moved out of the package. (@htwangtw) [#290](https://github.com/bids-apps/giga_connectome/pull/290)
+- [MAINT] Fix the container test failing on `main` by sharing the test data cache between workflows. (@htwangtw) [#288](https://github.com/bids-apps/giga_connectome/pull/288)
 
 
 ## 0.6.0
