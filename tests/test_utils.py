@@ -42,7 +42,7 @@ def test_prepare_bidsfilter_and_template() -> None:
     assert bids_filters["mask"]["space"] == "MNI152NLin2009cAsym"
 
 
-def test_get_bids_images(data_dir) -> None:
+def test_get_bids_images(data_dir, tmp_path) -> None:
     subjects = ["1"]
     template = "MNI152NLin2009cAsym"
     bids_dir = (
@@ -56,7 +56,12 @@ def test_get_bids_images(data_dir) -> None:
         "bold": {"task": "probabilisticclassification", "run": "1"},
     }  # task and run should apply to both mask and bold
     subj_data, _ = utils.get_bids_images(
-        subjects, template, bids_dir, reindex_bids, user_bids_filters
+        subjects,
+        template,
+        bids_dir,
+        reindex_bids,
+        user_bids_filters,
+        database_path=tmp_path,
     )
     assert len(subj_data["bold"]) == len(subj_data["mask"])
 
@@ -65,11 +70,14 @@ def test_get_bids_images(data_dir) -> None:
     template, bids_filters = utils.prepare_bidsfilter_and_template(
         strategy, user_bids_filters
     )
-    print(bids_filters)
     subj_data, _ = utils.get_bids_images(
-        subjects, template, bids_dir, reindex_bids, bids_filters
+        subjects,
+        template,
+        bids_dir,
+        reindex_bids,
+        bids_filters,
+        database_path=tmp_path,
     )
-    print(subj_data)
     assert len(subj_data["bold"]) == len(subj_data["mask"])
     assert all(
         "desc-smoothAROMAnonaggr_bold.nii.gz" in img.path
@@ -209,10 +217,14 @@ def test_output_filename_seg(
     assert target == generated_target
 
 
-def test_desc_entity_recognised(tmp_path) -> None:
-
+@pytest.fixture
+def fake_bids_dir(tmp_path) -> Path:
+    """A fake fMRIPrep derivative dataset with one subject."""
     create_fake_bids_dataset(tmp_path, n_sub=1, n_ses=1, n_runs=[1, 1])
+    return tmp_path / "bids_dataset" / "derivatives"
 
+
+def test_desc_entity_recognised(fake_bids_dir) -> None:
     subjects = ["01"]
     template = "MNI"
     reindex_bids = True
@@ -220,31 +232,17 @@ def test_desc_entity_recognised(tmp_path) -> None:
     utils.get_bids_images(
         subjects,
         template,
-        tmp_path / "bids_dataset" / "derivatives",
+        fake_bids_dir,
         reindex_bids,
         bids_filters=None,
     )
 
 
-def test_bids_database_dir(tmp_path) -> None:
-    """The PyBIDS index is written to database_path, not to bids_dir."""
-    create_fake_bids_dataset(tmp_path, n_sub=1, n_ses=1, n_runs=[1, 1])
-    bids_dir = tmp_path / "bids_dataset" / "derivatives"
-    database_dir = tmp_path / "pybids_db"
-
-    utils.get_bids_images(
-        ["01"],
-        "MNI",
-        bids_dir,
-        reindex_bids=True,
-        bids_filters=None,
-        database_path=database_dir,
-    )
-    assert (database_dir / "layout_index.sqlite").exists()
-    assert not (bids_dir / "layout_index.sqlite").exists()
-
-
-def _make_database(bids_dir, database_dir, config=("bids", "derivatives")):
+def _make_database(
+    bids_dir: Path,
+    database_dir: Path,
+    config: tuple[str, ...] = ("bids", "derivatives"),
+) -> Path:
     BIDSLayout(
         bids_dir,
         database_path=database_dir,
@@ -255,62 +253,58 @@ def _make_database(bids_dir, database_dir, config=("bids", "derivatives")):
     return database_dir / "layout_index.sqlite"
 
 
-def test_select_bids_database_reuse(tmp_path) -> None:
-    """An existing PyBIDS index built for bids_dir is reused as is."""
-    create_fake_bids_dataset(tmp_path, n_sub=1, n_ses=1, n_runs=[1, 1])
-    bids_dir = tmp_path / "bids_dataset" / "derivatives"
+@pytest.mark.parametrize("given_path", [True, False], ids=["reuse", "default"])
+def test_select_bids_database(fake_bids_dir, tmp_path, given_path) -> None:
+    """A given index built for bids_dir is reused as is; without a path,
+    the index is generated in output_dir.
+    """
     output_dir = tmp_path / "output"
-    database_file = _make_database(bids_dir, tmp_path / "pybids_db")
-    mtime = database_file.stat().st_mtime_ns
+    if given_path:
+        database_file = _make_database(fake_bids_dir, tmp_path / "pybids_db")
+        mtime = database_file.stat().st_mtime_ns
+        expected_dir, other_dir = database_file.parent, output_dir
+    else:
+        database_file = None
+        expected_dir, other_dir = output_dir, tmp_path / "pybids_db"
 
     selected = utils.select_bids_database(
-        database_file, bids_dir, output_dir, reindex_bids=False
+        database_file, fake_bids_dir, output_dir, reindex_bids=False
     )
-    assert selected == database_file.parent
+    assert selected == expected_dir
     subj_data, layout = utils.get_bids_images(
-        ["01"], "MNI", bids_dir, False, None, database_path=selected
+        ["01"], "MNI", fake_bids_dir, False, None, database_path=selected
     )
-    assert Path(layout.root) == bids_dir.resolve()
+    assert Path(layout.root) == fake_bids_dir.resolve()
     assert len(subj_data["bold"]) > 0
-    assert database_file.stat().st_mtime_ns == mtime
-    assert not (output_dir / "layout_index.sqlite").exists()
-
-
-def test_select_bids_database_default(tmp_path) -> None:
-    """Without a path, the index is generated in output_dir."""
-    create_fake_bids_dataset(tmp_path, n_sub=1, n_ses=1, n_runs=[1, 1])
-    bids_dir = tmp_path / "bids_dataset" / "derivatives"
-    output_dir = tmp_path / "output"
-
-    selected = utils.select_bids_database(None, bids_dir, output_dir, False)
-    assert selected == output_dir
-    utils.get_bids_images(
-        ["01"], "MNI", bids_dir, False, None, database_path=selected
-    )
-    assert (output_dir / "layout_index.sqlite").exists()
+    assert (expected_dir / "layout_index.sqlite").exists()
+    assert not (other_dir / "layout_index.sqlite").exists()
+    assert not (fake_bids_dir / "layout_index.sqlite").exists()
+    if given_path:
+        assert database_file.stat().st_mtime_ns == mtime
 
 
 @pytest.mark.parametrize("case", ["new", "no_derivatives", "other_root"])
-def test_select_bids_database_regenerate(tmp_path, case) -> None:
+def test_select_bids_database_regenerate(
+    fake_bids_dir, tmp_path, case
+) -> None:
     """A missing or unusable index is generated at the given path."""
-    create_fake_bids_dataset(tmp_path, n_sub=1, n_ses=1, n_runs=[1, 1])
-    bids_dir = tmp_path / "bids_dataset" / "derivatives"
     database_file = tmp_path / "pybids_db" / "layout_index.sqlite"
     if case == "no_derivatives":
-        _make_database(bids_dir, database_file.parent, config=("bids",))
+        _make_database(fake_bids_dir, database_file.parent, config=("bids",))
     elif case == "other_root":
         _make_database(tmp_path / "bids_dataset", database_file.parent)
 
     selected = utils.select_bids_database(
-        database_file, bids_dir, tmp_path / "output", False
+        database_file, fake_bids_dir, tmp_path / "output", False
     )
     assert selected == database_file.parent
     subj_data, layout = utils.get_bids_images(
-        ["01"], "MNI", bids_dir, False, None, database_path=selected
+        ["01"], "MNI", fake_bids_dir, False, None, database_path=selected
     )
-    assert Path(layout.root) == bids_dir.resolve()
+    assert Path(layout.root) == fake_bids_dir.resolve()
     assert len(subj_data["bold"]) > 0
     assert database_file.exists()
+    assert not (fake_bids_dir / "layout_index.sqlite").exists()
 
 
 def test_select_bids_database_rejects_directory(tmp_path) -> None:

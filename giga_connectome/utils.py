@@ -120,14 +120,16 @@ def select_bids_database(
         The directory holding the index, as expected by PyBIDS.
     """
     if database_path is None:
-        gc_log.info(f"Generate PyBIDS database: {output_dir}/{PYBIDS_DATABASE_FILE}")
+        gc_log.info(
+            f"Generate PyBIDS database: {output_dir}/{PYBIDS_DATABASE_FILE}"
+        )
         return Path(output_dir)
 
     database_path = Path(database_path)
     if database_path.is_dir():
         raise ValueError(
-            f"The PyBIDS database path must be the sqlite file of {bids_dir},"
-            "not a direcotry"
+            f"The PyBIDS database path must be the sqlite file of {bids_dir}, "
+            "not a directory."
         )
 
     database_dir = database_path.parent

@@ -2,7 +2,6 @@
 
 import contextlib
 import json
-from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -26,7 +25,7 @@ def test_help(capsys) -> None:
 
 
 @pytest.mark.smoke
-def test_smoke(data_dir, tmp_path, caplog) -> None:
+def test_smoke(data_dir, tmp_path) -> None:
     bids_dir = (
         data_dir
         / "test_data"
@@ -34,9 +33,6 @@ def test_smoke(data_dir, tmp_path, caplog) -> None:
     )
     output_dir = tmp_path / "output"
     atlases_dir = tmp_path / "atlases"
-
-    if not Path(output_dir).exists:
-        Path(output_dir).mkdir()
 
     main(
         [
@@ -77,13 +73,13 @@ def test_smoke(data_dir, tmp_path, caplog) -> None:
     assert relmat_file.exists()
     relmat = pd.read_csv(relmat_file, sep="\t")
     assert len(relmat) == 100
-    json_file = relmat_file = output_folder / (ts_base + "_timeseries.json")
+    json_file = output_folder / (ts_base + "_timeseries.json")
     assert json_file.exists()
     with open(json_file) as f:
         content = json.load(f)
         assert content.get("SamplingFrequency") == 0.5
 
-    timeseries_file = relmat_file = output_folder / (
+    timeseries_file = output_folder / (
         base + "_desc-denoiseSimple_timeseries.tsv"
     )
     assert timeseries_file.exists()
