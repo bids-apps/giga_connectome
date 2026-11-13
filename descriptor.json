@@ -129,6 +129,6 @@
   ],
   "container-image": {
     "type": "docker",
-    "image": "bids/giga_connectome:0.7.0"
+    "image": "bids/giga_connectome:unstable"
   }
 }
