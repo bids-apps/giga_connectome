@@ -153,7 +153,7 @@ def resample_atlas_collection(
 def get_atlas_labels() -> list[str]:
     """Get the list of available atlas labels."""
     atlas_dir = DATA_DIR / "atlas"
-    return [p.stem for p in Path(atlas_dir).glob("*.json")]
+    return sorted(p.stem for p in Path(atlas_dir).glob("*.json"))
 
 
 def _check_altas_config(
