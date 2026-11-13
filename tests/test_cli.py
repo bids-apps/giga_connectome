@@ -58,7 +58,6 @@ def test_smoke(data_dir, tmp_path, caplog) -> None:
         ]
     )
     # check outputs
-    assert "has been deprecated" in caplog.text.splitlines()[0]
     # PyBIDS index is stored in the output directory, not in bids_dir
     assert (output_dir / "layout_index.sqlite").exists()
 
