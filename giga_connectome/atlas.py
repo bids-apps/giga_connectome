@@ -29,10 +29,10 @@ class ATLAS_SETTING_TYPE(TypedDict):
     type: str
 
 
-deprecations = {
+deprecations: dict[str, tuple[str, str]] = {
     # parser attribute name:
     # (replacement, version slated to be removed in)
-    "Schaefer20187Networks": ("Schaefer2018", "0.7.0"),
+    # "Schaefer20187Networks": ("Schaefer2018", "0.7.0"),
 }
 
 
@@ -112,7 +112,7 @@ def resample_atlas_collection(
         File names of subject atlas segmentations.
 
     atlas_config: dict
-        Atlas name. Currently support Schaefer20187Networks, MIST, DiFuMo.
+        Atlas name. Currently support Schaefer2018, MIST, DiFuMo.
 
     subject_mask_dir: pathlib.Path
         Path to where the outputs are saved.
@@ -153,7 +153,7 @@ def resample_atlas_collection(
 def get_atlas_labels() -> list[str]:
     """Get the list of available atlas labels."""
     atlas_dir = DATA_DIR / "atlas"
-    return [p.stem for p in Path(atlas_dir).glob("*.json")]
+    return sorted(p.stem for p in Path(atlas_dir).glob("*.json"))
 
 
 def _check_altas_config(
