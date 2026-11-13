@@ -2,7 +2,7 @@
   "schema-version": "0.5+styx",
   "name": "giga_connectome",
   "description": "Generate denoised timeseries and Pearson's correlation based connectomes from fmriprep processed dataset.",
-  "command-line": "giga_connectome [BIDS_DIR] [OUTPUT_DIR] [ANALYSIS_LEVEL] [PARTICIPANT_LABEL] [ATLASES_DIR] [WORK_DIR] [ATLAS] [DENOISE_STRATEGY] [SMOOTHING_FWHM] [REINDEX_BIDS] [BIDS_DATABASE_PATH] [BIDS_FILTER_FILE] [CALCULATE_INTRANETWORK_AVERAGE_CORRELATION] [VERBOSITY]",
+  "command-line": "giga_connectome [BIDS_DIR] [OUTPUT_DIR] [ANALYSIS_LEVEL] [PARTICIPANT_LABEL] [ATLASES_DIR] [ATLAS] [DENOISE_STRATEGY] [SMOOTHING_FWHM] [REINDEX_BIDS] [BIDS_DATABASE_PATH] [BIDS_FILTER_FILE] [CALCULATE_INTRANETWORK_AVERAGE_CORRELATION] [VERBOSITY]",
   "inputs": [
     {
       "id": "bids_dir",
@@ -49,19 +49,10 @@
       "name": "atlases_dir"
     },
     {
-      "id": "work_dir",
-      "type": "String",
-      "value-key": "[WORK_DIR]",
-      "description": "This argument is deprecated. Please use --atlases-dir instead.",
-      "optional": true,
-      "command-line-flag": "--work-dir",
-      "name": "work_dir"
-    },
-    {
       "id": "atlas",
       "type": "String",
       "value-key": "[ATLAS]",
-      "description": "The choice of atlas for time series extraction. Default atlas choices are: ['DiFuMo', 'HarvardOxfordCorticalSymmetricSplit', 'HarvardOxfordCortical', 'HarvardOxfordSubcortical', 'MIST', 'Schaefer2018']. User can pass a path to a json file containing configuration for their own choice of atlas. The default is 'Schaefer2018'. (Default: \"Schaefer2018\")",
+      "description": "The choice of atlas for time series extraction. Default atlas choices are: ['DiFuMo', 'HarvardOxfordCortical', 'HarvardOxfordCorticalSymmetricSplit', 'HarvardOxfordSubcortical', 'MIST', 'Schaefer2018']. User can pass a path to a json file containing configuration for their own choice of atlas. The default is 'Schaefer2018'. (Default: \"Schaefer2018\")",
       "optional": true,
       "command-line-flag": "--atlas",
       "name": "atlas"
@@ -97,7 +88,7 @@
       "id": "bids_database_path",
       "type": "File",
       "value-key": "[BIDS_DATABASE_PATH]",
-      "description": "Path to the PyBIDS database file layout_index.sqlite (SQLite index of bids_dir); a directory is not accepted. If the path is already a PyBIDS database built for bids_dir, it is reused unless --reindex-bids is set. Otherwise it will be generated and stored at this path, or at <output_dir>/layout_index.sqlite if no path is given.",
+      "description": "Path to the PyBIDS database file layout_index.sqlite (SQLite index of bids_dir); a directory is not accepted. If the path is already a PyBIDS database built for bids_dir, it is reused unless --reindex-bids is set. If the file does not exist, it is generated at this path. An existing file is never modified: when it cannot be reused, or when no path is given, the database is generated at <output_dir>/fmriprep_pybids_db/layout_index.sqlite.",
       "optional": true,
       "command-line-flag": "--bids-database-path",
       "name": "bids_database_path"
