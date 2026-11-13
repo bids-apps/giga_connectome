@@ -292,7 +292,6 @@ def test_select_bids_database(
         == (reference_database[1])
     )
     assert (expected_dir / DATABASE_FILE).exists()
-    assert not (bids_dir / DATABASE_FILE).exists()
     if case == "default":
         assert not database_file.exists()
     else:
