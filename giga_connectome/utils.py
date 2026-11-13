@@ -26,6 +26,8 @@ from giga_connectome.logger import gc_logger
 
 gc_log = gc_logger()
 PYBIDS_DATABASE_FILE = "layout_index.sqlite"
+# subfolder of the output directory holding the default PyBIDS index
+PYBIDS_DATABASE_DIR = "fmriprep_pybids_db"
 
 
 def prepare_bidsfilter_and_template(
@@ -108,10 +110,12 @@ def select_bids_database(
 ) -> Path:
     """Pick the directory of the PyBIDS index to use for ``bids_dir``.
 
-    A user supplied ``database_path`` (the ``layout_index.sqlite`` file) is
+    A user supplied ``database_path`` (a ``layout_index.sqlite`` file) is
     reused if it is a PyBIDS index built for ``bids_dir`` and ``reindex_bids``
-    is False. Otherwise, the index is generated and stored at the provided
-    ``database_path`` or ``<output_dir>/layout_index.sqlite`` if
+    is False, and generated there if it does not exist yet. An existing index
+    is never modified: if it cannot be reused, or ``reindex_bids`` is True, a
+    new index is generated at
+    ``<output_dir>/fmriprep_pybids_db/layout_index.sqlite``, as it is when
     ``database_path`` is None.
 
     Returns
@@ -119,11 +123,11 @@ def select_bids_database(
     Path
         The directory holding the index, as expected by PyBIDS.
     """
+    default_dir = Path(output_dir) / PYBIDS_DATABASE_DIR
+    default_file = default_dir / PYBIDS_DATABASE_FILE
     if database_path is None:
-        gc_log.info(
-            f"Generate PyBIDS database: {output_dir}/{PYBIDS_DATABASE_FILE}"
-        )
-        return Path(output_dir)
+        gc_log.info(f"Generate PyBIDS database: {default_file}")
+        return default_dir
 
     database_path = Path(database_path)
     if database_path.is_dir():
@@ -131,18 +135,32 @@ def select_bids_database(
             f"The PyBIDS database path must be the sqlite file of {bids_dir}, "
             "not a directory."
         )
+    # PyBIDS only reads and writes <directory>/layout_index.sqlite
+    if database_path.name != PYBIDS_DATABASE_FILE:
+        raise ValueError(
+            f"The PyBIDS database file must be named "
+            f"'{PYBIDS_DATABASE_FILE}', got {database_path}."
+        )
+    if not database_path.exists():
+        gc_log.info(f"Generate PyBIDS database: {database_path}")
+        return database_path.parent
+    if database_path.resolve() == default_file.resolve():
+        # already the default location, which is ours to rebuild
+        return default_dir
 
-    database_dir = database_path.parent
-    if database_path.exists() and not reindex_bids:
+    reason: str | None
+    if reindex_bids:
+        reason = "--reindex-bids is set"
+    else:
         reason = _pybids_database_mismatch(database_path, bids_dir)
-        if reason is None:
-            gc_log.info(f"Reusing PyBIDS database: {database_path}")
-        else:
-            gc_log.warning(
-                f"Regenerating the PyBIDS database at {database_path} "
-                f"({reason})."
-            )
-    return database_dir
+    if reason is None:
+        gc_log.info(f"Reusing PyBIDS database: {database_path}")
+        return database_path.parent
+    gc_log.warning(
+        f"Not using the PyBIDS database at {database_path} ({reason}); "
+        f"it is left unchanged. Generate PyBIDS database: {default_file}"
+    )
+    return default_dir
 
 
 def get_bids_images(

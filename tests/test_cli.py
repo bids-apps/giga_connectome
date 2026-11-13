@@ -55,7 +55,7 @@ def test_smoke(data_dir, tmp_path) -> None:
     )
     # check outputs
     # PyBIDS index is stored in the output directory, not in bids_dir
-    assert (output_dir / "layout_index.sqlite").exists()
+    assert (output_dir / "fmriprep_pybids_db" / "layout_index.sqlite").exists()
 
     output_folder = output_dir / "sub-1" / "ses-timepoint1" / "func"
 

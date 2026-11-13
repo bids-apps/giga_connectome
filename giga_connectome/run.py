@@ -131,9 +131,10 @@ def global_parser() -> argparse.ArgumentParser:
         help="Path to the PyBIDS database file layout_index.sqlite (SQLite "
         "index of bids_dir); a directory is not accepted. If the "
         "path is already a PyBIDS database built for bids_dir, it is reused "
-        "unless --reindex-bids is set. Otherwise it will be generated and "
-        "stored at this path, or at <output_dir>/layout_index.sqlite if no "
-        "path is given.",
+        "unless --reindex-bids is set. If the file does not exist, it is "
+        "generated at this path. An existing file is never modified: when it "
+        "cannot be reused, or when no path is given, the database is "
+        "generated at <output_dir>/fmriprep_pybids_db/layout_index.sqlite.",
     )
     parser.add_argument(
         "--bids-filter-file",

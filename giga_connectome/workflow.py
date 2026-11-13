@@ -75,12 +75,13 @@ def workflow(args: argparse.Namespace) -> None:
         average_correlation=calculate_average_correlation,
     )
 
-    for subject in subjects:
+    for i, subject in enumerate(subjects):
+        # the index covers all of bids_dir, so rebuild it once at most
         subj_data, _ = utils.get_bids_images(
             [subject],
             template,
             bids_dir,
-            args.reindex_bids,
+            args.reindex_bids and i == 0,
             bids_filters,
             database_path=bids_database_path,
         )
