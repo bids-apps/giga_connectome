@@ -114,7 +114,7 @@ module = [
 minversion = "7"
 log_cli_level = "INFO"
 xfail_strict = true
-testpaths = ["giga_connectome/tests"]
+testpaths = ["tests"]
 addopts = ["-ra", "--strict-config", "--strict-markers", "--doctest-modules", "-v" , "--showlocals"]
 markers = [
     "smoke: smoke tests that will run on a downsampled real dataset (deselect with '-m \"not smoke\"')",
