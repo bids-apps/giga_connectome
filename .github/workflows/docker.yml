@@ -107,6 +107,7 @@ jobs:
             /test_data/ds000017-fmriprep22.0.1-downsampled-nosurface \
             /outputs \
             participant \
+            --bids-database-dir /test_data/ds000017-fmriprep22.0.1-downsampled-nosurface/layout_index.sqlite \
             -a /atlases \
             --atlas "${atlas}" \
             --participant_label 1 \
