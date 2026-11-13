@@ -1,4 +1,15 @@
 # What’s new
+## 0.8.0.dev
+
+**Released Month Year**
+
+### New
+
+### Fixes
+
+### Enhancements
+
+### Changes
 
 ## 0.7.0
 
