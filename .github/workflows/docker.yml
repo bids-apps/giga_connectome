@@ -39,7 +39,7 @@ jobs:
       id: cache
       with:
         path: ${{ env.DATA }}
-        key: data
+        key: ds000017
     - if: ${{ steps.cache.outputs.cache-hit != 'true' }}
       uses: actions/setup-python@v7
     - if: ${{ steps.cache.outputs.cache-hit != 'true' }}
@@ -88,7 +88,7 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: ${{ env.DATA }}
-          key: data
+          key: ds000017
       - name: Test the Docker image
         run: |
           # Atlases with a config in .github/ci_atlas run a reduced set of
