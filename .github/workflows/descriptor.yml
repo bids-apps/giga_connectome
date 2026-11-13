@@ -60,8 +60,7 @@ jobs:
         prog-name: giga_connectome
         output-path: descriptor.json
         # Image tag is set in env.TAG above.
-        updates-str: '{"container-image.type": "docker", "container-image.image": "bids/giga_connectome:${{ env.TAG }}", "tool-version": "${{ env.TAG }}", "schema-version": "0.5"}'
-        validate: true
+        updates-str: '{"container-image.type": "docker", "container-image.image": "bids/giga_connectome:${{ env.TAG }}"}'
         open-pr: true
         # PRs opened with GITHUB_TOKEN do not trigger other workflows.
         token: ${{ secrets.GITHUB_TOKEN }}
