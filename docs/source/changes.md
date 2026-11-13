@@ -19,7 +19,7 @@
 
 ### Changes
 
-- [ENH] The PyBIDS database is now stored in `<output_dir>/layout_index.sqlite` by default instead of inside `bids_dir`. Existing datasets will be reindexed once on the first run after upgrading. (@htwangtw) [#181](https://github.com/bids-apps/giga_connectome/issues/181)
+- [ENH] The PyBIDS database is now stored in `<output_dir>/fmriprep_pybids_db/layout_index.sqlite` by default instead of inside `bids_dir`. Existing datasets will be reindexed once on the first run after upgrading. (@htwangtw) [#181](https://github.com/bids-apps/giga_connectome/issues/181)
 - [MAINT] Update the container base image from Python 3.12.3 on Debian 11 (bullseye, end of life) to Python 3.14.10 on Debian 13 (trixie). (@htwangtw)
 - [MAINT] Run the container test in CI with a reduced set of DiFuMo (64 and 128 dimensions) and Schaefer2018 (100 and 200 parcels) atlases, so the job fits in the memory of a GitHub runner. The full DiFuMo preset needs about 16 GB of memory for the 1024-dimension atlas. (@htwangtw)
 - [MAINT] Update the pinned dependencies of the container, including nilearn 0.10.3 → 0.13.1, numpy 1.26.4 → 2.4.3, scipy 1.12.0 → 1.17.1, pandas 2.2.1 → 3.0.1, scikit-learn 1.4.1 → 1.8.0, pybids 0.15.6 → 0.22.0 and templateflow 0.8.1 → 25.1.2. Time series and connectomes may differ slightly from 0.6.0. (@Remi-Gau) [#263](https://github.com/bids-apps/giga_connectome/pull/263)

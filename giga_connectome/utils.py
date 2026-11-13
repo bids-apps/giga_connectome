@@ -26,6 +26,8 @@ from giga_connectome.logger import gc_logger
 
 gc_log = gc_logger()
 PYBIDS_DATABASE_FILE = "layout_index.sqlite"
+# subfolder of the output directory holding the default PyBIDS index
+PYBIDS_DATABASE_DIR = "fmriprep_pybids_db"
 
 
 def prepare_bidsfilter_and_template(
@@ -112,15 +114,16 @@ def select_bids_database(
     reused if it is a PyBIDS index built for ``bids_dir`` and ``reindex_bids``
     is False, and generated there if it does not exist yet. An existing index
     is never modified: if it cannot be reused, or ``reindex_bids`` is True, a
-    new index is generated at ``<output_dir>/layout_index.sqlite``, as it is
-    when ``database_path`` is None.
+    new index is generated at
+    ``<output_dir>/fmriprep_pybids_db/layout_index.sqlite``, as it is when
+    ``database_path`` is None.
 
     Returns
     -------
     Path
         The directory holding the index, as expected by PyBIDS.
     """
-    default_dir = Path(output_dir)
+    default_dir = Path(output_dir) / PYBIDS_DATABASE_DIR
     default_file = default_dir / PYBIDS_DATABASE_FILE
     if database_path is None:
         gc_log.info(f"Generate PyBIDS database: {default_file}")

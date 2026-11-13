@@ -264,6 +264,7 @@ def database_file(reference_database, tmp_path) -> Path:
         ("reindex", False),
         ("no_derivatives", False),
         ("other_root", False),
+        ("unreadable", False),
     ],
 )
 def test_select_bids_database(
@@ -275,11 +276,12 @@ def test_select_bids_database(
     uses_given_path,
 ) -> None:
     """The given index is used if it can be reused or does not exist yet;
-    otherwise the index is generated in output_dir. Either way, an existing
-    index at the given path is left unchanged and the selected index returns
-    the same images as a freshly built one.
+    otherwise the index is generated in output_dir/fmriprep_pybids_db.
+    Either way, an existing index at the given path is left unchanged and the
+    selected index returns the same images as a freshly built one.
     """
     output_dir = tmp_path / "output"
+    default_dir = output_dir / utils.PYBIDS_DATABASE_DIR
     if case in ("new", "default"):
         database_file.unlink()
     if case in ("no_derivatives", "other_root"):
@@ -290,6 +292,8 @@ def test_select_bids_database(
             validate=False,
             config=["bids"] if case == "no_derivatives" else None,
         )
+    if case == "unreadable":
+        database_file.write_bytes(b"not a database")
     given_content = (
         database_file.read_bytes() if database_file.exists() else None
     )
@@ -301,7 +305,7 @@ def test_select_bids_database(
         output_dir,
         reindex_bids,
     )
-    expected_dir = database_file.parent if uses_given_path else output_dir
+    expected_dir = database_file.parent if uses_given_path else default_dir
     assert selected == expected_dir
 
     assert (
@@ -310,11 +314,39 @@ def test_select_bids_database(
     )
     assert (expected_dir / DATABASE_FILE).exists()
     if uses_given_path:
-        assert not (output_dir / DATABASE_FILE).exists()
+        assert not default_dir.exists()
     if given_content is not None:
         assert database_file.read_bytes() == given_content
     else:
         assert database_file.exists() == (case == "new")
+
+
+@pytest.mark.parametrize("stale", [False, True], ids=["valid", "stale"])
+def test_select_bids_database_default_path_given(
+    bids_dir, reference_database, tmp_path, stale
+) -> None:
+    """Passing the default location (as parallel jobs do) reuses a valid
+    index, and rebuilds a stale one in place since it belongs to us.
+    """
+    output_dir = tmp_path / "output"
+    default_dir = output_dir / utils.PYBIDS_DATABASE_DIR
+    default_dir.mkdir(parents=True)
+    default_file = default_dir / DATABASE_FILE
+    if stale:  # an index of another dataset
+        BIDSLayout(tmp_path, database_path=default_dir, validate=False)
+    else:
+        shutil.copy(reference_database[0], default_file)
+    content = default_file.read_bytes()
+
+    selected = utils.select_bids_database(
+        default_file, bids_dir, output_dir, reindex_bids=False
+    )
+    assert selected == default_dir
+    assert (
+        _get_image_paths(bids_dir, selected, reindex_bids=False)
+        == reference_database[1]
+    )
+    assert (default_file.read_bytes() == content) is not stale
 
 
 def test_select_bids_database_rejects_wrong_name(bids_dir, tmp_path) -> None:

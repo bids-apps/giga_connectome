@@ -99,6 +99,59 @@ docker run --rm \
 
 Now you can navigate the outputs under `outputs`
 
+### Running participants in parallel
+
+`giga_connectome` uses a PyBIDS index (`layout_index.sqlite`) to find the input files from a fMRIPrep output directory.
+By default, the index is created at `<output_dir>/fmriprep_pybids_db/layout_index.sqlite`, and it covers all participants in the input directory.
+`--reindex-bids` rebuilds it.
+
+If several jobs (for example, one per participant in an HPC array job) share the same output directory,
+do not let them create or rebuild the index at the same time:
+they would all write the same file, which can fail or leave a broken index.
+Build the index once, then let the parallel jobs read it:
+
+1. Run the first participant alone, with `--reindex-bids`.
+   This creates `outputs/fmriprep_pybids_db/layout_index.sqlite`.
+2. Run the remaining participants in parallel, **without** `--reindex-bids`,
+   and point them to the index with `--bids-database-path`.
+   An existing index built for the same input directory is only read, never modified.
+
+```bash
+# 1. build the index with the first participant
+apptainer run \
+    --bind ${DATA}:/inputs \
+    --bind ./outputs:/outputs \
+    --bind ./outputs/atlases:/atlases \
+    giga_connectome \
+    /inputs \
+    /outputs \
+    participant \
+    --participant-label 1 \
+    -a /atlases \
+    --reindex-bids
+
+# 2. one job per remaining participant, all reading the same index
+apptainer run \
+    --bind ${DATA}:/inputs \
+    --bind ./outputs:/outputs \
+    --bind ./outputs/atlases:/atlases \
+    giga_connectome \
+    /inputs \
+    /outputs \
+    participant \
+    --participant-label ${PARTICIPANT} \
+    -a /atlases \
+    --bids-database-path /outputs/fmriprep_pybids_db/layout_index.sqlite
+```
+
+```{note}
+The index stores the absolute path of the input directory.
+Mount the input directory at the same path (here `/inputs`) in every job,
+including step 1. Otherwise the index does not match the input directory
+and every job rebuilds it, which is the conflict described above.
+If new participants are added to the input directory, run step 1 again so the index includes them.
+```
+
 ## Advanced: Using customised configuration files for denoising strategy and atlas
 
 Aside from the preset strategies and atlases, the users can supply their own for further customisation.

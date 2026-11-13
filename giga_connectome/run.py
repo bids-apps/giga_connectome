@@ -134,7 +134,7 @@ def global_parser() -> argparse.ArgumentParser:
         "unless --reindex-bids is set. If the file does not exist, it is "
         "generated at this path. An existing file is never modified: when it "
         "cannot be reused, or when no path is given, the database is "
-        "generated at <output_dir>/layout_index.sqlite.",
+        "generated at <output_dir>/fmriprep_pybids_db/layout_index.sqlite.",
     )
     parser.add_argument(
         "--bids-filter-file",
