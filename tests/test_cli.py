@@ -34,7 +34,6 @@ def test_smoke(data_dir, tmp_path, caplog) -> None:
     )
     output_dir = tmp_path / "output"
     atlases_dir = tmp_path / "atlases"
-    work_dir = tmp_path / "work"
 
     if not Path(output_dir).exists:
         Path(output_dir).mkdir()
@@ -43,8 +42,6 @@ def test_smoke(data_dir, tmp_path, caplog) -> None:
         [
             "--participant-label",
             "1",
-            "-w",
-            str(work_dir),
             "-a",
             str(atlases_dir),
             "--atlas",
@@ -63,7 +60,7 @@ def test_smoke(data_dir, tmp_path, caplog) -> None:
     # check outputs
     assert "has been deprecated" in caplog.text.splitlines()[0]
     # PyBIDS index is stored in the output directory, not in bids_dir
-    assert (output_dir / ".pybids_db" / "layout_index.sqlite").exists()
+    assert (output_dir / "layout_index.sqlite").exists()
 
     output_folder = output_dir / "sub-1" / "ses-timepoint1" / "func"
 

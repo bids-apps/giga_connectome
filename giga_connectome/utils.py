@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import sqlite3
+from contextlib import closing
 from pathlib import Path
 from typing import Any
 
@@ -23,6 +25,7 @@ from giga_connectome.denoise import STRATEGY_TYPE, is_ica_aroma
 from giga_connectome.logger import gc_logger
 
 gc_log = gc_logger()
+PYBIDS_DATABASE_FILE = "layout_index.sqlite"
 
 
 def prepare_bidsfilter_and_template(
@@ -67,6 +70,79 @@ def prepare_bidsfilter_and_template(
         return "MNI152NLin2009cAsym", user_bids_filter
 
 
+def _pybids_database_mismatch(
+    database_path: Path, bids_dir: Path
+) -> str | None:
+    """Explain why the PyBIDS index ``database_path`` can't be reused for
+    ``bids_dir``. Return None if it can be reused, or if there is no index.
+
+    PyBIDS silently replaces the ``root`` and ``config`` arguments with the
+    values stored in an existing index, so a mismatch has to be caught here.
+    """
+    if not database_path.exists():
+        return None
+    try:
+        uri = f"{database_path.resolve().as_uri()}?mode=ro"
+        with closing(sqlite3.connect(uri, uri=True)) as conn:
+            stored_root, stored_config = conn.execute(
+                "SELECT root, _config FROM layout_info"
+            ).fetchone()
+    except (sqlite3.Error, TypeError):
+        return "it could not be read"
+
+    if Path(stored_root).resolve() != Path(bids_dir).resolve():
+        return f"it indexes {stored_root}, not {bids_dir}"
+    if "derivatives" not in json.loads(stored_config or "[]"):
+        return (
+            "it was not built with the 'derivatives' config, which is "
+            "needed to query fMRIPrep outputs"
+        )
+    return None
+
+
+def select_bids_database(
+    database_path: Path | None,
+    bids_dir: Path,
+    output_dir: Path,
+    reindex_bids: bool,
+) -> Path:
+    """Pick the directory of the PyBIDS index to use for ``bids_dir``.
+
+    A user supplied ``database_path`` (the ``layout_index.sqlite`` file) is
+    reused if it is a PyBIDS index built for ``bids_dir`` and ``reindex_bids``
+    is False. Otherwise, the index is generated and stored at the provided
+    ``database_path`` or ``<output_dir>/layout_index.sqlite`` if
+    ``database_path`` is None.
+
+    Returns
+    -------
+    Path
+        The directory holding the index, as expected by PyBIDS.
+    """
+    if database_path is None:
+        gc_log.info(f"Generate PyBIDS database: {output_dir}/{PYBIDS_DATABASE_FILE}")
+        return Path(output_dir)
+
+    database_path = Path(database_path)
+    if database_path.is_dir():
+        raise ValueError(
+            f"The PyBIDS database path must be the sqlite file of {bids_dir},"
+            "not a direcotry"
+        )
+
+    database_dir = database_path.parent
+    if database_path.exists() and not reindex_bids:
+        reason = _pybids_database_mismatch(database_path, bids_dir)
+        if reason is None:
+            gc_log.info(f"Reusing PyBIDS database: {database_path}")
+        else:
+            gc_log.warning(
+                f"Regenerating the PyBIDS database at {database_path} "
+                f"({reason})."
+            )
+    return database_dir
+
+
 def get_bids_images(
     subjects: list[str],
     template: str,
@@ -85,14 +161,23 @@ def get_bids_images(
         Directory where the PyBIDS SQLite index is stored.
         If None, the index is stored in ``bids_dir``.
         Set this to a writable location when ``bids_dir`` is read-only.
+        An existing index there is reused unless ``reindex_bids`` is True
+        or it was not built for ``bids_dir``, in which case it is rebuilt.
     """
     bids_filters = check_filter(bids_filters)
 
-    if database_path is None:
-        database_path = bids_dir
-    else:
-        database_path = Path(database_path)
-        database_path.mkdir(parents=True, exist_ok=True)
+    database_path = Path(bids_dir if database_path is None else database_path)
+    database_path.mkdir(parents=True, exist_ok=True)
+    if not reindex_bids:
+        reason = _pybids_database_mismatch(
+            database_path / PYBIDS_DATABASE_FILE, bids_dir
+        )
+        if reason is not None:
+            gc_log.warning(
+                f"Rebuilding the PyBIDS database at {database_path} "
+                f"({reason})."
+            )
+            reindex_bids = True
 
     layout = BIDSLayout(
         root=bids_dir,

@@ -1,4 +1,7 @@
+from pathlib import Path
+
 import pytest
+from bids import BIDSLayout
 from nilearn._utils.data_gen import create_fake_bids_dataset
 
 from giga_connectome import utils
@@ -239,3 +242,81 @@ def test_bids_database_dir(tmp_path) -> None:
     )
     assert (database_dir / "layout_index.sqlite").exists()
     assert not (bids_dir / "layout_index.sqlite").exists()
+
+
+def _make_database(bids_dir, database_dir, config=("bids", "derivatives")):
+    BIDSLayout(
+        bids_dir,
+        database_path=database_dir,
+        validate=False,
+        derivatives=False,
+        config=list(config),
+    )
+    return database_dir / "layout_index.sqlite"
+
+
+def test_select_bids_database_reuse(tmp_path) -> None:
+    """An existing PyBIDS index built for bids_dir is reused as is."""
+    create_fake_bids_dataset(tmp_path, n_sub=1, n_ses=1, n_runs=[1, 1])
+    bids_dir = tmp_path / "bids_dataset" / "derivatives"
+    output_dir = tmp_path / "output"
+    database_file = _make_database(bids_dir, tmp_path / "pybids_db")
+    mtime = database_file.stat().st_mtime_ns
+
+    selected = utils.select_bids_database(
+        database_file, bids_dir, output_dir, reindex_bids=False
+    )
+    assert selected == database_file.parent
+    subj_data, layout = utils.get_bids_images(
+        ["01"], "MNI", bids_dir, False, None, database_path=selected
+    )
+    assert Path(layout.root) == bids_dir.resolve()
+    assert len(subj_data["bold"]) > 0
+    assert database_file.stat().st_mtime_ns == mtime
+    assert not (output_dir / "layout_index.sqlite").exists()
+
+
+def test_select_bids_database_default(tmp_path) -> None:
+    """Without a path, the index is generated in output_dir."""
+    create_fake_bids_dataset(tmp_path, n_sub=1, n_ses=1, n_runs=[1, 1])
+    bids_dir = tmp_path / "bids_dataset" / "derivatives"
+    output_dir = tmp_path / "output"
+
+    selected = utils.select_bids_database(None, bids_dir, output_dir, False)
+    assert selected == output_dir
+    utils.get_bids_images(
+        ["01"], "MNI", bids_dir, False, None, database_path=selected
+    )
+    assert (output_dir / "layout_index.sqlite").exists()
+
+
+@pytest.mark.parametrize("case", ["new", "no_derivatives", "other_root"])
+def test_select_bids_database_regenerate(tmp_path, case) -> None:
+    """A missing or unusable index is generated at the given path."""
+    create_fake_bids_dataset(tmp_path, n_sub=1, n_ses=1, n_runs=[1, 1])
+    bids_dir = tmp_path / "bids_dataset" / "derivatives"
+    database_file = tmp_path / "pybids_db" / "layout_index.sqlite"
+    if case == "no_derivatives":
+        _make_database(bids_dir, database_file.parent, config=("bids",))
+    elif case == "other_root":
+        _make_database(tmp_path / "bids_dataset", database_file.parent)
+
+    selected = utils.select_bids_database(
+        database_file, bids_dir, tmp_path / "output", False
+    )
+    assert selected == database_file.parent
+    subj_data, layout = utils.get_bids_images(
+        ["01"], "MNI", bids_dir, False, None, database_path=selected
+    )
+    assert Path(layout.root) == bids_dir.resolve()
+    assert len(subj_data["bold"]) > 0
+    assert database_file.exists()
+
+
+def test_select_bids_database_rejects_directory(tmp_path) -> None:
+    """A directory is rejected, even one that holds a database."""
+    _make_database(tmp_path, tmp_path / "pybids_db")
+    with pytest.raises(ValueError, match="must be the sqlite file"):
+        utils.select_bids_database(
+            tmp_path / "pybids_db", tmp_path, tmp_path, False
+        )
