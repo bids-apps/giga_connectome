@@ -2,7 +2,7 @@
   "schema-version": "0.5+styx",
   "name": "giga_connectome",
   "description": "Generate denoised timeseries and Pearson's correlation based connectomes from fmriprep processed dataset.",
-  "command-line": "giga_connectome [BIDS_DIR] [OUTPUT_DIR] [ANALYSIS_LEVEL] [PARTICIPANT_LABEL] [ATLASES_DIR] [WORK_DIR] [ATLAS] [DENOISE_STRATEGY] [SMOOTHING_FWHM] [REINDEX_BIDS] [BIDS_DATABASE_DIR] [BIDS_FILTER_FILE] [CALCULATE_INTRANETWORK_AVERAGE_CORRELATION] [VERBOSITY]",
+  "command-line": "giga_connectome [BIDS_DIR] [OUTPUT_DIR] [ANALYSIS_LEVEL] [PARTICIPANT_LABEL] [ATLASES_DIR] [WORK_DIR] [ATLAS] [DENOISE_STRATEGY] [SMOOTHING_FWHM] [REINDEX_BIDS] [BIDS_DATABASE_PATH] [BIDS_FILTER_FILE] [CALCULATE_INTRANETWORK_AVERAGE_CORRELATION] [VERBOSITY]",
   "inputs": [
     {
       "id": "bids_dir",
@@ -94,13 +94,13 @@
       "name": "reindex_bids"
     },
     {
-      "id": "bids_database_dir",
+      "id": "bids_database_path",
       "type": "File",
-      "value-key": "[BIDS_DATABASE_DIR]",
-      "description": "Path to a directory where the PyBIDS database (SQLite index of bids_dir) is stored, so bids_dir can be read-only. The default is <output_dir>/.pybids_db.",
+      "value-key": "[BIDS_DATABASE_PATH]",
+      "description": "Path to the PyBIDS database file layout_index.sqlite (SQLite index of bids_dir); a directory is not accepted. If the path is already a PyBIDS database built for bids_dir, it is reused unless --reindex-bids is set. Otherwise it will be generated and stored at this path, or at <output_dir>/layout_index.sqlite if no path is given.",
       "optional": true,
-      "command-line-flag": "--bids-database-dir",
-      "name": "bids_database_dir"
+      "command-line-flag": "--bids-database-path",
+      "name": "bids_database_path"
     },
     {
       "id": "bids_filter_file",
