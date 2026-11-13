@@ -6,7 +6,7 @@
 
 ### New
 
-- [EHN] Add `--bids-database-path` to set where the PyBIDS database is stored, so the input dataset can be read-only. An existing `layout_index.sqlite` built for `bids_dir` is reused; otherwise it is generated at that path. (@htwangtw) [#181](https://github.com/bids-apps/giga_connectome/issues/181)
+- [EHN] Add `--bids-database-path` to set where the PyBIDS database is stored, so the input dataset can be read-only. An existing `layout_index.sqlite` built for `bids_dir` is reused and never modified; if it cannot be reused, or with `--reindex-bids`, a new database is generated in the output directory. (@htwangtw) [#181](https://github.com/bids-apps/giga_connectome/issues/181)
 
 ### Fixes
 

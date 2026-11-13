@@ -256,26 +256,43 @@ def database_file(reference_database, tmp_path) -> Path:
 
 
 @pytest.mark.parametrize(
-    "case",
-    ["reuse", "reindex", "default", "new", "no_derivatives", "other_root"],
+    "case, uses_given_path",
+    [
+        ("reuse", True),
+        ("new", True),
+        ("default", False),
+        ("reindex", False),
+        ("no_derivatives", False),
+        ("other_root", False),
+    ],
 )
 def test_select_bids_database(
-    bids_dir, reference_database, database_file, tmp_path, case
+    bids_dir,
+    reference_database,
+    database_file,
+    tmp_path,
+    case,
+    uses_given_path,
 ) -> None:
-    """Whether the index is reused or (re)generated, it is stored at the
-    expected place and returns the same images as a freshly built index.
+    """The given index is used if it can be reused or does not exist yet;
+    otherwise the index is generated in output_dir. Either way, an existing
+    index at the given path is left unchanged and the selected index returns
+    the same images as a freshly built one.
     """
     output_dir = tmp_path / "output"
-    if case not in ("reuse", "reindex"):
+    if case in ("new", "default"):
         database_file.unlink()
     if case in ("no_derivatives", "other_root"):
+        database_file.unlink()
         BIDSLayout(
             bids_dir if case == "no_derivatives" else tmp_path,
             database_path=database_file.parent,
             validate=False,
             config=["bids"] if case == "no_derivatives" else None,
         )
-    mtime = database_file.stat().st_mtime_ns if case == "reuse" else None
+    given_content = (
+        database_file.read_bytes() if database_file.exists() else None
+    )
     reindex_bids = case == "reindex"
 
     selected = utils.select_bids_database(
@@ -284,20 +301,28 @@ def test_select_bids_database(
         output_dir,
         reindex_bids,
     )
-    expected_dir = output_dir if case == "default" else database_file.parent
+    expected_dir = database_file.parent if uses_given_path else output_dir
     assert selected == expected_dir
 
     assert (
         _get_image_paths(bids_dir, selected, reindex_bids)
-        == (reference_database[1])
+        == reference_database[1]
     )
     assert (expected_dir / DATABASE_FILE).exists()
-    if case == "default":
-        assert not database_file.exists()
-    else:
+    if uses_given_path:
         assert not (output_dir / DATABASE_FILE).exists()
-    if case == "reuse":
-        assert database_file.stat().st_mtime_ns == mtime
+    if given_content is not None:
+        assert database_file.read_bytes() == given_content
+    else:
+        assert database_file.exists() == (case == "new")
+
+
+def test_select_bids_database_rejects_wrong_name(bids_dir, tmp_path) -> None:
+    """PyBIDS only uses layout_index.sqlite, so other names are rejected."""
+    with pytest.raises(ValueError, match="must be named"):
+        utils.select_bids_database(
+            tmp_path / "my_index.sqlite", bids_dir, tmp_path, False
+        )
 
 
 def test_select_bids_database_rejects_directory(
