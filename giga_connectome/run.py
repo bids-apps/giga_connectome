@@ -124,13 +124,16 @@ def global_parser() -> argparse.ArgumentParser:
         action="store_true",
     )
     parser.add_argument(
-        "--bids-database-dir",
+        "--bids-database-path",
         action="store",
         type=Path,
         default=None,
-        help="Path to a directory where the PyBIDS database (SQLite index of "
-        "bids_dir) is stored, so bids_dir can be read-only. "
-        "The default is <output_dir>/.pybids_db.",
+        help="Path to the PyBIDS database file layout_index.sqlite (SQLite "
+        "index of bids_dir); a directory is not accepted. If the "
+        "path is already a PyBIDS database built for bids_dir, it is reused "
+        "unless --reindex-bids is set. Otherwise it will be generated and "
+        "stored at this path, or at <output_dir>/layout_index.sqlite if no "
+        "path is given.",
     )
     parser.add_argument(
         "--bids-filter-file",

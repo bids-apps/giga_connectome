@@ -1,4 +1,8 @@
+import shutil
+from pathlib import Path
+
 import pytest
+from bids import BIDSLayout
 from nilearn._utils.data_gen import create_fake_bids_dataset
 
 from giga_connectome import utils
@@ -39,21 +43,21 @@ def test_prepare_bidsfilter_and_template() -> None:
     assert bids_filters["mask"]["space"] == "MNI152NLin2009cAsym"
 
 
-def test_get_bids_images(data_dir) -> None:
+def test_get_bids_images(bids_dir, tmp_path) -> None:
     subjects = ["1"]
     template = "MNI152NLin2009cAsym"
-    bids_dir = (
-        data_dir
-        / "test_data"
-        / "ds000017-fmriprep22.0.1-downsampled-nosurface"
-    )
 
     reindex_bids = True
     user_bids_filters = {
         "bold": {"task": "probabilisticclassification", "run": "1"},
     }  # task and run should apply to both mask and bold
     subj_data, _ = utils.get_bids_images(
-        subjects, template, bids_dir, reindex_bids, user_bids_filters
+        subjects,
+        template,
+        bids_dir,
+        reindex_bids,
+        user_bids_filters,
+        database_path=tmp_path,
     )
     assert len(subj_data["bold"]) == len(subj_data["mask"])
 
@@ -62,11 +66,14 @@ def test_get_bids_images(data_dir) -> None:
     template, bids_filters = utils.prepare_bidsfilter_and_template(
         strategy, user_bids_filters
     )
-    print(bids_filters)
     subj_data, _ = utils.get_bids_images(
-        subjects, template, bids_dir, reindex_bids, bids_filters
+        subjects,
+        template,
+        bids_dir,
+        reindex_bids,
+        bids_filters,
+        database_path=tmp_path,
     )
-    print(subj_data)
     assert len(subj_data["bold"]) == len(subj_data["mask"])
     assert all(
         "desc-smoothAROMAnonaggr_bold.nii.gz" in img.path
@@ -97,17 +104,13 @@ def test_parse_bids_name(source_file) -> None:
     assert specifier == "ses-ah_task-rest_run-1"
 
 
-def test_get_subject_lists(data_dir) -> None:
+def test_get_subject_lists(bids_dir) -> None:
     # strip the sub- prefix
     subjects = utils.get_subject_lists(participant_label=["sub-01"])
     assert len(subjects) == 1
     assert subjects[0] == "01"
 
-    subjects = utils.get_subject_lists(
-        bids_dir=data_dir
-        / "test_data"
-        / "ds000017-fmriprep22.0.1-downsampled-nosurface"
-    )
+    subjects = utils.get_subject_lists(bids_dir=bids_dir)
     assert len(subjects) == 2
     assert subjects[0] == "1"
 
@@ -207,35 +210,101 @@ def test_output_filename_seg(
 
 
 def test_desc_entity_recognised(tmp_path) -> None:
-
     create_fake_bids_dataset(tmp_path, n_sub=1, n_ses=1, n_runs=[1, 1])
-
-    subjects = ["01"]
-    template = "MNI"
-    reindex_bids = True
-
-    utils.get_bids_images(
-        subjects,
-        template,
-        tmp_path / "bids_dataset" / "derivatives",
-        reindex_bids,
-        bids_filters=None,
-    )
-
-
-def test_bids_database_dir(tmp_path) -> None:
-    """The PyBIDS index is written to database_path, not to bids_dir."""
-    create_fake_bids_dataset(tmp_path, n_sub=1, n_ses=1, n_runs=[1, 1])
-    bids_dir = tmp_path / "bids_dataset" / "derivatives"
-    database_dir = tmp_path / "pybids_db"
-
     utils.get_bids_images(
         ["01"],
         "MNI",
-        bids_dir,
+        tmp_path / "bids_dataset" / "derivatives",
         reindex_bids=True,
         bids_filters=None,
-        database_path=database_dir,
     )
-    assert (database_dir / "layout_index.sqlite").exists()
-    assert not (bids_dir / "layout_index.sqlite").exists()
+
+
+TEMPLATE = "MNI152NLin2009cAsym"
+DATABASE_FILE = utils.PYBIDS_DATABASE_FILE
+
+
+def _get_image_paths(
+    bids_dir: Path, database_dir: Path, reindex_bids: bool = False
+) -> dict[str, list[str]]:
+    """Query sub-1 bold and mask images through the index in database_dir."""
+    subj_data, layout = utils.get_bids_images(
+        ["1"], TEMPLATE, bids_dir, reindex_bids, None, database_dir
+    )
+    assert Path(layout.root) == bids_dir.resolve()
+    return {k: sorted(f.path for f in v) for k, v in subj_data.items()}
+
+
+@pytest.fixture(scope="session")
+def reference_database(
+    bids_dir, tmp_path_factory
+) -> tuple[Path, dict[str, list[str]]]:
+    """A freshly built index of bids_dir and the images it returns."""
+    database_dir = tmp_path_factory.mktemp("reference_db")
+    images = _get_image_paths(bids_dir, database_dir, reindex_bids=True)
+    assert len(images["bold"]) == len(images["mask"]) > 0
+    return database_dir / DATABASE_FILE, images
+
+
+@pytest.fixture
+def database_file(reference_database, tmp_path) -> Path:
+    """A private copy of the reference index, safe to modify."""
+    database_file = tmp_path / "pybids_db" / DATABASE_FILE
+    database_file.parent.mkdir()
+    shutil.copy(reference_database[0], database_file)
+    return database_file
+
+
+@pytest.mark.parametrize(
+    "case",
+    ["reuse", "reindex", "default", "new", "no_derivatives", "other_root"],
+)
+def test_select_bids_database(
+    bids_dir, reference_database, database_file, tmp_path, case
+) -> None:
+    """Whether the index is reused or (re)generated, it is stored at the
+    expected place and returns the same images as a freshly built index.
+    """
+    output_dir = tmp_path / "output"
+    if case not in ("reuse", "reindex"):
+        database_file.unlink()
+    if case in ("no_derivatives", "other_root"):
+        BIDSLayout(
+            bids_dir if case == "no_derivatives" else tmp_path,
+            database_path=database_file.parent,
+            validate=False,
+            config=["bids"] if case == "no_derivatives" else None,
+        )
+    mtime = database_file.stat().st_mtime_ns if case == "reuse" else None
+    reindex_bids = case == "reindex"
+
+    selected = utils.select_bids_database(
+        None if case == "default" else database_file,
+        bids_dir,
+        output_dir,
+        reindex_bids,
+    )
+    expected_dir = output_dir if case == "default" else database_file.parent
+    assert selected == expected_dir
+
+    assert (
+        _get_image_paths(bids_dir, selected, reindex_bids)
+        == (reference_database[1])
+    )
+    assert (expected_dir / DATABASE_FILE).exists()
+    if case == "default":
+        assert not database_file.exists()
+    else:
+        assert not (output_dir / DATABASE_FILE).exists()
+    if case == "reuse":
+        assert database_file.stat().st_mtime_ns == mtime
+
+
+def test_select_bids_database_rejects_directory(
+    bids_dir, database_file, tmp_path
+) -> None:
+    """A directory is rejected, even one that holds a database."""
+    with pytest.raises(ValueError, match="must be the sqlite file"):
+        utils.select_bids_database(
+            database_file.parent, bids_dir, tmp_path, False
+        )
